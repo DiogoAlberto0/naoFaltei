@@ -9,6 +9,9 @@
     "lint": "next lint --dir .",
     "lint:fix": "next lint --dir . --fix",
     "test": "vitest",
+    "services:up": "docker compose up -d",
+    "services:down": "docker compose down",
+    "services:stop": "docker compose stop",
     "prepare": "husky",
     "commit": "cz"
   },
