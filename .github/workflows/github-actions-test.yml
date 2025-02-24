@@ -1,0 +1,16 @@
+name: Run automated tests
+on: pull_request
+jobs:
+  Vitest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: Setup node version form .nvmrc
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Install dependencies
+        run: npm ci
+      - name: run tests
+        run: npm run ci
