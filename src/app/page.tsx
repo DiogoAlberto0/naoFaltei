@@ -1,7 +1,9 @@
+import { GoogleSigninButton } from "@/components/GoogleSigninButton";
+
 export default function Home() {
   return (
     <div>
-      <h1>Hello world</h1>
+      <GoogleSigninButton />
     </div>
   );
 }
