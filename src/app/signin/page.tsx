@@ -1,6 +1,6 @@
 import { GoogleSigninButton } from "@/components/GoogleSigninButton";
 
-export default function Home() {
+export default async function SigninPage() {
   return (
     <div>
       <GoogleSigninButton />
