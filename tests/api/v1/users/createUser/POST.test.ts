@@ -10,7 +10,7 @@ const userCounter = async () => {
 
 beforeAll(async () => {
   await prisma.$queryRawUnsafe(
-    `TRUNCATE TABLE "users" RESTART IDENTITY CASCADE;`
+    `TRUNCATE TABLE "users" RESTART IDENTITY CASCADE;`,
   );
 
   expect(await userCounter()).toEqual(0);
@@ -33,7 +33,7 @@ describe("POST on /api/v1/user/createUser", () => {
             ...validUser,
             name: "",
           }),
-        }
+        },
       );
 
       expect(response.status).toEqual(400);
@@ -55,7 +55,7 @@ describe("POST on /api/v1/user/createUser", () => {
             ...validUser,
             email: "test-teste.com",
           }),
-        }
+        },
       );
 
       expect(response.status).toEqual(400);
@@ -78,7 +78,7 @@ describe("POST on /api/v1/user/createUser", () => {
             ...validUser,
             email: "",
           }),
-        }
+        },
       );
 
       expect(response.status).toEqual(400);
@@ -101,7 +101,7 @@ describe("POST on /api/v1/user/createUser", () => {
             ...validUser,
             password: "1234",
           }),
-        }
+        },
       );
 
       expect(response.status).toEqual(400);
@@ -125,7 +125,7 @@ describe("POST on /api/v1/user/createUser", () => {
             ...validUser,
             password: "",
           }),
-        }
+        },
       );
 
       expect(response.status).toEqual(400);
@@ -146,7 +146,7 @@ describe("POST on /api/v1/user/createUser", () => {
         {
           method: "POST",
           body: JSON.stringify(validUser),
-        }
+        },
       );
 
       expect(response.status).toEqual(201);
@@ -175,7 +175,7 @@ describe("POST on /api/v1/user/createUser", () => {
         {
           method: "POST",
           body: JSON.stringify(validUser),
-        }
+        },
       );
 
       expect(response.status).toEqual(409);

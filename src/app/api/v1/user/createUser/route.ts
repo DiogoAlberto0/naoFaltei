@@ -15,7 +15,7 @@ export const POST = async (request: NextRequest) => {
       },
       {
         status: 400,
-      }
+      },
     );
 
   if (!password || !isValidPassword(password))
@@ -26,7 +26,7 @@ export const POST = async (request: NextRequest) => {
       },
       {
         status: 400,
-      }
+      },
     );
 
   if (!name)
@@ -36,7 +36,7 @@ export const POST = async (request: NextRequest) => {
       },
       {
         status: 400,
-      }
+      },
     );
 
   try {
@@ -49,7 +49,7 @@ export const POST = async (request: NextRequest) => {
         },
         {
           status: 409,
-        }
+        },
       );
     await createUser({ email, password, name });
 
@@ -59,7 +59,7 @@ export const POST = async (request: NextRequest) => {
       },
       {
         status: 201,
-      }
+      },
     );
   } catch (error) {
     console.error(error);
@@ -69,7 +69,7 @@ export const POST = async (request: NextRequest) => {
       },
       {
         status: 500,
-      }
+      },
     );
   }
 };

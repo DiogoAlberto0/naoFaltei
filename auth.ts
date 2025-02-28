@@ -44,7 +44,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const isCorrectPass = comparePassAndHash(
           credentials.password as string,
-          user.hash
+          user.hash,
         );
 
         if (!isCorrectPass) throw new Error("Invalid credentials.");
