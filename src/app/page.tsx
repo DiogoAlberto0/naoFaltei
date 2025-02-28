@@ -1,4 +1,4 @@
-import { GoogleSigninButton } from "@/components/GoogleSigninButton";
+import { GoogleSigninButton } from "@/src/components/GoogleSigninButton";
 
 export default function Home() {
   return (
