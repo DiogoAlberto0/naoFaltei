@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm run services:up && next dev --turbopack",
+    "dev": "npm run services:up && npm run migrate:postgres:dev && next dev --turbopack",
     "test:watch": "vitest",
     "test": "vitest run",
     "ci": "start-server-and-test dev http://localhost:3000 test",
