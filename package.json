@@ -6,7 +6,7 @@
     "dev": "npm run services:up && npm run migrate:postgres:dev && next dev --turbopack",
     "test:watch": "vitest",
     "test": "vitest run",
-    "ci": "start-server-and-test dev http://localhost:3000 test",
+    "ci": "node scripts/ci.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint --dir .",
