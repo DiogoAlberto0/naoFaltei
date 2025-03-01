@@ -2,6 +2,7 @@
   "name": "nao_faltei",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "npm run services:up && npm run migrate:postgres:dev && next dev --turbopack",
     "test:watch": "vitest",
