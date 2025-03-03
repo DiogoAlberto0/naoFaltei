@@ -53,6 +53,8 @@ model User {
   hash          String?
   accounts      Account[]
   sessions      Session[]
+
+  establishments users_on_establishments[]
  
   @@map("users")
 }
@@ -64,4 +66,32 @@ model VerificationToken {
  
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model Establishment {
+  id String @id @default(cuid())
+  name String 
+  phone String @unique
+  email String @unique
+  cep String 
+  lat String 
+  lng String
+  active Boolean @default(true)
+
+  users users_on_establishments[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("establishments")
+}
+
+model users_on_establishments {
+  user User @relation(fields: [ user_id ], references: [id])
+  user_id String
+
+  establishments Establishment @relation(fields: [ establishment_id ], references: [id])
+  establishment_id String
+
+  @@id([ user_id, establishment_id])
 }
