@@ -54,7 +54,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  establishments users_on_establishments[]
+  managed_establishments manager_on_establishments[]
  
   @@map("users")
 }
@@ -78,7 +78,7 @@ model Establishment {
   lng String
   active Boolean @default(true)
 
-  users users_on_establishments[]
+  managers manager_on_establishments[]
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
@@ -86,12 +86,12 @@ model Establishment {
   @@map("establishments")
 }
 
-model users_on_establishments {
-  user User @relation(fields: [ user_id ], references: [id])
-  user_id String
+model manager_on_establishments {
+  manager User @relation(fields: [ manager_id ], references: [id])
+  manager_id String
 
   establishments Establishment @relation(fields: [ establishment_id ], references: [id])
   establishment_id String
 
-  @@id([ user_id, establishment_id])
+  @@id([ manager_id, establishment_id])
 }

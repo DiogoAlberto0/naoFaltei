@@ -15,11 +15,11 @@ CREATE TABLE "establishments" (
 );
 
 -- CreateTable
-CREATE TABLE "users_on_establishments" (
-    "user_id" TEXT NOT NULL,
+CREATE TABLE "manager_on_establishments" (
+    "manager_id" TEXT NOT NULL,
     "establishment_id" TEXT NOT NULL,
 
-    CONSTRAINT "users_on_establishments_pkey" PRIMARY KEY ("user_id","establishment_id")
+    CONSTRAINT "manager_on_establishments_pkey" PRIMARY KEY ("manager_id","establishment_id")
 );
 
 -- CreateIndex
@@ -29,7 +29,7 @@ CREATE UNIQUE INDEX "establishments_phone_key" ON "establishments"("phone");
 CREATE UNIQUE INDEX "establishments_email_key" ON "establishments"("email");
 
 -- AddForeignKey
-ALTER TABLE "users_on_establishments" ADD CONSTRAINT "users_on_establishments_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "manager_on_establishments" ADD CONSTRAINT "manager_on_establishments_manager_id_fkey" FOREIGN KEY ("manager_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "users_on_establishments" ADD CONSTRAINT "users_on_establishments_establishment_id_fkey" FOREIGN KEY ("establishment_id") REFERENCES "establishments"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "manager_on_establishments" ADD CONSTRAINT "manager_on_establishments_establishment_id_fkey" FOREIGN KEY ("establishment_id") REFERENCES "establishments"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
