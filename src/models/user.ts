@@ -23,7 +23,7 @@ const createUser = async ({
   name: string;
 }) => {
   const hash = passwordUtils.genHash(password);
-  await prisma.user.create({
+  return await prisma.user.create({
     data: {
       email: email.toLowerCase(),
       name,
@@ -32,5 +32,13 @@ const createUser = async ({
   });
 };
 
-const userModel = { createUser, findByEmail };
+const findById = async (id: string) => {
+  return await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+};
+
+const userModel = { createUser, findByEmail, findById };
 export { userModel };
