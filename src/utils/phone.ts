@@ -3,8 +3,8 @@ const clean = (phone: string) => {
 };
 
 const isValid = (phone: string) => {
-  const regex = /^(\(?\d{2}\)?\s?)?(\d{4,5}-?\d{4})$/;
-  return regex.test(phone);
+  const cleaned = clean(phone);
+  return cleaned.length == 11 || cleaned.length == 10;
 };
 
 function format(phone: string) {

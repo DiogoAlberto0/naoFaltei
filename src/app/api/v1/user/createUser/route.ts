@@ -1,14 +1,15 @@
 //next
 import { NextRequest, NextResponse } from "next/server";
 //utils
-import { isValidEmail, isValidPassword } from "@/src/utils/validators";
+import { emailUtils } from "@/src/utils/email";
+import { passwordUtils } from "@/src/utils/password";
 // model user
 import { userModel } from "@/src/models/user";
 
 export const POST = async (request: NextRequest) => {
   const { email, password, name } = await request.json();
 
-  if (!email || !isValidEmail(email))
+  if (!email || !emailUtils.isValid(email))
     return NextResponse.json(
       {
         message: "Informe um email válido",
@@ -18,7 +19,7 @@ export const POST = async (request: NextRequest) => {
       }
     );
 
-  if (!password || !isValidPassword(password))
+  if (!password || !passwordUtils.isValid(password))
     return NextResponse.json(
       {
         message:

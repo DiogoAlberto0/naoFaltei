@@ -12,4 +12,11 @@ const comparePassAndHash = (password: string, hash: string) => {
   return compareSync(password, hash);
 };
 
-export { genHash, comparePassAndHash };
+function isValid(password: string): boolean {
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).+$/;
+  return passwordRegex.test(password);
+}
+
+const passwordUtils = { genHash, comparePassAndHash, isValid };
+export { passwordUtils };
