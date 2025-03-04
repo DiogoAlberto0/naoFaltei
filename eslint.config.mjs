@@ -13,6 +13,10 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
   {
     ignores: ["node_modules", ".next", "dist", "out", "public", "coverage"],
+    rules: {
+      // Desabilita a regra que proíbe o uso de 'any'
+      "@typescript-eslint/no-explicit-any": "off",
+    },
   },
 ];
 
