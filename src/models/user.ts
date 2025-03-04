@@ -40,5 +40,9 @@ const findById = async (id: string) => {
   });
 };
 
-const userModel = { createUser, findByEmail, findById };
+const count = async () => {
+  return await prisma.user.count();
+};
+
+const userModel = { createUser, findByEmail, findById, count };
 export { userModel };
