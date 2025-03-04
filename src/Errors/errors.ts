@@ -31,3 +31,15 @@ export class ConflictError extends Error {
     this.action = action || "Contate o supervisor";
   }
 }
+
+export class UnauthorizedError extends Error {
+  public status_code: number;
+  public action: string;
+
+  constructor() {
+    super("Usuário não autorizado");
+    this.name = "UnauthorizedError";
+    this.status_code = 401;
+    this.action = "Faça login no site";
+  }
+}
