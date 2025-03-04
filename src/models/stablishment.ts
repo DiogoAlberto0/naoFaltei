@@ -1,5 +1,12 @@
-import { ConflictError, InputError } from "@/src/Errors/errors";
+import {
+  ConflictError,
+  InputError,
+  UnauthorizedError,
+} from "@/src/Errors/errors";
 import { prisma } from "@/prisma/prisma";
+
+//models
+import { userModel } from "@/src/models/user";
 
 //utils
 import { phoneUtils } from "@/src/utils/phone";
@@ -14,10 +21,15 @@ export interface IStablishment {
   cep: string;
   lat: string;
   lng: string;
+  managerId: string;
 }
 
 const create = async (stablishment: IStablishment) => {
-  const { name, phone, email, cep, lat, lng } = stablishment;
+  const { name, phone, email, cep, lat, lng, managerId } = stablishment;
+
+  const manager = await userModel.findById(managerId);
+
+  if (!manager) throw new UnauthorizedError();
 
   if (!phoneUtils.isValid(phone))
     throw new InputError({
@@ -78,6 +90,13 @@ const create = async (stablishment: IStablishment) => {
       lng,
       name,
       phone: phoneUtils.clean(phone),
+    },
+  });
+
+  await prisma.manager_on_establishments.create({
+    data: {
+      manager_id: managerId,
+      establishment_id: newEstablishment.id,
     },
   });
 

@@ -3,6 +3,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { prisma } from "@/prisma/prisma";
 
 import { establishmentModel } from "@/src/models/stablishment";
+import { userModel } from "@/src/models/user";
 
 const validEstablishment = {
   name: "Empresa teste",
@@ -11,18 +12,86 @@ const validEstablishment = {
   cep: "71800-000",
   lat: "-23.550520",
   lng: "-46.633308",
+  managerId: "",
+};
+
+const validEstablishment2 = {
+  name: "Empresa teste 2",
+  email: "teste2@empresa.com",
+  phone: "61986548271",
+  cep: "71800000",
+  lat: "-23.550520",
+  lng: "-46.633308",
+  managerId: "",
 };
 beforeAll(async () => {
   await prisma.$queryRawUnsafe(
-    ` TRUNCATE TABLE "establishments" RESTART IDENTITY CASCADE`
+    `TRUNCATE TABLE "establishments", "users" RESTART IDENTITY CASCADE`
   );
 
   const quantity = await establishmentModel.count();
   expect(quantity).toEqual(0);
+
+  const manager = await userModel.createUser({
+    name: "Teste",
+    password: "123456789Abc.",
+    email: "teste@teste.com",
+  });
+
+  validEstablishment.managerId = manager.id;
+  validEstablishment2.managerId = manager.id;
 });
 
 describe("POST on `/api/v1/establishment/create`", () => {
   describe("Anonymous user", () => {
+    it("should not be possible to register a new establishment if managerId is not provided", async () => {
+      const response = await fetch(
+        "http://localhost:3000/api/v1/establishment/create",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            ...validEstablishment,
+            managerId: "",
+          }),
+        }
+      );
+
+      const body = await response.json();
+
+      expect(response.status).toBe(401);
+      expect(body).toEqual({
+        message: "Usuário não autorizado",
+        action: "Faça login no site",
+      });
+
+      const quantity = await establishmentModel.count();
+      expect(quantity).toEqual(0);
+    });
+
+    it("should not be possible to register a new establishment if invalid managerId is provided", async () => {
+      const response = await fetch(
+        "http://localhost:3000/api/v1/establishment/create",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            ...validEstablishment,
+            managerId: "12345",
+          }),
+        }
+      );
+
+      const body = await response.json();
+
+      expect(response.status).toBe(401);
+      expect(body).toEqual({
+        message: "Usuário não autorizado",
+        action: "Faça login no site",
+      });
+
+      const quantity = await establishmentModel.count();
+      expect(quantity).toEqual(0);
+    });
+
     it("should not be possible to register a new establishment with invalid phone number", async () => {
       const response = await fetch(
         "http://localhost:3000/api/v1/establishment/create",
@@ -176,15 +245,6 @@ describe("POST on `/api/v1/establishment/create`", () => {
       const quantity = await establishmentModel.count();
       expect(quantity).toEqual(1);
     });
-
-    const validEstablishment2 = {
-      name: "Empresa teste 2",
-      email: "teste2@empresa.com",
-      phone: "61986548271",
-      cep: "71800000",
-      lat: "-23.550520",
-      lng: "-46.633308",
-    };
 
     it("should not be possible to register a new establishment if phone is already in use by another establishment", async () => {
       const response = await fetch(

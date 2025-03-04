@@ -10,7 +10,7 @@ const userCounter = async () => {
 
 beforeAll(async () => {
   await prisma.$queryRawUnsafe(
-    `TRUNCATE TABLE "users" RESTART IDENTITY CASCADE;`
+    `TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE;`
   );
 
   expect(await userCounter()).toEqual(0);
