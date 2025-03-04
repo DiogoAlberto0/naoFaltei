@@ -1,10 +1,10 @@
-import { ConflictError, InputError } from "@/Errors/errors";
+import { ConflictError, InputError } from "@/src/Errors/errors";
 import { prisma } from "@/prisma/prisma";
-import { isValidCEP, isValidLat, isValidLng } from "@/utils/validators";
+import { isValidCEP, isValidLat, isValidLng } from "@/src/utils/validators";
 
 //utils
-import { phoneUtils } from "@/utils/phone";
-import { emailUtils } from "@/utils/email";
+import { phoneUtils } from "@/src/utils/phone";
+import { emailUtils } from "@/src/utils/email";
 
 export interface IStablishment {
   name: string;

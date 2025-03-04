@@ -1,9 +1,9 @@
 import { prisma } from "@/prisma/prisma";
 
 //utils
-import { genHash } from "@/utils/password";
+import { genHash } from "@/src/utils/password";
 
-const findUserByEmail = async (email: string) => {
+const findByEmail = async (email: string) => {
   const user = await prisma.user.findUnique({
     where: {
       email: email.toLowerCase(),
@@ -32,4 +32,5 @@ const createUser = async ({
   });
 };
 
-export { createUser, findUserByEmail };
+const userModel = { createUser, findByEmail };
+export { userModel };
