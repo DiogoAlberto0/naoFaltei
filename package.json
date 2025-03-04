@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npm run services:up && npm run migrate:postgres:dev && next dev --turbopack",
-    "test:watch": "vitest",
+    "test:watch": "vitest --no-file-parallelism",
     "test": "vitest run",
     "ci": "node src/scripts/ci.js",
     "build": "next build",
