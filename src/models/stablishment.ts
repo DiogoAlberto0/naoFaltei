@@ -1,10 +1,11 @@
 import { ConflictError, InputError } from "@/src/Errors/errors";
 import { prisma } from "@/prisma/prisma";
-import { isValidCEP, isValidLat, isValidLng } from "@/src/utils/validators";
 
 //utils
 import { phoneUtils } from "@/src/utils/phone";
 import { emailUtils } from "@/src/utils/email";
+import { cepUtils } from "../utils/cep";
+import { coordinateUtils } from "../utils/coordinate";
 
 export interface IStablishment {
   name: string;
@@ -34,23 +35,23 @@ const create = async (stablishment: IStablishment) => {
         "Informe um email válido seguindo a seguinte estrutura: XXXX@XXXX.XXX",
     });
 
-  if (!isValidCEP(cep))
+  if (!cepUtils.isValid(cep))
     throw new InputError({
       message: "CEP inválido",
       status_code: 400,
       action: "Informe um CEP válido seguindo a seguinte estrutura: XXXXX-XXX",
     });
 
-  if (!isValidLat(lat))
+  if (!coordinateUtils.isValidLat(lat))
     throw new InputError({
       message: "Latitude inválida",
       status_code: 400,
       action: "Informe uma coordenada válida",
     });
 
-  if (!isValidLng(lng))
+  if (!coordinateUtils.isValidLng(lng))
     throw new InputError({
-      message: "Longitude inválido",
+      message: "Longitude inválida",
       status_code: 400,
       action: "Informe uma coordenada válida",
     });
@@ -71,7 +72,7 @@ const create = async (stablishment: IStablishment) => {
 
   const newEstablishment = await prisma.establishment.create({
     data: {
-      cep,
+      cep: cepUtils.clean(cep),
       email: emailUtils.normalize(email),
       lat,
       lng,
@@ -97,10 +98,15 @@ const countByEmail = async (email: string) => {
   });
 };
 
+const count = async () => {
+  return await prisma.establishment.count();
+};
+
 const establishmentModel = {
   create,
   countByEmail,
   countByPhone,
+  count,
 };
 
 export { establishmentModel };
