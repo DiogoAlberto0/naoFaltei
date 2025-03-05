@@ -1,24 +1,25 @@
 //next
 import { NextRequest, NextResponse } from "next/server";
 //utils
-import { isValidEmail, isValidPassword } from "@/utils/validators";
+import { emailUtils } from "@/src/utils/email";
+import { passwordUtils } from "@/src/utils/password";
 // model user
-import { createUser, findUserByEmail } from "@/model/user";
+import { userModel } from "@/src/models/user";
 
 export const POST = async (request: NextRequest) => {
   const { email, password, name } = await request.json();
 
-  if (!email || !isValidEmail(email))
+  if (!email || !emailUtils.isValid(email))
     return NextResponse.json(
       {
         message: "Informe um email válido",
       },
       {
         status: 400,
-      },
+      }
     );
 
-  if (!password || !isValidPassword(password))
+  if (!password || !passwordUtils.isValid(password))
     return NextResponse.json(
       {
         message:
@@ -26,7 +27,7 @@ export const POST = async (request: NextRequest) => {
       },
       {
         status: 400,
-      },
+      }
     );
 
   if (!name)
@@ -36,11 +37,11 @@ export const POST = async (request: NextRequest) => {
       },
       {
         status: 400,
-      },
+      }
     );
 
   try {
-    const existentUser = await findUserByEmail(email);
+    const existentUser = await userModel.findByEmail(email);
 
     if (existentUser)
       return NextResponse.json(
@@ -49,9 +50,9 @@ export const POST = async (request: NextRequest) => {
         },
         {
           status: 409,
-        },
+        }
       );
-    await createUser({ email, password, name });
+    await userModel.createUser({ email, password, name });
 
     return NextResponse.json(
       {
@@ -59,7 +60,7 @@ export const POST = async (request: NextRequest) => {
       },
       {
         status: 201,
-      },
+      }
     );
   } catch (error) {
     console.error(error);
@@ -69,7 +70,7 @@ export const POST = async (request: NextRequest) => {
       },
       {
         status: 500,
-      },
+      }
     );
   }
 };

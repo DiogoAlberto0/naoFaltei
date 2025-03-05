@@ -81,7 +81,7 @@ async function waitForServer() {
 
 function runTests() {
   console.log("🧪 Running tests...");
-  execSync("npx vitest run", { stdio: "inherit" });
+  execSync("npm run test", { stdio: "inherit" });
   console.log("✅ Tests completed.");
 }
 
