@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { InputError, UnauthorizedError } from "@/src/Errors/errors";
 
 //models
-import { establishmentModel } from "@/src/models/stablishment";
+import { establishmentModel } from "@/src/models/establishment";
 
 export const POST = async (request: NextRequest) => {
   const { name, phone, email, cep, lat, lng, managerId } = await request.json();

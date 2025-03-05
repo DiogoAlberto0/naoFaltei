@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 
 import { prisma } from "@/prisma/prisma";
 
-import { establishmentModel } from "@/src/models/stablishment";
+import { establishmentModel } from "@/src/models/establishment";
 import { userModel } from "@/src/models/user";
 
 const validEstablishment = {
@@ -82,10 +82,11 @@ describe("POST on `/api/v1/establishment/create`", () => {
 
       const body = await response.json();
 
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(400);
       expect(body).toEqual({
-        message: "Usuário não autorizado",
-        action: "Faça login no site",
+        message: "Gerente não encontrado",
+        action:
+          "Verifique se os dados do gerente foram informados corretamente",
       });
 
       const quantity = await establishmentModel.count();
@@ -264,7 +265,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
       expect(body).toEqual({
         action: "Informe outro telefone.",
         message:
-          "O telefone fornecido ja está em uso por outro estabelecimento.",
+          "O telefone fornecido já está em uso por outro estabelecimento.",
       });
 
       const quantity = await establishmentModel.count();
