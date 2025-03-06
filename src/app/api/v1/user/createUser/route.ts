@@ -1,75 +1,33 @@
 //next
 import { NextRequest, NextResponse } from "next/server";
-//utils
-import { emailUtils } from "@/src/utils/email";
-import { passwordUtils } from "@/src/utils/password";
+
 // model user
 import { userModel } from "@/src/models/user";
+import { InputError } from "@/src/Errors/errors";
 
 export const POST = async (request: NextRequest) => {
-  const { email, password, name } = await request.json();
-
-  if (!email || !emailUtils.isValid(email))
-    return NextResponse.json(
-      {
-        message: "Informe um email válido",
-      },
-      {
-        status: 400,
-      }
-    );
-
-  if (!password || !passwordUtils.isValid(password))
-    return NextResponse.json(
-      {
-        message:
-          "A senha deve conter pelomenos uma letra maiuscula e um caracter especial",
-      },
-      {
-        status: 400,
-      }
-    );
-
-  if (!name)
-    return NextResponse.json(
-      {
-        message: "Informe o nome do usuário",
-      },
-      {
-        status: 400,
-      }
-    );
-
   try {
-    const existentUser = await userModel.findByEmail(email);
+    const { email, password, name } = await request.json();
 
-    if (existentUser)
-      return NextResponse.json(
-        {
-          message: "Este email já está em uso por outro usuário",
-        },
-        {
-          status: 409,
-        }
-      );
-    await userModel.createUser({ email, password, name });
+    if (!email || !password || !name)
+      throw new InputError({
+        message: "Campos obrigatórios faltando.",
+        action: "Informe nome, email e senha do usuário",
+        status_code: 400,
+      });
 
-    return NextResponse.json(
-      {
-        message: "Usuário criado com sucesso!",
-      },
-      {
-        status: 201,
-      }
-    );
-  } catch (error) {
+    const createdUser = await userModel.create({ email, password, name });
+
+    return NextResponse.json(createdUser, { status: 201 });
+  } catch (error: any) {
     console.error(error);
     return NextResponse.json(
       {
-        message: "Falha na conexão com banco de dados",
+        message: error.message || "Internal server error",
+        action: error.action || "Contate o suporte",
       },
       {
-        status: 500,
+        status: error.status_code || 500,
       }
     );
   }
