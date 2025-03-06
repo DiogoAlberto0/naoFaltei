@@ -10,4 +10,6 @@ interface IEstablishmentFromDB extends Establishment {}
 
 interface IUserFromDB extends User {}
 
-export { type IEstablishmentFromDB, type IUserFromDB };
+interface IUserWithoutHash extends Omit<User, "hash"> {}
+
+export { type IEstablishmentFromDB, type IUserFromDB, type IUserWithoutHash };
