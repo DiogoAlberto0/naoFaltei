@@ -27,7 +27,7 @@ export const POST = async (request: NextRequest) => {
       lng,
       managerId,
     });
-    return NextResponse.json(createdEstablishment);
+    return NextResponse.json(createdEstablishment, { status: 201 });
   } catch (error: any) {
     console.error(error);
     return NextResponse.json(

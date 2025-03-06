@@ -1,26 +1,30 @@
 import { describe, it, expect, beforeAll } from "vitest";
 
-import { prisma, IEstablishmentFromDB, IUserFromDB } from "@/prisma/prisma";
+import {
+  prisma,
+  type IEstablishmentFromDB,
+  type IUserWithoutHash,
+} from "@/prisma/prisma";
 import { establishmentModel } from "@/src/models/establishment";
 import { userModel } from "@/src/models/user";
 
-let user: IUserFromDB;
+let user: IUserWithoutHash;
 let establishment: IEstablishmentFromDB;
 
-let user2: IUserFromDB;
+let user2: IUserWithoutHash;
 let establishment2: IEstablishmentFromDB;
 
 beforeAll(async () => {
   await prisma.$executeRawUnsafe(
     'TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE'
   );
-  user = await userModel.createUser({
+  user = await userModel.create({
     email: "user@email.com",
     name: "user",
     password: "123456789Abc.",
   });
 
-  user2 = await userModel.createUser({
+  user2 = await userModel.create({
     email: "user2@email.com",
     name: "user2",
     password: "123456789Abc.",

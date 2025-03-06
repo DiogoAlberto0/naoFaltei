@@ -4,16 +4,12 @@ import { prisma } from "@/prisma/prisma";
 
 import { userModel } from "@/src/models/user";
 
-const userCounter = async () => {
-  return await prisma.user.count();
-};
-
 beforeAll(async () => {
   await prisma.$queryRawUnsafe(
     `TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE;`
   );
 
-  expect(await userCounter()).toEqual(0);
+  expect(await userModel.count()).toEqual(0);
 });
 
 const validUser = {
@@ -41,11 +37,13 @@ describe("POST on /api/v1/user/createUser", () => {
       const json = await response.json();
 
       expect(json).toStrictEqual({
-        message: "Informe o nome do usuário",
+        message: "Campos obrigatórios faltando.",
+        action: "Informe nome, email e senha do usuário",
       });
 
-      expect(await userCounter()).toEqual(0);
+      expect(await userModel.count()).toEqual(0);
     });
+
     it("should not be possible to create a new user with invalid email", async () => {
       const response = await fetch(
         "http://localhost:3000/api/v1/user/createUser",
@@ -63,10 +61,12 @@ describe("POST on /api/v1/user/createUser", () => {
       const json = await response.json();
 
       expect(json).toStrictEqual({
-        message: "Informe um email válido",
+        message: "Email inválido.",
+        action:
+          "Informe um email válido seguindo a seguinte estrutura: XXXX@XXXX.XXX",
       });
 
-      expect(await userCounter()).toEqual(0);
+      expect(await userModel.count()).toEqual(0);
     });
 
     it("should not be possible to create a new user if email is not provided", async () => {
@@ -86,10 +86,11 @@ describe("POST on /api/v1/user/createUser", () => {
       const json = await response.json();
 
       expect(json).toStrictEqual({
-        message: "Informe um email válido",
+        message: "Campos obrigatórios faltando.",
+        action: "Informe nome, email e senha do usuário",
       });
 
-      expect(await userCounter()).toEqual(0);
+      expect(await userModel.count()).toEqual(0);
     });
 
     it("should not be possible to create a new user with invalid password", async () => {
@@ -109,11 +110,12 @@ describe("POST on /api/v1/user/createUser", () => {
       const json = await response.json();
 
       expect(json).toStrictEqual({
-        message:
-          "A senha deve conter pelomenos uma letra maiuscula e um caracter especial",
+        message: "Senha inválida.",
+        action:
+          "Informe uma senha válida, a senha deve conter ao menos uma letra maiúscula um número e um caracter especial.",
       });
 
-      expect(await userCounter()).toEqual(0);
+      expect(await userModel.count()).toEqual(0);
     });
 
     it("should not be possible to create a new user if password is not provided", async () => {
@@ -133,11 +135,11 @@ describe("POST on /api/v1/user/createUser", () => {
       const json = await response.json();
 
       expect(json).toStrictEqual({
-        message:
-          "A senha deve conter pelomenos uma letra maiuscula e um caracter especial",
+        message: "Campos obrigatórios faltando.",
+        action: "Informe nome, email e senha do usuário",
       });
 
-      expect(await userCounter()).toEqual(0);
+      expect(await userModel.count()).toEqual(0);
     });
 
     it("should be possible to create new user", async () => {
@@ -153,10 +155,6 @@ describe("POST on /api/v1/user/createUser", () => {
 
       const json = await response.json();
 
-      expect(json).toStrictEqual({
-        message: "Usuário criado com sucesso!",
-      });
-
       const userFromDB = await userModel.findByEmail(validUser.email);
 
       expect(userFromDB).toEqual({
@@ -166,6 +164,14 @@ describe("POST on /api/v1/user/createUser", () => {
         emailVerified: null,
         image: null,
         hash: expect.any(String),
+      });
+
+      expect(json).toStrictEqual({
+        id: expect.any(String),
+        name: validUser.name,
+        email: validUser.email,
+        emailVerified: null,
+        image: null,
       });
     });
 
@@ -183,10 +189,11 @@ describe("POST on /api/v1/user/createUser", () => {
       const json = await response.json();
 
       expect(json).toStrictEqual({
-        message: "Este email já está em uso por outro usuário",
+        message: "O Email fornecido já está em uso por outro usuário.",
+        action: "Informe outro email",
       });
 
-      expect(await userCounter()).toEqual(1);
+      expect(await userModel.count()).toEqual(1);
     });
   });
 });
