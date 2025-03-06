@@ -12,18 +12,6 @@ import { emailUtils } from "@/src/utils/email";
 import { cepUtils } from "../utils/cep";
 import { coordinateUtils } from "../utils/coordinate";
 
-export interface IEstablishmentFromDB {
-  name: string;
-  id: string;
-  email: string;
-  phone: string;
-  cep: string;
-  lat: string;
-  lng: string;
-  active: boolean;
-  created_at: Date;
-  updated_at: Date;
-}
 interface ICreateStablishment {
   name: string;
   email: string;
@@ -210,12 +198,25 @@ const update = async ({
   });
 };
 
+const listByManager = async ({ managerId }: { managerId: string }) => {
+  return await prisma.establishment.findMany({
+    where: {
+      managers: {
+        some: {
+          manager_id: managerId,
+        },
+      },
+    },
+  });
+};
+
 const establishmentModel = {
   create,
   countByEmail,
   countByPhone,
   count,
   update,
+  listByManager,
 };
 
 export { establishmentModel };

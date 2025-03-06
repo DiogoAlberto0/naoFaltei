@@ -15,6 +15,7 @@ const eslintConfig = [
     rules: {
       // Desabilita a regra que proíbe o uso de 'any'
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
     },
   },
   {

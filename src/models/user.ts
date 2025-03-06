@@ -3,14 +3,6 @@ import { prisma } from "@/prisma/prisma";
 //utils
 import { passwordUtils } from "@/src/utils/password";
 
-export interface IUserFromDB {
-  name: string | null;
-  id: string;
-  email: string | null;
-  emailVerified: Date | null;
-  image: string | null;
-  hash: string | null;
-}
 const findByEmail = async (email: string) => {
   const user = await prisma.user.findUnique({
     where: {
