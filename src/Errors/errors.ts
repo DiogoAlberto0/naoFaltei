@@ -11,7 +11,7 @@ export class InputError extends Error {
     super(message);
     this.name = "InputError";
     this.status_code = status_code;
-    this.action = action || "Contate o supervisor";
+    this.action = action || "Contate o suporte";
   }
 }
 
@@ -28,7 +28,24 @@ export class ConflictError extends Error {
     super(message);
     this.name = "ConflictError";
     this.status_code = status_code;
-    this.action = action || "Contate o supervisor";
+    this.action = action || "Contate o suporte";
+  }
+}
+
+interface IConnectionErrorParams {
+  message: string;
+  status_code?: number;
+  action?: string;
+}
+export class ConnectionError extends Error {
+  public status_code: number;
+  public action: string;
+
+  constructor({ message, status_code, action }: IConnectionErrorParams) {
+    super(message);
+    this.name = "ConnectionError";
+    this.status_code = status_code || 500;
+    this.action = action || "Contate o suporte";
   }
 }
 
