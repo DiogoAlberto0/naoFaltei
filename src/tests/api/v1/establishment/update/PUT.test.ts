@@ -1,14 +1,15 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
 // client
-import { prisma } from "@/prisma/prisma";
+import {
+  prisma,
+  type IEstablishmentFromDB,
+  type IUserWithoutHash,
+} from "@/prisma/prisma";
 
 // models
-import {
-  establishmentModel,
-  type IEstablishmentFromDB,
-} from "@/src/models/establishment";
-import { userModel, type IUserFromDB } from "@/src/models/user";
+import { establishmentModel } from "@/src/models/establishment";
+import { userModel } from "@/src/models/user";
 
 //utils
 import { emailUtils } from "@/src/utils/email";
@@ -16,10 +17,10 @@ import { phoneUtils } from "@/src/utils/phone";
 import { cepUtils } from "@/src/utils/cep";
 
 let validEstablishment: IEstablishmentFromDB;
-let validUser: IUserFromDB;
+let validUser: IUserWithoutHash;
 
 let validEstablishment2: IEstablishmentFromDB;
-let validUser2: IUserFromDB;
+let validUser2: IUserWithoutHash;
 
 const validateTimestamps = (data: {
   created_at: string;
@@ -39,7 +40,7 @@ beforeEach(async () => {
   expect(await userModel.count()).toEqual(0);
   expect(await establishmentModel.count()).toEqual(0);
 
-  validUser = await userModel.createUser({
+  validUser = await userModel.create({
     name: "user",
     email: "user@teste.com",
     password: "123456789Abc.",
@@ -55,7 +56,7 @@ beforeEach(async () => {
     phone: "61999999999",
   });
 
-  validUser2 = await userModel.createUser({
+  validUser2 = await userModel.create({
     name: "user2",
     email: "user2@teste.com",
     password: "123456789Abc.",

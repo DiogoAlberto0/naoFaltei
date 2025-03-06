@@ -32,7 +32,7 @@ beforeAll(async () => {
   const quantity = await establishmentModel.count();
   expect(quantity).toEqual(0);
 
-  const manager = await userModel.createUser({
+  const manager = await userModel.create({
     name: "Teste",
     password: "123456789Abc.",
     email: "teste@teste.com",
