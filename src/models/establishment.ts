@@ -100,7 +100,7 @@ const validateParams = async ({
 };
 
 const validateManager = async (managerId: string) => {
-  const manager = await userModel.findById(managerId);
+  const manager = await userModel.findBy({ id: managerId });
 
   if (!manager)
     throw new InputError({
@@ -210,6 +210,34 @@ const listByManager = async ({ managerId }: { managerId: string }) => {
   });
 };
 
+const findBy = async ({
+  id,
+  email,
+  name,
+}: {
+  id?: string;
+  name?: string;
+  email?: string;
+}) => {
+  if (id)
+    return await prisma.establishment.findUnique({
+      where: { id },
+    });
+
+  const filters = [];
+
+  if (name) filters.push({ name });
+  if (email) filters.push({ email: emailUtils.normalize(email) });
+
+  if (filters.length === 0) return null;
+
+  return await prisma.establishment.findFirst({
+    where: {
+      OR: filters,
+    },
+  });
+};
+
 const establishmentModel = {
   create,
   countByEmail,
@@ -217,6 +245,7 @@ const establishmentModel = {
   count,
   update,
   listByManager,
+  findBy,
 };
 
 export { establishmentModel };
