@@ -15,7 +15,7 @@ export const GET = async () => {
     const managerId = headersList.get("authorization");
     if (!managerId) throw new UnauthorizedError();
 
-    const manager = await userModel.findById(managerId);
+    const manager = await userModel.findBy({ id: managerId });
     if (!manager) throw new UnauthorizedError();
 
     const establishments = await establishmentModel.listByManager({

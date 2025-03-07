@@ -2,6 +2,11 @@ import { prisma } from "@/prisma/prisma";
 import { establishmentModel } from "@/src/models/establishment";
 import { passwordUtils } from "@/src/utils/password";
 
+export interface IValidManager {
+  id: string;
+  email: string;
+  password: string;
+}
 export const createValidManager = async () => {
   const password = "123456789Abc.";
   const email = "validmanager@email.com";

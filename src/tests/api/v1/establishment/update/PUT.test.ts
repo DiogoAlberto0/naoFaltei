@@ -1,11 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
 // client
-import {
-  prisma,
-  type IEstablishmentFromDB,
-  type IUserWithoutHash,
-} from "@/prisma/prisma";
+import { prisma, type IEstablishmentFromDB } from "@/prisma/prisma";
 
 // models
 import { establishmentModel } from "@/src/models/establishment";
@@ -16,11 +12,20 @@ import { emailUtils } from "@/src/utils/email";
 import { phoneUtils } from "@/src/utils/phone";
 import { cepUtils } from "@/src/utils/cep";
 
+//valid entitys for tests
+import {
+  type IValidManager,
+  createValidEstablishment,
+  createValidEstablishment2,
+  createValidManager,
+  createValidManager2,
+} from "@/src/tests/entitysForTest";
+
 let validEstablishment: IEstablishmentFromDB;
-let validUser: IUserWithoutHash;
+let validManager: IValidManager;
 
 let validEstablishment2: IEstablishmentFromDB;
-let validUser2: IUserWithoutHash;
+let validManager2: IValidManager;
 
 const validateTimestamps = (data: {
   created_at: string;
@@ -40,37 +45,11 @@ beforeEach(async () => {
   expect(await userModel.count()).toEqual(0);
   expect(await establishmentModel.count()).toEqual(0);
 
-  validUser = await userModel.create({
-    name: "user",
-    email: "user@teste.com",
-    password: "123456789Abc.",
-  });
+  validManager = await createValidManager();
+  validEstablishment = await createValidEstablishment(validManager.id);
 
-  validEstablishment = await establishmentModel.create({
-    name: "Estabelecimento",
-    cep: "71800800",
-    email: "estabelecimento@teste.com",
-    lat: "-23.550520",
-    lng: "-46.633308",
-    managerId: validUser.id,
-    phone: "61999999999",
-  });
-
-  validUser2 = await userModel.create({
-    name: "user2",
-    email: "user2@teste.com",
-    password: "123456789Abc.",
-  });
-
-  validEstablishment2 = await establishmentModel.create({
-    name: "Estabelecimento2",
-    cep: "71800800",
-    email: "estabelecimento2@teste.com",
-    lat: "-23.550520",
-    lng: "-46.633308",
-    managerId: validUser2.id,
-    phone: "61999999998",
-  });
+  validManager2 = await createValidManager2();
+  validEstablishment2 = await createValidEstablishment2(validManager2.id);
 
   expect(await userModel.count()).toEqual(2);
   expect(await establishmentModel.count()).toEqual(2);
@@ -82,7 +61,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be possible to update name of an valid establishment", async () => {
         const newName = "Novo nome";
         const body = {
-          managerId: validUser.id,
+          managerId: validManager.id,
           name: newName,
         };
         const response = await fetch(
@@ -118,7 +97,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be possible to update email of an valid establishment", async () => {
         const newEmail = "Novo@email.com";
         const body = {
-          managerId: validUser.id,
+          managerId: validManager.id,
           email: newEmail,
         };
         const response = await fetch(
@@ -152,7 +131,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be not possible to update if invalid email is provided", async () => {
         const newEmail = "asdasd";
         const body = {
-          managerId: validUser.id,
+          managerId: validManager.id,
           email: newEmail,
         };
         const response = await fetch(
@@ -183,7 +162,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should not be possible to update if provided email is already in use by another establishment", async () => {
         const newEmail = validEstablishment2.email;
         const body = {
-          managerId: validUser.id,
+          managerId: validManager.id,
           email: newEmail,
         };
         const response = await fetch(
@@ -216,7 +195,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be possible to update phone of an valid establishment", async () => {
         const newPhone = "61900000000";
         const body = {
-          managerId: validUser.id,
+          managerId: validManager.id,
           phone: newPhone,
         };
         const response = await fetch(
@@ -250,7 +229,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be possible to update phone with ponctuation of an valid establishment", async () => {
         const newPhone = "(61)90000-0000";
         const body = {
-          managerId: validUser.id,
+          managerId: validManager.id,
           phone: newPhone,
         };
         const response = await fetch(
@@ -284,7 +263,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be not possible to update if invalid phone is provided", async () => {
         const newPhone = "12345";
         const body = {
-          managerId: validUser.id,
+          managerId: validManager.id,
           phone: newPhone,
         };
         const response = await fetch(
@@ -315,7 +294,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should not be possible to update if provided email is already in use by another establishment", async () => {
         const newPhone = validEstablishment2.phone;
         const body = {
-          managerId: validUser.id,
+          managerId: validManager.id,
           phone: newPhone,
         };
         const response = await fetch(

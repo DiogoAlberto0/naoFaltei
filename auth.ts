@@ -37,7 +37,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password", required: true },
       },
       authorize: async (credentials) => {
-        const user = await userModel.findByEmail(credentials.email as string);
+        const user = await userModel.findBy({
+          email: credentials.email as string,
+        });
 
         if (!user) throw new Error("Invalid credentials.");
         if (!user.hash) throw new Error("Invalid credentials.");
@@ -71,9 +73,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.id = token.id as string;
       return session;
     },
-  },
-  pages: {
-    signIn: "/signin",
   },
   session: {
     strategy: "jwt",
