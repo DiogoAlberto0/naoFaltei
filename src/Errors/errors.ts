@@ -60,3 +60,15 @@ export class UnauthorizedError extends Error {
     this.action = "Faça login no site";
   }
 }
+
+export class ForbiddenError extends Error {
+  public status_code: number;
+  public action: string;
+
+  constructor() {
+    super("Usuário não tem permissão.");
+    this.name = "ForbiddenError";
+    this.status_code = 403;
+    this.action = "Contate o suporte.";
+  }
+}
