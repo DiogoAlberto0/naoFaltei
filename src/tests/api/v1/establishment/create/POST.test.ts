@@ -3,7 +3,9 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { prisma } from "@/prisma/prisma";
 
 import { establishmentModel } from "@/src/models/establishment";
-import { userModel } from "@/src/models/user";
+
+// valid entity for tests
+import { createValidManager } from "@/src/tests/entitysForTest";
 
 const validEstablishment = {
   name: "Empresa teste",
@@ -32,11 +34,7 @@ beforeAll(async () => {
   const quantity = await establishmentModel.count();
   expect(quantity).toEqual(0);
 
-  const manager = await userModel.create({
-    name: "Teste",
-    password: "123456789Abc.",
-    email: "teste@teste.com",
-  });
+  const manager = await createValidManager();
 
   validEstablishment.managerId = manager.id;
   validEstablishment2.managerId = manager.id;
