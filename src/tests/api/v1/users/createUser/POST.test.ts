@@ -1,236 +1,389 @@
 import { describe, it, expect, beforeAll } from "vitest";
 
-import { IUserWithoutHash, prisma } from "@/prisma/prisma";
+import { IEstablishmentFromDB, prisma } from "@/prisma/prisma";
 
 import { userModel } from "@/src/models/user";
-import { signinForTest } from "../../signinForTest";
 
-let validManager: IUserWithoutHash;
-const managerEmail = "manager@email.com";
-const managerPass = "123456789Abc.";
-let cookies: string;
+// valid entitys for tests
+import {
+  createValidEstablishment,
+  createValidEstablishment2,
+  createValidManager,
+  createValidManager2,
+  IValidManager,
+} from "../../../../entitysForTest";
+import { signinForTest } from "../../../../signinForTest";
+import { cpfUtils } from "@/src/utils/cpf";
+import { establishmentModel } from "@/src/models/establishment";
+
+let validManager: IValidManager;
+let validManager2: IValidManager;
+let validEstablishment2: IEstablishmentFromDB;
+let cookie: string;
+let cookie2: string;
+let validUserData: {
+  name: string;
+  email: string;
+  password: string;
+  cpf: string;
+  establishmentId: string;
+};
 
 beforeAll(async () => {
   await prisma.$queryRawUnsafe(
     `TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE;`
   );
 
-  validManager = await userModel.create({
-    email: managerEmail,
-    password: managerPass,
-    name: "manager",
+  validManager = await createValidManager();
+  const validEstablishment = await createValidEstablishment(validManager.id);
+  const signinResponse = await signinForTest({
+    email: validManager.email,
+    password: validManager.password,
   });
 
-  const resp = await signinForTest({
-    email: managerEmail,
-    password: managerPass,
+  cookie = signinResponse.cookies;
+
+  validManager2 = await createValidManager2();
+  validEstablishment2 = await createValidEstablishment2(validManager2.id);
+  const signinResponse2 = await signinForTest({
+    email: validManager2.email,
+    password: validManager2.password,
   });
 
-  cookies = resp.cookies;
+  cookie2 = signinResponse2.cookies;
 
-  expect(await userModel.count()).toEqual(1);
+  validUserData = {
+    name: "userName",
+    email: "teste@teste.com",
+    password: "135792478Abc.",
+    cpf: "529.982.247-25",
+    establishmentId: validEstablishment.id,
+  };
+
+  expect(await userModel.count()).toEqual(2);
 });
-
-const validUser = {
-  email: "teste@teste.com",
-  password: "135792478Abc.",
-  name: "userName",
-};
 
 describe("POST on /api/v1/user/createUser", () => {
   describe("Anonymous user", () => {
-    it("asdfasdfasd", async () => {
-      const response2 = await fetch(
+    it("should not be possible to access if is not authenticated", async () => {
+      const response = await fetch(
         "http://localhost:3000/api/v1/user/createUser",
         {
           method: "POST",
           body: JSON.stringify({
-            ...validUser,
-            name: "",
+            ...validUserData,
           }),
-          credentials: "include",
-          headers: {
-            Cookie: cookies,
-          },
         }
       );
+      expect(response.status).toEqual(401);
 
-      console.log(await response2.json());
+      const json = await response.json();
+
+      expect(json).toEqual({
+        action: "Faça login no site",
+        message: "Usuário não autorizado",
+      });
     });
-    // it("should not be possible to create a new user if name is not provided", async () => {
-    //   const response = await fetch(
-    //     "http://localhost:3000/api/v1/user/createUser",
-    //     {
-    //       method: "POST",
-    //       body: JSON.stringify({
-    //         ...validUser,
-    //         name: "",
-    //       }),
-    //     }
-    //   );
+  });
 
-    //   expect(response.status).toEqual(400);
+  describe("Authenticated user but unauthorized", () => {
+    it("should not be possible to access if is not authenticated", async () => {
+      const response = await fetch(
+        "http://localhost:3000/api/v1/user/createUser",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            ...validUserData,
+            establishmentId: validEstablishment2.id,
+          }),
+          headers: { cookie },
+        }
+      );
+      expect(response.status).toEqual(403);
 
-    //   const json = await response.json();
+      const json = await response.json();
 
-    //   expect(json).toStrictEqual({
-    //     message: "Campos obrigatórios faltando.",
-    //     action: "Informe nome, email e senha do usuário",
-    //   });
+      expect(json).toEqual({
+        action: "Contate o suporte.",
+        message: "Usuário não tem permissão.",
+      });
 
-    //   expect(await userModel.count()).toEqual(0);
-    // });
+      expect(await userModel.count()).toEqual(2);
+    });
+  });
+  describe("Authenticated user", () => {
+    describe("Name tests", () => {
+      it("should not be possible to create a new user if name is not provided", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/user/createUser",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              ...validUserData,
+              name: "",
+            }),
+            headers: { cookie },
+          }
+        );
+        expect(response.status).toEqual(400);
+        const json = await response.json();
+        expect(json).toStrictEqual({
+          message: "Campos obrigatórios faltando.",
+          action:
+            "Informe nome, email, cpf, senha e o estabelecimento do usuário",
+        });
+        expect(await userModel.count()).toEqual(2);
+      });
+    });
+    describe("Email tests", () => {
+      it("should not be possible to create a new user with invalid email", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/user/createUser",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              ...validUserData,
+              email: "test-teste.com",
+            }),
+            headers: { cookie },
+          }
+        );
+        expect(response.status).toEqual(400);
+        const json = await response.json();
+        expect(json).toStrictEqual({
+          message: "Email inválido.",
+          action:
+            "Informe um email válido seguindo a seguinte estrutura: XXXX@XXXX.XXX",
+        });
+        expect(await userModel.count()).toEqual(2);
+      });
 
-    // it("should not be possible to create a new user with invalid email", async () => {
-    //   const response = await fetch(
-    //     "http://localhost:3000/api/v1/user/createUser",
-    //     {
-    //       method: "POST",
-    //       body: JSON.stringify({
-    //         ...validUser,
-    //         email: "test-teste.com",
-    //       }),
-    //     }
-    //   );
+      it("should not be possible to create a new user if email is not provided", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/user/createUser",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              ...validUserData,
+              email: "",
+            }),
+            headers: { cookie },
+          }
+        );
+        expect(response.status).toEqual(400);
+        const json = await response.json();
+        expect(json).toStrictEqual({
+          message: "Campos obrigatórios faltando.",
+          action:
+            "Informe nome, email, cpf, senha e o estabelecimento do usuário",
+        });
+        expect(await userModel.count()).toEqual(2);
+      });
+    });
 
-    //   expect(response.status).toEqual(400);
+    describe("Password tests", () => {
+      it("should not be possible to create a new user with invalid password", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/user/createUser",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              ...validUserData,
+              password: "1234",
+            }),
+            headers: { cookie },
+          }
+        );
+        expect(response.status).toEqual(400);
+        const json = await response.json();
+        expect(json).toStrictEqual({
+          message: "Senha inválida.",
+          action:
+            "Informe uma senha válida, a senha deve conter ao menos uma letra maiúscula um número e um caracter especial.",
+        });
+        expect(await userModel.count()).toEqual(2);
+      });
 
-    //   const json = await response.json();
+      it("should not be possible to create a new user if password is not provided", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/user/createUser",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              ...validUserData,
+              password: "",
+            }),
+            headers: { cookie },
+          }
+        );
+        expect(response.status).toEqual(400);
+        const json = await response.json();
+        expect(json).toStrictEqual({
+          message: "Campos obrigatórios faltando.",
+          action:
+            "Informe nome, email, cpf, senha e o estabelecimento do usuário",
+        });
+        expect(await userModel.count()).toEqual(2);
+      });
+    });
 
-    //   expect(json).toStrictEqual({
-    //     message: "Email inválido.",
-    //     action:
-    //       "Informe um email válido seguindo a seguinte estrutura: XXXX@XXXX.XXX",
-    //   });
+    describe("CPF tests", () => {
+      it("should not be possible to create a new user with invalid CPF", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/user/createUser",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              ...validUserData,
+              cpf: "529.982.247-26",
+            }),
+            headers: { cookie },
+          }
+        );
+        expect(response.status).toEqual(400);
+        const json = await response.json();
+        expect(json).toStrictEqual({
+          message: "CPF inválido",
+          action: "Informe um cpf válido",
+        });
+        expect(await userModel.count()).toEqual(2);
+      });
 
-    //   expect(await userModel.count()).toEqual(0);
-    // });
+      it("should not be possible to create a new user if CPF is not provided", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/user/createUser",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              ...validUserData,
+              password: "",
+            }),
+            headers: { cookie },
+          }
+        );
+        expect(response.status).toEqual(400);
+        const json = await response.json();
+        expect(json).toStrictEqual({
+          message: "Campos obrigatórios faltando.",
+          action:
+            "Informe nome, email, cpf, senha e o estabelecimento do usuário",
+        });
+        expect(await userModel.count()).toEqual(2);
+      });
+    });
 
-    // it("should not be possible to create a new user if email is not provided", async () => {
-    //   const response = await fetch(
-    //     "http://localhost:3000/api/v1/user/createUser",
-    //     {
-    //       method: "POST",
-    //       body: JSON.stringify({
-    //         ...validUser,
-    //         email: "",
-    //       }),
-    //     }
-    //   );
+    describe("Successful cases", () => {
+      it("should be possible to create new user", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/user/createUser",
+          {
+            method: "POST",
+            body: JSON.stringify(validUserData),
+            headers: { cookie },
+          }
+        );
+        expect(response.status).toEqual(201);
 
-    //   expect(response.status).toEqual(400);
+        const json = await response.json();
 
-    //   const json = await response.json();
+        expect(json).toEqual({
+          id: expect.any(String),
+          name: validUserData.name,
+          email: validUserData.email,
+          emailVerified: null,
+          image: null,
+          cpf: cpfUtils.clean(validUserData.cpf),
+        });
 
-    //   expect(json).toStrictEqual({
-    //     message: "Campos obrigatórios faltando.",
-    //     action: "Informe nome, email e senha do usuário",
-    //   });
+        const userFromDB = await userModel.findBy({
+          email: validUserData.email,
+        });
 
-    //   expect(await userModel.count()).toEqual(0);
-    // });
+        if (!userFromDB) throw new Error("Usuário não foi criado");
+        expect(userFromDB).toEqual({
+          id: expect.any(String),
+          name: validUserData.name,
+          email: validUserData.email,
+          cpf: cpfUtils.clean(validUserData.cpf),
+          emailVerified: null,
+          image: null,
+          hash: expect.any(String),
+        });
 
-    // it("should not be possible to create a new user with invalid password", async () => {
-    //   const response = await fetch(
-    //     "http://localhost:3000/api/v1/user/createUser",
-    //     {
-    //       method: "POST",
-    //       body: JSON.stringify({
-    //         ...validUser,
-    //         password: "1234",
-    //       }),
-    //     }
-    //   );
+        const establishmentsFromUser = await establishmentModel.listByWorker({
+          workerId: userFromDB.id,
+        });
 
-    //   expect(response.status).toEqual(400);
+        expect(establishmentsFromUser.length).toEqual(1);
+      });
 
-    //   const json = await response.json();
+      it("should be possible to associate a existent user to a existent establishment", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/user/createUser",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              ...validUserData,
+              establishmentId: validEstablishment2.id,
+            }),
+            headers: { cookie: cookie2 },
+          }
+        );
+        expect(response.status).toEqual(201);
 
-    //   expect(json).toStrictEqual({
-    //     message: "Senha inválida.",
-    //     action:
-    //       "Informe uma senha válida, a senha deve conter ao menos uma letra maiúscula um número e um caracter especial.",
-    //   });
+        const json = await response.json();
 
-    //   expect(await userModel.count()).toEqual(0);
-    // });
+        expect(json).toEqual({
+          id: expect.any(String),
+          name: validUserData.name,
+          email: validUserData.email,
+          emailVerified: null,
+          image: null,
+          cpf: cpfUtils.clean(validUserData.cpf),
+        });
 
-    // it("should not be possible to create a new user if password is not provided", async () => {
-    //   const response = await fetch(
-    //     "http://localhost:3000/api/v1/user/createUser",
-    //     {
-    //       method: "POST",
-    //       body: JSON.stringify({
-    //         ...validUser,
-    //         password: "",
-    //       }),
-    //     }
-    //   );
+        const userFromDB = await userModel.findBy({
+          email: validUserData.email,
+        });
 
-    //   expect(response.status).toEqual(400);
+        if (!userFromDB) throw new Error("Usuário não foi criado");
+        expect(userFromDB).toEqual({
+          id: expect.any(String),
+          name: validUserData.name,
+          email: validUserData.email,
+          cpf: cpfUtils.clean(validUserData.cpf),
+          emailVerified: null,
+          image: null,
+          hash: expect.any(String),
+        });
 
-    //   const json = await response.json();
+        const establishmentsFromUser = await establishmentModel.listByWorker({
+          workerId: userFromDB.id,
+        });
 
-    //   expect(json).toStrictEqual({
-    //     message: "Campos obrigatórios faltando.",
-    //     action: "Informe nome, email e senha do usuário",
-    //   });
+        expect(establishmentsFromUser.length).toEqual(2);
+      });
 
-    //   expect(await userModel.count()).toEqual(0);
-    // });
+      it("should return error if a user is already associated with the establishment", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/user/createUser",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              ...validUserData,
+            }),
+            headers: { cookie },
+          }
+        );
+        expect(response.status).toEqual(409);
 
-    // it("should be possible to create new user", async () => {
-    //   const response = await fetch(
-    //     "http://localhost:3000/api/v1/user/createUser",
-    //     {
-    //       method: "POST",
-    //       body: JSON.stringify(validUser),
-    //     }
-    //   );
+        const json = await response.json();
 
-    //   expect(response.status).toEqual(201);
-
-    //   const json = await response.json();
-
-    //   const userFromDB = await userModel.findByEmail(validUser.email);
-
-    //   expect(userFromDB).toEqual({
-    //     id: expect.any(String),
-    //     name: validUser.name,
-    //     email: validUser.email,
-    //     emailVerified: null,
-    //     image: null,
-    //     hash: expect.any(String),
-    //   });
-
-    //   expect(json).toStrictEqual({
-    //     id: expect.any(String),
-    //     name: validUser.name,
-    //     email: validUser.email,
-    //     emailVerified: null,
-    //     image: null,
-    //   });
-    // });
-
-    // it("should not be possible to create a new user with an used email", async () => {
-    //   const response = await fetch(
-    //     "http://localhost:3000/api/v1/user/createUser",
-    //     {
-    //       method: "POST",
-    //       body: JSON.stringify(validUser),
-    //     }
-    //   );
-
-    //   expect(response.status).toEqual(409);
-
-    //   const json = await response.json();
-
-    //   expect(json).toStrictEqual({
-    //     message: "O Email fornecido já está em uso por outro usuário.",
-    //     action: "Informe outro email",
-    //   });
-
-    //   expect(await userModel.count()).toEqual(1);
-    // });
+        expect(json).toEqual({
+          action: "Verifique o usuário e o estabelecimento",
+          message: "O usuário informado ja está associado ao estabelecimento",
+        });
+      });
+    });
   });
 });
