@@ -1,6 +1,6 @@
 interface IInputErrorParams {
   message: string;
-  status_code: number;
+  status_code?: number;
   action?: string;
 }
 export class InputError extends Error {
@@ -10,24 +10,23 @@ export class InputError extends Error {
   constructor({ message, status_code, action }: IInputErrorParams) {
     super(message);
     this.name = "InputError";
-    this.status_code = status_code;
+    this.status_code = status_code || 400;
     this.action = action || "Contate o suporte";
   }
 }
 
 interface IConflictErrorParams {
   message: string;
-  status_code: number;
   action?: string;
 }
 export class ConflictError extends Error {
   public status_code: number;
   public action: string;
 
-  constructor({ message, status_code, action }: IConflictErrorParams) {
+  constructor({ message, action }: IConflictErrorParams) {
     super(message);
     this.name = "ConflictError";
-    this.status_code = status_code;
+    this.status_code = 409;
     this.action = action || "Contate o suporte";
   }
 }
