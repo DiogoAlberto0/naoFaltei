@@ -87,14 +87,12 @@ const validateParams = async ({
   if (email && (await countByEmail(email)) > 0)
     throw new ConflictError({
       message: "O email fornecido ja está em uso por outro estabelecimento.",
-      status_code: 409,
       action: "Informe outro email.",
     });
 
   if (phone && (await countByPhone(phone)) > 0)
     throw new ConflictError({
       message: "O telefone fornecido já está em uso por outro estabelecimento.",
-      status_code: 409,
       action: "Informe outro telefone.",
     });
 };

@@ -15,6 +15,8 @@ export const signinForTest = async ({
       credentials: "include",
     });
 
+    console.log(loginResponse);
+
     const setCookieHeader = loginResponse.headers.get("set-cookie");
     if (!setCookieHeader)
       throw new Error("Nenhum cookie foi retornado pelo servidor!");
