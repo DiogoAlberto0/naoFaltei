@@ -1,7 +1,7 @@
 import { prisma } from "@/prisma/prisma";
 
 // Errors
-import { InputError } from "../Errors/errors";
+import { ConflictError, InputError } from "../Errors/errors";
 //utils
 import { emailUtils } from "../utils/email";
 import { passwordUtils } from "@/src/utils/password";
@@ -124,8 +124,22 @@ const create = async ({
       email: createdUser.email,
       emailVerified: createdUser.emailVerified,
       image: createdUser.image,
+      cpf: createdUser.cpf,
     };
   } else {
+    const establishmentFromUser = await establishmentModel.listByWorker({
+      workerId: existentUser.id,
+    });
+
+    const isAlreadyAssociated = establishmentFromUser.some(
+      ({ id }) => establishment.id === id
+    );
+
+    if (isAlreadyAssociated)
+      throw new ConflictError({
+        message: "O usuário informado ja está associado ao estabelecimento",
+        action: "Verifique o usuário e o estabelecimento",
+      });
     await prisma.worker_on_establishments.create({
       data: {
         establishment_id: establishment.id,
@@ -139,6 +153,7 @@ const create = async ({
       email: existentUser.email,
       emailVerified: existentUser.emailVerified,
       image: existentUser.image,
+      cpf: existentUser.cpf,
     };
   }
 };

@@ -210,6 +210,18 @@ const listByManager = async ({ managerId }: { managerId: string }) => {
   });
 };
 
+const listByWorker = async ({ workerId }: { workerId: string }) => {
+  return await prisma.establishment.findMany({
+    where: {
+      workers: {
+        some: {
+          worker_id: workerId,
+        },
+      },
+    },
+  });
+};
+
 const findBy = async ({
   id,
   email,
@@ -246,6 +258,7 @@ const establishmentModel = {
   update,
   listByManager,
   findBy,
+  listByWorker,
 };
 
 export { establishmentModel };
