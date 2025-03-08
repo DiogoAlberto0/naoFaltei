@@ -22,10 +22,16 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json({
       signin,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    return NextResponse.json({
-      error,
-    });
+    return NextResponse.json(
+      {
+        message: error.message || "Internal server error",
+        action: error.action || "Contate o suporte",
+      },
+      {
+        status: error.status_code || 500,
+      }
+    );
   }
 };
