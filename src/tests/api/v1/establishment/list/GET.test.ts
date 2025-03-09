@@ -1,54 +1,34 @@
 import { describe, it, expect, beforeAll } from "vitest";
 
-import {
-  prisma,
-  type IEstablishmentFromDB,
-  type IUserWithoutHash,
-} from "@/prisma/prisma";
+import { prisma, type IEstablishmentFromDB } from "@/prisma/prisma";
 import { establishmentModel } from "@/src/models/establishment";
 import { userModel } from "@/src/models/user";
 
-let user: IUserWithoutHash;
+// valid entitys for test
+import {
+  type IValidManager,
+  createValidEstablishment,
+  createValidEstablishment2,
+  createValidManager,
+  createValidManager2,
+} from "@/src/tests/entitysForTest";
+
+let validManager: IValidManager;
 let establishment: IEstablishmentFromDB;
 
-let user2: IUserWithoutHash;
+let validManager2: IValidManager;
 let establishment2: IEstablishmentFromDB;
 
 beforeAll(async () => {
   await prisma.$executeRawUnsafe(
     'TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE'
   );
-  user = await userModel.create({
-    email: "user@email.com",
-    name: "user",
-    password: "123456789Abc.",
-  });
 
-  user2 = await userModel.create({
-    email: "user2@email.com",
-    name: "user2",
-    password: "123456789Abc.",
-  });
+  validManager = await createValidManager();
+  establishment = await createValidEstablishment(validManager.id);
 
-  establishment = await establishmentModel.create({
-    cep: "01001-000", // CEP válido no formato brasileiro
-    email: "establishment@email.com", // E-mail válido
-    lat: "-23.55052", // Latitude válida (exemplo: São Paulo)
-    lng: "-46.633308", // Longitude válida (exemplo: São Paulo)
-    managerId: user.id, // UUID válido
-    name: "Establishment", // Nome válido
-    phone: "11 98765-4321", // Telefone válido no formato brasileiro
-  });
-
-  establishment2 = await establishmentModel.create({
-    cep: "01001-000", // CEP válido no formato brasileiro
-    email: "establishment2@email.com", // E-mail válido
-    lat: "-23.55052", // Latitude válida (exemplo: São Paulo)
-    lng: "-46.633308", // Longitude válida (exemplo: São Paulo)
-    managerId: user2.id, // UUID válido
-    name: "Establishment2", // Nome válido
-    phone: "11 98765-4322", // Telefone válido no formato brasileiro
-  });
+  validManager2 = await createValidManager2();
+  establishment2 = await createValidEstablishment2(validManager2.id);
 
   expect(await userModel.count()).toEqual(2);
   expect(await establishmentModel.count()).toEqual(2);
@@ -63,7 +43,7 @@ describe("GET on /api/v1/establishment/list", () => {
           headers: {
             "Content-type": "application/json",
             Accept: "application/json",
-            authorization: user.id,
+            authorization: validManager.id,
           },
           method: "GET",
         }
@@ -90,7 +70,7 @@ describe("GET on /api/v1/establishment/list", () => {
           headers: {
             "Content-type": "application/json",
             Accept: "application/json",
-            authorization: user2.id,
+            authorization: validManager2.id,
           },
           method: "GET",
         }

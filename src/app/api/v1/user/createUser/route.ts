@@ -3,20 +3,46 @@ import { NextRequest, NextResponse } from "next/server";
 
 // model user
 import { userModel } from "@/src/models/user";
-import { InputError } from "@/src/Errors/errors";
+import {
+  ForbiddenError,
+  InputError,
+  UnauthorizedError,
+} from "@/src/Errors/errors";
+
+// authjs
+import { auth } from "@/auth";
+import { establishmentModel } from "@/src/models/establishment";
 
 export const POST = async (request: NextRequest) => {
   try {
-    const { email, password, name } = await request.json();
+    const session = await auth();
+    if (!session || !session.user) throw new UnauthorizedError();
 
-    if (!email || !password || !name)
+    const { name, cpf, email, password, establishmentId } =
+      await request.json();
+    if (!name || !cpf || !email || !password || !establishmentId)
       throw new InputError({
         message: "Campos obrigatórios faltando.",
-        action: "Informe nome, email e senha do usuário",
+        action:
+          "Informe nome, email, cpf, senha e o estabelecimento do usuário",
         status_code: 400,
       });
 
-    const createdUser = await userModel.create({ email, password, name });
+    const establishments = await establishmentModel.listByManager({
+      managerId: session.user.id,
+    });
+    const isManagerFromEstablishment = establishments.some(
+      ({ id }) => establishmentId === id
+    );
+    if (!isManagerFromEstablishment) throw new ForbiddenError();
+
+    const createdUser = await userModel.create({
+      email,
+      password,
+      name,
+      cpf,
+      establishmentId,
+    });
 
     return NextResponse.json(createdUser, { status: 201 });
   } catch (error: any) {

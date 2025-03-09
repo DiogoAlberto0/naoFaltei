@@ -48,6 +48,7 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
+  cpf String @unique
   emailVerified DateTime? @map("email_verified")
   image         String?
   hash          String?
@@ -55,6 +56,7 @@ model User {
   sessions      Session[]
 
   managed_establishments manager_on_establishments[]
+  worked_establishments worker_on_establishments[]
  
   @@map("users")
 }
@@ -79,6 +81,7 @@ model Establishment {
   active Boolean @default(true)
 
   managers manager_on_establishments[]
+  workers worker_on_establishments[]
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
@@ -94,4 +97,14 @@ model manager_on_establishments {
   establishment_id String
 
   @@id([ manager_id, establishment_id])
+}
+
+model worker_on_establishments {
+  worker User @relation(fields: [ worker_id ], references: [id])
+  worker_id String
+
+  establishments Establishment @relation(fields: [ establishment_id ], references: [id])
+  establishment_id String
+
+  @@id([ worker_id, establishment_id])
 }

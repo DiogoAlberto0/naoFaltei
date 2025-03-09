@@ -87,20 +87,18 @@ const validateParams = async ({
   if (email && (await countByEmail(email)) > 0)
     throw new ConflictError({
       message: "O email fornecido ja está em uso por outro estabelecimento.",
-      status_code: 409,
       action: "Informe outro email.",
     });
 
   if (phone && (await countByPhone(phone)) > 0)
     throw new ConflictError({
       message: "O telefone fornecido já está em uso por outro estabelecimento.",
-      status_code: 409,
       action: "Informe outro telefone.",
     });
 };
 
 const validateManager = async (managerId: string) => {
-  const manager = await userModel.findById(managerId);
+  const manager = await userModel.findBy({ id: managerId });
 
   if (!manager)
     throw new InputError({
@@ -210,6 +208,46 @@ const listByManager = async ({ managerId }: { managerId: string }) => {
   });
 };
 
+const listByWorker = async ({ workerId }: { workerId: string }) => {
+  return await prisma.establishment.findMany({
+    where: {
+      workers: {
+        some: {
+          worker_id: workerId,
+        },
+      },
+    },
+  });
+};
+
+const findBy = async ({
+  id,
+  email,
+  name,
+}: {
+  id?: string;
+  name?: string;
+  email?: string;
+}) => {
+  if (id)
+    return await prisma.establishment.findUnique({
+      where: { id },
+    });
+
+  const filters = [];
+
+  if (name) filters.push({ name });
+  if (email) filters.push({ email: emailUtils.normalize(email) });
+
+  if (filters.length === 0) return null;
+
+  return await prisma.establishment.findFirst({
+    where: {
+      OR: filters,
+    },
+  });
+};
+
 const establishmentModel = {
   create,
   countByEmail,
@@ -217,6 +255,8 @@ const establishmentModel = {
   count,
   update,
   listByManager,
+  findBy,
+  listByWorker,
 };
 
 export { establishmentModel };
