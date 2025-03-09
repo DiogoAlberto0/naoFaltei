@@ -28,6 +28,6 @@ export const signinForTest = async ({
     return { cookies };
   } catch (error) {
     console.error(error);
-    throw new Error("Falha ao autenticar usuário");
+    throw error;
   }
 };
