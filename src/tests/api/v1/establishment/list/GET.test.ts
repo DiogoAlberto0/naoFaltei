@@ -12,12 +12,15 @@ import {
   createValidManager,
   createValidManager2,
 } from "@/src/tests/entitysForTest";
+import { signinForTest } from "@/src/tests/signinForTest";
 
 let validManager: IValidManager;
 let establishment: IEstablishmentFromDB;
+let cookieManager: string;
 
 let validManager2: IValidManager;
 let establishment2: IEstablishmentFromDB;
+let cookieManager2: string;
 
 beforeAll(async () => {
   await prisma.$executeRawUnsafe(
@@ -26,26 +29,33 @@ beforeAll(async () => {
 
   validManager = await createValidManager();
   establishment = await createValidEstablishment(validManager.id);
+  const { cookies } = await signinForTest({
+    email: validManager.email,
+    password: validManager.password,
+  });
+  cookieManager = cookies;
+  console.log(cookieManager);
 
   validManager2 = await createValidManager2();
   establishment2 = await createValidEstablishment2(validManager2.id);
+  const { cookies: cookies2 } = await signinForTest({
+    email: validManager2.email,
+    password: validManager2.password,
+  });
+  cookieManager2 = cookies2;
 
   expect(await userModel.count()).toEqual(2);
   expect(await establishmentModel.count()).toEqual(2);
 });
 
 describe("GET on /api/v1/establishment/list", () => {
-  describe("Anonymous user", () => {
-    it("should return establishment if valid manager id is provided", async () => {
+  describe("Valid Manager Authenticated", () => {
+    it("should return establishment", async () => {
       const response = await fetch(
         "http://localhost:3000/api/v1/establishment/list",
         {
-          headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
-            authorization: validManager.id,
-          },
           method: "GET",
+          headers: { cookie: cookieManager },
         }
       );
 
@@ -62,16 +72,13 @@ describe("GET on /api/v1/establishment/list", () => {
         updated_at: new Date(establishment.updated_at).toISOString(),
       });
     });
-
+  });
+  describe("Valid Manager 2 Authenticated", () => {
     it("should return establishment if valid manager id is provided", async () => {
       const response = await fetch(
         "http://localhost:3000/api/v1/establishment/list",
         {
-          headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
-            authorization: validManager2.id,
-          },
+          headers: { cookie: cookieManager2 },
           method: "GET",
         }
       );
@@ -89,38 +96,12 @@ describe("GET on /api/v1/establishment/list", () => {
         updated_at: new Date(establishment2.updated_at).toISOString(),
       });
     });
-
-    it("should return error if a invalid manager id is provided", async () => {
+  });
+  describe("Anonymous user", () => {
+    it("should return error", async () => {
       const response = await fetch(
         "http://localhost:3000/api/v1/establishment/list",
         {
-          headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
-            authorization: "123",
-          },
-          method: "GET",
-        }
-      );
-
-      expect(response.status).toEqual(401);
-
-      const data = await response.json();
-
-      expect(data).toStrictEqual({
-        message: "Usuário não autorizado",
-        action: "Faça login no site",
-      });
-    });
-
-    it("should return error if  manager id is not provided", async () => {
-      const response = await fetch(
-        "http://localhost:3000/api/v1/establishment/list",
-        {
-          headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
-          },
           method: "GET",
         }
       );

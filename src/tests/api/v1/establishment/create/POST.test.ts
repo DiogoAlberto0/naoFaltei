@@ -5,7 +5,8 @@ import { prisma } from "@/prisma/prisma";
 import { establishmentModel } from "@/src/models/establishment";
 
 // valid entity for tests
-import { createValidManager } from "@/src/tests/entitysForTest";
+import { createValidManager, IValidManager } from "@/src/tests/entitysForTest";
+import { signinForTest } from "@/src/tests/signinForTest";
 
 const validEstablishment = {
   name: "Empresa teste",
@@ -14,7 +15,6 @@ const validEstablishment = {
   cep: "71800-000",
   lat: "-23.550520",
   lng: "-46.633308",
-  managerId: "",
 };
 
 const validEstablishment2 = {
@@ -24,32 +24,36 @@ const validEstablishment2 = {
   cep: "71800000",
   lat: "-23.550520",
   lng: "-46.633308",
-  managerId: "",
 };
+
+let cookie: string;
+let manager: IValidManager;
+
 beforeAll(async () => {
   await prisma.$queryRawUnsafe(
     `TRUNCATE TABLE "establishments", "users" RESTART IDENTITY CASCADE`
   );
+  expect(await establishmentModel.count()).toEqual(0);
 
-  const quantity = await establishmentModel.count();
-  expect(quantity).toEqual(0);
+  manager = await createValidManager();
 
-  const manager = await createValidManager();
+  const { cookies } = await signinForTest({
+    email: manager.email,
+    password: manager.password,
+  });
 
-  validEstablishment.managerId = manager.id;
-  validEstablishment2.managerId = manager.id;
+  cookie = cookies;
 });
 
 describe("POST on `/api/v1/establishment/create`", () => {
   describe("Anonymous user", () => {
-    it("should not be possible to register a new establishment if managerId is not provided", async () => {
+    it("should not be possible to register a new establishment if cookie is not provider", async () => {
       const response = await fetch(
         "http://localhost:3000/api/v1/establishment/create",
         {
           method: "POST",
           body: JSON.stringify({
             ...validEstablishment,
-            managerId: "",
           }),
         }
       );
@@ -65,32 +69,8 @@ describe("POST on `/api/v1/establishment/create`", () => {
       const quantity = await establishmentModel.count();
       expect(quantity).toEqual(0);
     });
-
-    it("should not be possible to register a new establishment if invalid managerId is provided", async () => {
-      const response = await fetch(
-        "http://localhost:3000/api/v1/establishment/create",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            ...validEstablishment,
-            managerId: "12345",
-          }),
-        }
-      );
-
-      const body = await response.json();
-
-      expect(response.status).toBe(400);
-      expect(body).toEqual({
-        message: "Gerente não encontrado",
-        action:
-          "Verifique se os dados do gerente foram informados corretamente",
-      });
-
-      const quantity = await establishmentModel.count();
-      expect(quantity).toEqual(0);
-    });
-
+  });
+  describe("Auhtenticated user", () => {
     it("should not be possible to register a new establishment with invalid phone number", async () => {
       const response = await fetch(
         "http://localhost:3000/api/v1/establishment/create",
@@ -100,6 +80,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             ...validEstablishment,
             phone: "123456789",
           }),
+          headers: { cookie },
         }
       );
 
@@ -125,6 +106,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             ...validEstablishment,
             email: "asdasd",
           }),
+          headers: { cookie },
         }
       );
 
@@ -150,6 +132,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             ...validEstablishment,
             cep: "7180000",
           }),
+          headers: { cookie },
         }
       );
 
@@ -175,6 +158,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             ...validEstablishment,
             lat: "-95.123456",
           }),
+          headers: { cookie },
         }
       );
 
@@ -199,6 +183,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             ...validEstablishment,
             lng: "200.543210",
           }),
+          headers: { cookie },
         }
       );
 
@@ -220,6 +205,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
         {
           method: "POST",
           body: JSON.stringify(validEstablishment),
+          headers: { cookie },
         }
       );
 
@@ -243,6 +229,11 @@ describe("POST on `/api/v1/establishment/create`", () => {
 
       const quantity = await establishmentModel.count();
       expect(quantity).toEqual(1);
+
+      const establishmentsByManager = await establishmentModel.listByManager({
+        managerId: manager.id,
+      });
+      expect(establishmentsByManager.length).toEqual(1);
     });
 
     it("should not be possible to register a new establishment if phone is already in use by another establishment", async () => {
@@ -254,6 +245,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             ...validEstablishment2,
             phone: validEstablishment.phone,
           }),
+          headers: { cookie },
         }
       );
 
@@ -279,6 +271,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             ...validEstablishment2,
             email: validEstablishment.email,
           }),
+          headers: { cookie },
         }
       );
 

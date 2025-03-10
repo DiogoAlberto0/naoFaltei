@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
 
 // Errors
-import { InputError } from "@/src/Errors/errors";
+import {
+  InputError,
+  UnauthorizedError,
+  ForbiddenError,
+} from "@/src/Errors/errors";
 
 // models
 import { establishmentModel } from "@/src/models/establishment";
@@ -11,8 +16,10 @@ export const PUT = async (
   { params }: { params: Promise<{ establishmentId: string }> }
 ) => {
   try {
-    const { name, phone, email, cep, coords } = await request.json();
+    const session = await auth();
+    if (!session || !session.user) throw new UnauthorizedError();
 
+    const { name, phone, email, cep, coords } = await request.json();
     if (coords && (!coords.lat || !coords.lng))
       throw new InputError({
         message: "Coordenadas inválidas",
@@ -22,6 +29,15 @@ export const PUT = async (
       });
 
     const { establishmentId } = await params;
+
+    const establishmentsByManager = await establishmentModel.listByManager({
+      managerId: session.user.id,
+    });
+
+    const isManagerFromEstablishment = establishmentsByManager.some(
+      ({ id }) => establishmentId === id
+    );
+    if (!isManagerFromEstablishment) throw new ForbiddenError();
 
     const updatedEstablishment = await establishmentModel.update({
       id: establishmentId,

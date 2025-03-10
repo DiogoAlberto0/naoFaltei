@@ -20,12 +20,15 @@ import {
   createValidManager,
   createValidManager2,
 } from "@/src/tests/entitysForTest";
+import { signinForTest } from "@/src/tests/signinForTest";
 
 let validEstablishment: IEstablishmentFromDB;
 let validManager: IValidManager;
+let cookieManager: string;
 
 let validEstablishment2: IEstablishmentFromDB;
 let validManager2: IValidManager;
+let cookieManager2: string;
 
 const validateTimestamps = (data: {
   created_at: string;
@@ -47,21 +50,79 @@ beforeEach(async () => {
 
   validManager = await createValidManager();
   validEstablishment = await createValidEstablishment(validManager.id);
+  const { cookies } = await signinForTest({
+    email: validManager.email,
+    password: validManager.password,
+  });
+  cookieManager = cookies;
 
   validManager2 = await createValidManager2();
   validEstablishment2 = await createValidEstablishment2(validManager2.id);
+  const { cookies: cookies2 } = await signinForTest({
+    email: validManager2.email,
+    password: validManager2.password,
+  });
+  cookieManager2 = cookies2;
 
   expect(await userModel.count()).toEqual(2);
   expect(await establishmentModel.count()).toEqual(2);
 });
 
 describe("PUT on /api/v1/establishment/update/:ID", () => {
+  describe("Authenticated manager from anohter establishment", () => {
+    it("should be return error if user is not authenticated", async () => {
+      const newName = "Novo nome";
+      const body = {
+        name: newName,
+      };
+      const response = await fetch(
+        `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+        {
+          method: "PUT",
+          body: JSON.stringify(body),
+          headers: { cookie: cookieManager2 },
+        }
+      );
+
+      expect(response.status).toEqual(403);
+
+      const data = await response.json();
+
+      expect(data).toEqual({
+        message: "Usuário não tem permissão.",
+        action: "Contate o suporte.",
+      });
+    });
+  });
   describe("Anonymous user", () => {
+    it("should be return error if user is not authenticated", async () => {
+      const newName = "Novo nome";
+      const body = {
+        name: newName,
+      };
+      const response = await fetch(
+        `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+        {
+          method: "PUT",
+          body: JSON.stringify(body),
+        }
+      );
+
+      expect(response.status).toEqual(401);
+
+      const data = await response.json();
+
+      expect(data).toEqual({
+        message: "Usuário não autorizado",
+        action: "Faça login no site",
+      });
+    });
+  });
+  describe("Authenticated manager from establishment", () => {
     describe("UPDATE NAME TESTS", () => {
       it("should be possible to update name of an valid establishment", async () => {
         const newName = "Novo nome";
         const body = {
-          managerId: validManager.id,
           name: newName,
         };
         const response = await fetch(
@@ -69,6 +130,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -97,7 +159,6 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be possible to update email of an valid establishment", async () => {
         const newEmail = "Novo@email.com";
         const body = {
-          managerId: validManager.id,
           email: newEmail,
         };
         const response = await fetch(
@@ -105,6 +166,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -131,7 +193,6 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be not possible to update if invalid email is provided", async () => {
         const newEmail = "asdasd";
         const body = {
-          managerId: validManager.id,
           email: newEmail,
         };
         const response = await fetch(
@@ -139,6 +200,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -162,7 +224,6 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should not be possible to update if provided email is already in use by another establishment", async () => {
         const newEmail = validEstablishment2.email;
         const body = {
-          managerId: validManager.id,
           email: newEmail,
         };
         const response = await fetch(
@@ -170,6 +231,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -195,7 +257,6 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be possible to update phone of an valid establishment", async () => {
         const newPhone = "61900000000";
         const body = {
-          managerId: validManager.id,
           phone: newPhone,
         };
         const response = await fetch(
@@ -203,6 +264,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -229,7 +291,6 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be possible to update phone with ponctuation of an valid establishment", async () => {
         const newPhone = "(61)90000-0000";
         const body = {
-          managerId: validManager.id,
           phone: newPhone,
         };
         const response = await fetch(
@@ -237,6 +298,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -263,7 +325,6 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be not possible to update if invalid phone is provided", async () => {
         const newPhone = "12345";
         const body = {
-          managerId: validManager.id,
           phone: newPhone,
         };
         const response = await fetch(
@@ -271,6 +332,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -291,10 +353,9 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         expect(establishmentFromDB).toEqual(validEstablishment);
       });
 
-      it("should not be possible to update if provided email is already in use by another establishment", async () => {
+      it("should not be possible to update if provided phone is already in use by another establishment", async () => {
         const newPhone = validEstablishment2.phone;
         const body = {
-          managerId: validManager.id,
           phone: newPhone,
         };
         const response = await fetch(
@@ -302,6 +363,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -335,6 +397,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -380,6 +443,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -425,6 +489,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -464,6 +529,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -514,6 +580,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -550,6 +617,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -584,6 +652,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 
@@ -606,7 +675,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         expect(updatedEstablishment).toEqual(validEstablishment);
       });
 
-      it("should be possible to coordinates if only longitude is provided", async () => {
+      it("should not be possible to update coordinates if only longitude is provided", async () => {
         const newLongitude = "-46.633308";
         const body = {
           coords: {
@@ -619,6 +688,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
+            headers: { cookie: cookieManager },
           }
         );
 

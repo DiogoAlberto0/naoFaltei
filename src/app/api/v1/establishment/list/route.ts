@@ -1,25 +1,20 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
+import { auth } from "@/auth";
 
 // models
 import { establishmentModel } from "@/src/models/establishment";
-import { userModel } from "@/src/models/user";
 
 // Errors
 import { UnauthorizedError } from "@/src/Errors/errors";
 
 export const GET = async () => {
   try {
-    const headersList = await headers();
-
-    const managerId = headersList.get("authorization");
-    if (!managerId) throw new UnauthorizedError();
-
-    const manager = await userModel.findBy({ id: managerId });
-    if (!manager) throw new UnauthorizedError();
+    const session = await auth();
+    console.log(session);
+    if (!session || !session.user) throw new UnauthorizedError();
 
     const establishments = await establishmentModel.listByManager({
-      managerId,
+      managerId: session.user.id,
     });
 
     return NextResponse.json({
