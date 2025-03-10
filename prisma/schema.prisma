@@ -55,6 +55,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
+  created_establishments Establishment[]
+
   managed_establishments manager_on_establishments[]
   worked_establishments worker_on_establishments[]
  
@@ -85,6 +87,8 @@ model Establishment {
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
+  author User @relation(fields: [author_id], references: [id])
+  author_id String
 
   @@map("establishments")
 }

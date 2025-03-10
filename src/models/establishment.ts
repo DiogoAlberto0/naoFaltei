@@ -122,6 +122,11 @@ const create = async (stablishment: ICreateStablishment) => {
       lng,
       name,
       phone: phoneUtils.clean(phone),
+      author: {
+        connect: {
+          id: managerId,
+        },
+      },
     },
   });
 

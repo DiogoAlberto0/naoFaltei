@@ -149,6 +149,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
@@ -185,12 +186,13 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
       });
 
-      it("should be not possible to update if invalid email is provided", async () => {
+      it("should not be possible to update if invalid email is provided", async () => {
         const newEmail = "asdasd";
         const body = {
           email: newEmail,
@@ -283,6 +285,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
@@ -317,12 +320,13 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
       });
 
-      it("should be not possible to update if invalid phone is provided", async () => {
+      it("should not be possible to update if invalid phone is provided", async () => {
         const newPhone = "12345";
         const body = {
           phone: newPhone,
@@ -416,6 +420,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
@@ -462,6 +467,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
@@ -514,7 +520,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
     });
 
     describe("UPDATE COORDS TESTS", () => {
-      it("should be possible to coordinates if valid latitude an longitude is provided", async () => {
+      it("should be possible to update coordinates if valid latitude an longitude is provided", async () => {
         const newLatitude = "-23.550520";
         const newLongitude = "-46.633308";
         const body = {
@@ -548,6 +554,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
@@ -565,7 +572,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         });
       });
 
-      it("should be possible to coordinates if invalid latitude is provided", async () => {
+      it("should not be possible to update coordinates if invalid latitude is provided", async () => {
         const newLatitude = "100.123456";
         const newLongitude = "-46.633308";
         const body = {
@@ -602,7 +609,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         expect(updatedEstablishment).toEqual(validEstablishment);
       });
 
-      it("should be possible to coordinates if invalid longitude is provided", async () => {
+      it("should not be possible to update coordinates if invalid longitude is provided", async () => {
         const newLatitude = "-23.550520";
         const newLongitude = "200.123456";
         const body = {
@@ -639,7 +646,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         expect(updatedEstablishment).toEqual(validEstablishment);
       });
 
-      it("should be possible to coordinates if only latitude is provided", async () => {
+      it("should not be possible to update coordinates if only latitude is provided", async () => {
         const newLatitude = "-23.550520";
         const body = {
           coords: {
