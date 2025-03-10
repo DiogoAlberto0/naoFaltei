@@ -71,3 +71,19 @@ export class ForbiddenError extends Error {
     this.action = "Contate o suporte.";
   }
 }
+
+interface INotFoundErrorParams {
+  message: string;
+  action?: string;
+}
+export class NotFoundError extends Error {
+  public status_code: number;
+  public action: string;
+
+  constructor({ message, action }: INotFoundErrorParams) {
+    super(message);
+    this.name = "NotFound";
+    this.status_code = 404;
+    this.action = action || "Contate o suporte.";
+  }
+}
