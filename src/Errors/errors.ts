@@ -65,7 +65,7 @@ export class ForbiddenError extends Error {
   public action: string;
 
   constructor() {
-    super("Usuário não tem permissão.");
+    super("Usuário não tem permissão para fazer essa operação.");
     this.name = "ForbiddenError";
     this.status_code = 403;
     this.action = "Contate o suporte.";
