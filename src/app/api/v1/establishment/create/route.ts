@@ -4,10 +4,11 @@ import { InputError, UnauthorizedError } from "@/src/Errors/errors";
 
 //models
 import { establishmentModel } from "@/src/models/establishment";
+import { auth } from "@/auth";
 
 export const POST = async (request: NextRequest) => {
-  const { name, phone, email, cep, lat, lng, managerId } = await request.json();
   try {
+    const { name, phone, email, cep, lat, lng } = await request.json();
     if (!name || !phone || !email || !cep || !lat || !lng)
       throw new InputError({
         message: "Campos obrigatórios faltando.",
@@ -16,7 +17,8 @@ export const POST = async (request: NextRequest) => {
           "Informe nome, telefone, email, cep, latitude e longitude do estabelecimento",
       });
 
-    if (!managerId) throw new UnauthorizedError();
+    const session = await auth();
+    if (!session || !session.user) throw new UnauthorizedError();
 
     const createdEstablishment = await establishmentModel.create({
       name,
@@ -25,7 +27,7 @@ export const POST = async (request: NextRequest) => {
       cep,
       lat,
       lng,
-      managerId,
+      managerId: session.user.id,
     });
     return NextResponse.json(createdEstablishment, { status: 201 });
   } catch (error: any) {
