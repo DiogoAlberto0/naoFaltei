@@ -323,6 +323,37 @@ const verifyIfIsAuthorFromEstablishment = async ({
   return establishment.author_id == userId;
 };
 
+const removeManager = async ({
+  establishmentId,
+  managerId,
+}: {
+  managerId: string;
+  establishmentId: string;
+}) => {
+  await userModel.validateUser(managerId);
+  await validateEstablishment(establishmentId);
+
+  const isManagerFromEstablishment = await verifyIfManagerIsFromEstablishment({
+    establishmentId,
+    managerId,
+  });
+
+  if (!isManagerFromEstablishment)
+    throw new NotFoundError({
+      message: "Gerente não encontrado no estabelecimento",
+      action: "Verifique se os dados do gerente foram informados corretamente",
+    });
+
+  await prisma.manager_on_establishments.delete({
+    where: {
+      manager_id_establishment_id: {
+        manager_id: managerId,
+        establishment_id: establishmentId,
+      },
+    },
+  });
+};
+
 const establishmentModel = {
   create,
   countByEmail,
@@ -335,6 +366,7 @@ const establishmentModel = {
   addManager,
   verifyIfManagerIsFromEstablishment,
   verifyIfIsAuthorFromEstablishment,
+  removeManager,
 };
 
 export { establishmentModel };
