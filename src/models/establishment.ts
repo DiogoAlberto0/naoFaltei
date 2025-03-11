@@ -98,10 +98,12 @@ const validateParams = async ({
 };
 
 const validateEstablishment = async (establishmentId: string) => {
-  const existentEstablishment = await establishmentModel.findBy({
-    id: establishmentId,
+  const existentEstablishment = await prisma.establishment.count({
+    where: {
+      id: establishmentId,
+    },
   });
-  if (!existentEstablishment)
+  if (existentEstablishment < 1)
     throw new NotFoundError({
       message: "Estabelecimento não encontrado",
       action: "Verifique se o ID do estabelecimento esta correto.",
@@ -159,6 +161,19 @@ const addManager = async ({
   if (!isValidEstablishment) {
     validateEstablishment(establishmentId);
   }
+
+  const managedEstablishments = await listByManager({ managerId });
+
+  const isAlreadyManager = managedEstablishments.some(
+    ({ id }) => establishmentId === id,
+  );
+
+  if (isAlreadyManager)
+    throw new ConflictError({
+      message: "O usuário já é gerênte do estabelecimento.",
+      action: "Verifique o email do usuário",
+    });
+
   await prisma.manager_on_establishments.create({
     data: {
       manager_id: managerId,
