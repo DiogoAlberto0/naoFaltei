@@ -89,7 +89,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       const data = await response.json();
 
       expect(data).toEqual({
-        message: "Usuário não tem permissão.",
+        message: "Usuário não tem permissão para fazer essa operação.",
         action: "Contate o suporte.",
       });
     });

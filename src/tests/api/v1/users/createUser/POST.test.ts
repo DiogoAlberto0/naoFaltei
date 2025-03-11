@@ -105,7 +105,7 @@ describe("POST on /api/v1/user/createUser", () => {
 
       expect(json).toEqual({
         action: "Contate o suporte.",
-        message: "Usuário não tem permissão.",
+        message: "Usuário não tem permissão para fazer essa operação.",
       });
 
       expect(await userModel.count()).toEqual(2);
