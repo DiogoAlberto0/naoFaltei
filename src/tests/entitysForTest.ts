@@ -45,6 +45,25 @@ export const createValidManager2 = async () => {
   };
 };
 
+export const createValidUser = async () => {
+  const password = "123456789Abc.";
+  const email = "validuser@email.com";
+  const validManager = await prisma.user.create({
+    data: {
+      name: "Valid User",
+      email,
+      hash: passwordUtils.genHash(password),
+      cpf: "09489226050",
+    },
+  });
+
+  return {
+    id: validManager.id,
+    email,
+    password,
+  };
+};
+
 export const createValidEstablishment = async (managerId: string) => {
   return await establishmentModel.create({
     cep: "01001000", // Sem pontos ou hífen
