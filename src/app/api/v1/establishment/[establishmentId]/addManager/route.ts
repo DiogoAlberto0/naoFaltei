@@ -18,17 +18,14 @@ export const PUT = async (
     if (!session || !session.user) throw new UnauthorizedError();
 
     const { establishmentId } = await params;
-    const establishment = await establishmentModel.findBy({
-      id: establishmentId,
-    });
 
-    if (!establishment)
-      throw new NotFoundError({
-        message: "Estabelecimento não encontrado.",
-        action: "Verifique se o ID do estabelecimento está correto",
+    const isAuthorFromEstablishment =
+      await establishmentModel.verifyIfIsAuthorFromEstablishment({
+        userId: session.user.id,
+        establishmentId,
       });
 
-    if (establishment.author_id !== session.user.id) throw new ForbiddenError();
+    if (!isAuthorFromEstablishment) throw new ForbiddenError();
 
     const { newManagerEmail } = await request.json();
     if (!newManagerEmail)

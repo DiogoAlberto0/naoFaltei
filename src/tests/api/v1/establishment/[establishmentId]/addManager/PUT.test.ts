@@ -133,8 +133,9 @@ describe("PUT on `/api/v1/establishment/:id/addManager`", () => {
       const data = await response.json();
 
       expect(data).toEqual({
-        message: "Estabelecimento não encontrado.",
-        action: "Verifique se o ID do estabelecimento está correto",
+        message: "Estabelecimento não encontrado",
+        action:
+          "Verifique se os dados informados do estabelecimento estão corretos",
       });
 
       managers = await establishmentModel.listByManager({

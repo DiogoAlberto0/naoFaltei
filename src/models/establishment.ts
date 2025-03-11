@@ -299,6 +299,30 @@ const verifyIfManagerIsFromEstablishment = async ({
   );
 };
 
+const verifyIfIsAuthorFromEstablishment = async ({
+  userId,
+  establishmentId,
+}: {
+  userId: string;
+  establishmentId: string;
+}) => {
+  const establishment = await prisma.establishment.findUnique({
+    where: { id: establishmentId },
+    select: {
+      author_id: true,
+    },
+  });
+
+  if (!establishment)
+    throw new NotFoundError({
+      message: "Estabelecimento não encontrado",
+      action:
+        "Verifique se os dados informados do estabelecimento estão corretos",
+    });
+
+  return establishment.author_id == userId;
+};
+
 const establishmentModel = {
   create,
   countByEmail,
@@ -310,6 +334,7 @@ const establishmentModel = {
   listByWorker,
   addManager,
   verifyIfManagerIsFromEstablishment,
+  verifyIfIsAuthorFromEstablishment,
 };
 
 export { establishmentModel };
