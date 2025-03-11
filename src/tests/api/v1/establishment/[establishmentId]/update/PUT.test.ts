@@ -38,12 +38,12 @@ const validateTimestamps = (data: {
   expect(Date.parse(data.updated_at)).not.toBeNaN();
   expect(Date.parse(data.created_at)).not.toEqual(Date.parse(data.updated_at));
   expect(Date.parse(data.updated_at)).toBeGreaterThan(
-    Date.parse(data.created_at)
+    Date.parse(data.created_at),
   );
 };
 beforeEach(async () => {
   await prisma.$queryRawUnsafe(
-    `TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE`
+    `TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE`,
   );
   expect(await userModel.count()).toEqual(0);
   expect(await establishmentModel.count()).toEqual(0);
@@ -76,12 +76,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         name: newName,
       };
       const response = await fetch(
-        `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+        `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
         {
           method: "PUT",
           body: JSON.stringify(body),
           headers: { cookie: cookieManager2 },
-        }
+        },
       );
 
       expect(response.status).toEqual(403);
@@ -101,11 +101,11 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         name: newName,
       };
       const response = await fetch(
-        `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+        `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
         {
           method: "PUT",
           body: JSON.stringify(body),
-        }
+        },
       );
 
       expect(response.status).toEqual(401);
@@ -126,12 +126,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           name: newName,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -163,12 +163,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           email: newEmail,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -198,12 +198,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           email: newEmail,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -229,12 +229,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           email: newEmail,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(409);
@@ -262,12 +262,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           phone: newPhone,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -297,12 +297,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           phone: newPhone,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -332,12 +332,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           phone: newPhone,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -363,12 +363,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           phone: newPhone,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(409);
@@ -397,12 +397,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -444,12 +444,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -491,12 +491,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -531,12 +531,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -583,12 +583,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -620,12 +620,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -655,12 +655,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -691,12 +691,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
