@@ -1,7 +1,7 @@
 import { prisma } from "@/prisma/prisma";
 
 // ERRORS
-import { ConflictError, InputError } from "@/src/Errors/errors";
+import { ConflictError, InputError, NotFoundError } from "@/src/Errors/errors";
 
 //models
 import { userModel } from "@/src/models/user";
@@ -97,14 +97,14 @@ const validateParams = async ({
     });
 };
 
-const validateManager = async (managerId: string) => {
-  const manager = await userModel.findBy({ id: managerId });
-
-  if (!manager)
-    throw new InputError({
-      message: "Gerente não encontrado",
-      action: "Verifique se os dados do gerente foram informados corretamente",
-      status_code: 400,
+const validateEstablishment = async (establishmentId: string) => {
+  const existentEstablishment = await establishmentModel.findBy({
+    id: establishmentId,
+  });
+  if (!existentEstablishment)
+    throw new NotFoundError({
+      message: "Estabelecimento não encontrado",
+      action: "Verifique se o ID do estabelecimento esta correto.",
     });
 };
 
@@ -112,7 +112,7 @@ const create = async (stablishment: ICreateStablishment) => {
   const { name, phone, email, cep, lat, lng, managerId } = stablishment;
 
   await validateParams(stablishment);
-  await validateManager(managerId);
+  await userModel.validateUser(managerId);
 
   const newEstablishment = await prisma.establishment.create({
     data: {
@@ -130,18 +130,34 @@ const create = async (stablishment: ICreateStablishment) => {
     },
   });
 
-  await addManager(managerId, newEstablishment.id, true);
+  await addManager({
+    managerId,
+    establishmentId: newEstablishment.id,
+    isValidManager: true,
+    isValidEstablishment: true,
+  });
 
   return newEstablishment;
 };
 
-const addManager = async (
-  managerId: string,
-  establishmentId: string,
-  isValidManager: boolean = false
-) => {
-  if (isValidManager === false) {
-    validateManager(managerId);
+interface IAddManagerProps {
+  managerId: string;
+  establishmentId: string;
+  isValidManager?: boolean;
+  isValidEstablishment?: boolean;
+}
+const addManager = async ({
+  managerId,
+  establishmentId,
+  isValidEstablishment = false,
+  isValidManager = false,
+}: IAddManagerProps) => {
+  if (!isValidManager) {
+    userModel.validateUser(managerId);
+  }
+
+  if (!isValidEstablishment) {
+    validateEstablishment(establishmentId);
   }
   await prisma.manager_on_establishments.create({
     data: {
@@ -262,6 +278,7 @@ const establishmentModel = {
   listByManager,
   findBy,
   listByWorker,
+  addManager,
 };
 
 export { establishmentModel };
