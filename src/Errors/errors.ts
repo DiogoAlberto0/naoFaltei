@@ -65,9 +65,25 @@ export class ForbiddenError extends Error {
   public action: string;
 
   constructor() {
-    super("Usuário não tem permissão.");
+    super("Usuário não tem permissão para fazer essa operação.");
     this.name = "ForbiddenError";
     this.status_code = 403;
     this.action = "Contate o suporte.";
+  }
+}
+
+interface INotFoundErrorParams {
+  message: string;
+  action?: string;
+}
+export class NotFoundError extends Error {
+  public status_code: number;
+  public action: string;
+
+  constructor({ message, action }: INotFoundErrorParams) {
+    super(message);
+    this.name = "NotFound";
+    this.status_code = 404;
+    this.action = action || "Contate o suporte.";
   }
 }

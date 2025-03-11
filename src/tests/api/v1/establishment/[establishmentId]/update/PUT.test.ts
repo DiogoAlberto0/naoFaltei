@@ -38,12 +38,12 @@ const validateTimestamps = (data: {
   expect(Date.parse(data.updated_at)).not.toBeNaN();
   expect(Date.parse(data.created_at)).not.toEqual(Date.parse(data.updated_at));
   expect(Date.parse(data.updated_at)).toBeGreaterThan(
-    Date.parse(data.created_at)
+    Date.parse(data.created_at),
   );
 };
 beforeEach(async () => {
   await prisma.$queryRawUnsafe(
-    `TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE`
+    `TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE`,
   );
   expect(await userModel.count()).toEqual(0);
   expect(await establishmentModel.count()).toEqual(0);
@@ -76,12 +76,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         name: newName,
       };
       const response = await fetch(
-        `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+        `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
         {
           method: "PUT",
           body: JSON.stringify(body),
           headers: { cookie: cookieManager2 },
-        }
+        },
       );
 
       expect(response.status).toEqual(403);
@@ -89,7 +89,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       const data = await response.json();
 
       expect(data).toEqual({
-        message: "Usuário não tem permissão.",
+        message: "Usuário não tem permissão para fazer essa operação.",
         action: "Contate o suporte.",
       });
     });
@@ -101,11 +101,11 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         name: newName,
       };
       const response = await fetch(
-        `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+        `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
         {
           method: "PUT",
           body: JSON.stringify(body),
-        }
+        },
       );
 
       expect(response.status).toEqual(401);
@@ -126,12 +126,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           name: newName,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -149,6 +149,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
@@ -162,12 +163,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           email: newEmail,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -185,23 +186,24 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
       });
 
-      it("should be not possible to update if invalid email is provided", async () => {
+      it("should not be possible to update if invalid email is provided", async () => {
         const newEmail = "asdasd";
         const body = {
           email: newEmail,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -227,12 +229,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           email: newEmail,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(409);
@@ -260,12 +262,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           phone: newPhone,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -283,6 +285,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
@@ -294,12 +297,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           phone: newPhone,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -317,23 +320,24 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
       });
 
-      it("should be not possible to update if invalid phone is provided", async () => {
+      it("should not be possible to update if invalid phone is provided", async () => {
         const newPhone = "12345";
         const body = {
           phone: newPhone,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -359,12 +363,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           phone: newPhone,
         };
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(409);
@@ -393,12 +397,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -416,6 +420,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
@@ -439,12 +444,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -462,6 +467,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
@@ -485,12 +491,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -514,7 +520,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
     });
 
     describe("UPDATE COORDS TESTS", () => {
-      it("should be possible to coordinates if valid latitude an longitude is provided", async () => {
+      it("should be possible to update coordinates if valid latitude an longitude is provided", async () => {
         const newLatitude = "-23.550520";
         const newLongitude = "-46.633308";
         const body = {
@@ -525,12 +531,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(200);
@@ -548,6 +554,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
+          author_id: validManager.id,
         });
 
         validateTimestamps(data);
@@ -565,7 +572,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         });
       });
 
-      it("should be possible to coordinates if invalid latitude is provided", async () => {
+      it("should not be possible to update coordinates if invalid latitude is provided", async () => {
         const newLatitude = "100.123456";
         const newLongitude = "-46.633308";
         const body = {
@@ -576,12 +583,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -602,7 +609,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         expect(updatedEstablishment).toEqual(validEstablishment);
       });
 
-      it("should be possible to coordinates if invalid longitude is provided", async () => {
+      it("should not be possible to update coordinates if invalid longitude is provided", async () => {
         const newLatitude = "-23.550520";
         const newLongitude = "200.123456";
         const body = {
@@ -613,12 +620,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -639,7 +646,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         expect(updatedEstablishment).toEqual(validEstablishment);
       });
 
-      it("should be possible to coordinates if only latitude is provided", async () => {
+      it("should not be possible to update coordinates if only latitude is provided", async () => {
         const newLatitude = "-23.550520";
         const body = {
           coords: {
@@ -648,12 +655,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);
@@ -684,12 +691,12 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
         };
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/update/${validEstablishment.id}`,
+          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
           {
             method: "PUT",
             body: JSON.stringify(body),
             headers: { cookie: cookieManager },
-          }
+          },
         );
 
         expect(response.status).toEqual(400);

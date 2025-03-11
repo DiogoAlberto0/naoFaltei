@@ -28,12 +28,11 @@ export const POST = async (request: NextRequest) => {
         status_code: 400,
       });
 
-    const establishments = await establishmentModel.listByManager({
-      managerId: session.user.id,
-    });
-    const isManagerFromEstablishment = establishments.some(
-      ({ id }) => establishmentId === id
-    );
+    const isManagerFromEstablishment =
+      await establishmentModel.verifyIfManagerIsFromEstablishment({
+        managerId: session.user.id,
+        establishmentId,
+      });
     if (!isManagerFromEstablishment) throw new ForbiddenError();
 
     const createdUser = await userModel.create({
@@ -54,7 +53,7 @@ export const POST = async (request: NextRequest) => {
       },
       {
         status: error.status_code || 500,
-      }
+      },
     );
   }
 };

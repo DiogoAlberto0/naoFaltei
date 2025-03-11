@@ -213,6 +213,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
 
       expect(createdEstablishment).toEqual({
         id: expect.any(String),
+        author_id: manager.id,
         name: "Empresa teste",
         phone: "61986548270",
         email: "teste@empresa.com",

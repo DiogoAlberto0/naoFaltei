@@ -162,5 +162,15 @@ const count = async () => {
   return await prisma.user.count();
 };
 
-const userModel = { create, findBy, count };
+const validateUser = async (userId: string) => {
+  const user = await userModel.findBy({ id: userId });
+
+  if (!user)
+    throw new InputError({
+      message: "Gerente não encontrado",
+      action: "Verifique se os dados do gerente foram informados corretamente",
+      status_code: 400,
+    });
+};
+const userModel = { create, findBy, count, validateUser };
 export { userModel };
