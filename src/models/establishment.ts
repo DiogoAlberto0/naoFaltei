@@ -284,6 +284,21 @@ const findBy = async ({
   });
 };
 
+const verifyIfManagerIsFromEstablishment = async ({
+  managerId,
+  establishmentId,
+}: {
+  managerId: string;
+  establishmentId: string;
+}) => {
+  const establishmentsFromAuthenticatedManager =
+    await establishmentModel.listByManager({ managerId });
+
+  return establishmentsFromAuthenticatedManager.some(
+    ({ id }) => id === establishmentId,
+  );
+};
+
 const establishmentModel = {
   create,
   countByEmail,
@@ -294,6 +309,7 @@ const establishmentModel = {
   findBy,
   listByWorker,
   addManager,
+  verifyIfManagerIsFromEstablishment,
 };
 
 export { establishmentModel };

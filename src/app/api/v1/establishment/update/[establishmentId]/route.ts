@@ -13,7 +13,7 @@ import { establishmentModel } from "@/src/models/establishment";
 
 export const PUT = async (
   request: NextRequest,
-  { params }: { params: Promise<{ establishmentId: string }> }
+  { params }: { params: Promise<{ establishmentId: string }> },
 ) => {
   try {
     const session = await auth();
@@ -30,13 +30,12 @@ export const PUT = async (
 
     const { establishmentId } = await params;
 
-    const establishmentsByManager = await establishmentModel.listByManager({
-      managerId: session.user.id,
-    });
+    const isManagerFromEstablishment =
+      await establishmentModel.verifyIfManagerIsFromEstablishment({
+        managerId: session.user.id,
+        establishmentId,
+      });
 
-    const isManagerFromEstablishment = establishmentsByManager.some(
-      ({ id }) => establishmentId === id
-    );
     if (!isManagerFromEstablishment) throw new ForbiddenError();
 
     const updatedEstablishment = await establishmentModel.update({
@@ -59,7 +58,7 @@ export const PUT = async (
       },
       {
         status: error.status_code || 500,
-      }
+      },
     );
   }
 };
