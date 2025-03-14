@@ -46,7 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const isCorrectPass = passwordUtils.comparePassAndHash(
           credentials.password as string,
-          user.hash
+          user.hash,
         );
 
         if (!isCorrectPass) throw new Error("Invalid credentials.");
@@ -73,6 +73,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.id = token.id as string;
       return session;
     },
+  },
+
+  pages: {
+    signIn: "/signin",
   },
   session: {
     strategy: "jwt",
