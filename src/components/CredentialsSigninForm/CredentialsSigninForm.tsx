@@ -1,6 +1,6 @@
 "use client";
 //next
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 //components
 import { Form } from "@heroui/form";
@@ -28,7 +28,10 @@ export function CredentialsSigninForm({
 }: {
   invalidCredentialsError: boolean;
 }) {
+  const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
+    setIsClient(true);
     if (invalidCredentialsError) {
       addToast({
         title: "Credenciais inválidas",
@@ -38,32 +41,33 @@ export function CredentialsSigninForm({
       });
     }
   }, [invalidCredentialsError]);
-  return (
-    <Form onSubmit={handleSubmit}>
-      <Input
-        isRequired
-        errorMessage="Informe um email válido."
-        label="Email"
-        labelPlacement="outside"
-        name="email"
-        placeholder="Digite seu email"
-        type="email"
-      />
-      <PasswordInput name="password" />
+  if (isClient)
+    return (
+      <Form onSubmit={handleSubmit} className="gap-3">
+        <Input
+          isRequired
+          errorMessage="Informe um email válido."
+          label="Email"
+          labelPlacement="outside"
+          name="email"
+          placeholder="Digite seu email"
+          type="email"
+        />
+        <PasswordInput name="password" />
 
-      <div className="w-full flex flex-wrap flex-row gap-5 bg-red-500">
-        <Button className="flex-1" variant="light" color="primary">
-          Cancelar
-        </Button>
-        <Button
-          className="flex-1"
-          variant="shadow"
-          color="primary"
-          type="submit"
-        >
-          Entrar
-        </Button>
-      </div>
-    </Form>
-  );
+        <div className="w-full flex flex-wrap flex-row gap-5">
+          <Button className="flex-1" variant="light" color="primary">
+            Cancelar
+          </Button>
+          <Button
+            className="flex-1"
+            variant="shadow"
+            color="primary"
+            type="submit"
+          >
+            Entrar
+          </Button>
+        </div>
+      </Form>
+    );
 }
