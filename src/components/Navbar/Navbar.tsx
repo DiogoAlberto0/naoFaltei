@@ -3,7 +3,6 @@ import {
   Navbar,
   NavbarBrand,
   NavbarContent,
-  NavbarItem,
   Link,
   NavbarMenuToggle,
   NavbarMenu,
@@ -15,7 +14,7 @@ import { useState } from "react";
 export function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
-    <Navbar onMenuOpenChange={setIsMenuOpen}>
+    <Navbar position="static" onMenuOpenChange={setIsMenuOpen} isBordered>
       <NavbarContent>
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
