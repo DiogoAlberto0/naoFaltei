@@ -1,3 +1,4 @@
+import { FetchError, InputError } from "@/src/Errors/errors";
 import {
   addToast,
   Button,
@@ -12,7 +13,7 @@ import {
 import { FormEvent } from "react";
 
 export interface IModalFormProps extends ModalProps {
-  handleSubmit: (formData: FormData) => void;
+  handleSubmit: (formData: FormData) => Promise<void>;
   submitButtonText: string;
 }
 export const ModalForm = ({
@@ -23,18 +24,18 @@ export const ModalForm = ({
   children,
   ...otherProps
 }: IModalFormProps) => {
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = e.currentTarget;
     const formData = new FormData(form);
 
     try {
-      handleSubmit(formData);
+      await handleSubmit(formData);
 
       form.reset();
     } catch (error: any) {
-      if (error.message && error.action) {
+      if (error instanceof InputError || error instanceof FetchError) {
         addToast({
           color: "danger",
           title: error.message,
