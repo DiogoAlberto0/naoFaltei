@@ -1,4 +1,6 @@
 "use client";
+// next
+import { redirect } from "next/navigation";
 //heroui components
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
@@ -51,10 +53,13 @@ const StatusChip = ({ isWorking }: { isWorking: boolean }) => (
   </Chip>
 );
 
-const ActionsToolTips = ({ id }: { id: string }) => (
-  <div className="relative flex items-center gap-2" key={id}>
+const ActionsToolTips = ({ workerId }: { workerId: string }) => (
+  <div className="relative flex items-center gap-2">
     <Tooltip content="Details">
-      <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+      <span
+        onClick={() => redirect(`/manager/worker/${workerId}`)}
+        className="text-lg text-default-400 cursor-pointer active:opacity-50"
+      >
         <EyeIcon />
       </span>
     </Tooltip>
@@ -134,7 +139,7 @@ export const WorkersTable = ({ establishmentId }: IWorkersTableProps) => {
                   <StatusChip isWorking={isWorking} />
                 </TableCell>
                 <TableCell>
-                  <ActionsToolTips id={id} />
+                  <ActionsToolTips workerId={id} />
                 </TableCell>
               </TableRow>
             ))}
