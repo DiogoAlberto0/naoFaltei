@@ -1,5 +1,3 @@
-import { FormEvent } from "react";
-
 // heroui components
 import { Input } from "@heroui/react";
 import { addToast } from "@heroui/toast";
@@ -13,7 +11,7 @@ import { emailUtils } from "@/src/utils/email";
 import { phoneUtils } from "@/src/utils/phone";
 
 // errors
-import { InputError } from "@/src/Errors/errors";
+import { InputError, FetchError } from "@/src/Errors/errors";
 interface IUpdateEstablishmentModal {
   id: string;
   name: string;
@@ -32,66 +30,50 @@ export const UpdateEstablishmentModal = ({
   isOpen,
   onOpenChange,
 }: IUpdateEstablishmentModal) => {
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (formData: FormData) => {
+    const name = formData.get("name");
+    const phone = formData.get("phone");
+    const email = formData.get("email");
+    const cep = formData.get("cep");
 
-    try {
-      const form = e.currentTarget;
-      const formData = new FormData(form);
+    if (!name || !phone || !email || !cep)
+      throw new InputError({
+        message: "Campos obrigatórios faltando",
+        action: "Informe o nome, telefone, email e cep do estabelecimento",
+      });
 
-      const name = formData.get("name");
-      const phone = formData.get("phone");
-      const email = formData.get("email");
-      const cep = formData.get("cep");
+    phoneUtils.isValidOrThrow(phone.toString());
 
-      if (!name || !phone || !email || !cep)
-        throw new InputError({
-          message: "Campos obrigatórios faltando",
-          action: "Informe o nome, telefone, email e cep do estabelecimento",
-        });
+    emailUtils.isValidOrThrow(email.toString());
 
-      phoneUtils.isValidOrThrow(phone.toString());
+    cepUtils.isValidOrThrow(cep.toString());
 
-      emailUtils.isValidOrThrow(email.toString());
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/establishment/${id}/update`,
+      {
+        method: "PUT",
+        body: JSON.stringify({
+          name,
+          phone,
+          email,
+          cep,
+        }),
+      },
+    );
 
-      cepUtils.isValidOrThrow(cep.toString());
+    const data = await response.json();
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/establishment/${id}/update`,
-        {
-          method: "PUT",
-          body: JSON.stringify({
-            name,
-            phone,
-            email,
-            cep,
-          }),
-        },
-      );
+    if (response.status != 200)
+      throw new FetchError({
+        message: data.message,
+        status_code: response.status,
+        action: data.actio,
+      });
 
-      const data = await response.json();
-
-      if (response.status == 200) {
-        addToast({
-          color: "success",
-          title: `Estabelecimento ${data.name} atualizado com sucesso!`,
-        });
-      } else {
-        addToast({
-          color: "danger",
-          title: data.message,
-          description: data.action,
-        });
-      }
-    } catch (error) {
-      if (error instanceof InputError) {
-        addToast({
-          color: "danger",
-          title: error.message,
-          description: error.action,
-        });
-      }
-    }
+    addToast({
+      color: "success",
+      title: `Estabelecimento ${data.name} atualizado com sucesso!`,
+    });
   };
   return (
     <ModalForm
