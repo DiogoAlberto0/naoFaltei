@@ -1,3 +1,5 @@
+import { InputError } from "../Errors/errors";
+
 const clean = (cpf: string): string => {
   return cpf.replace(/\D/g, "");
 };
@@ -28,6 +30,14 @@ const format = (cpf: string): string => {
   return `${cpf.slice(0, 3)}.${cpf.slice(3, 6)}.${cpf.slice(6, 9)}-${cpf.slice(9, 11)}`;
 };
 
-const cpfUtils = { clean, isValid, format };
+const isValidOrThrow = (cpf: string) => {
+  if (!isValid(cpf))
+    throw new InputError({
+      message: "CPF Inválido",
+      action: "O CPF deve seguir a seguinte estrutura XXX.XXX.XXX-XX",
+    });
+};
+
+const cpfUtils = { clean, isValid, format, isValidOrThrow };
 
 export { cpfUtils };
