@@ -27,7 +27,7 @@ export default async function ManagerDashboard(props: {
           email="estabelecimento1@email.com"
           cep="71805-703"
         />
-        <WorkersTable />
+        <WorkersTable establishmentId={establishmentId} />
       </div>
       <div className="flex-1 flex flex-col gap-1">
         <LastRegistersTable />
