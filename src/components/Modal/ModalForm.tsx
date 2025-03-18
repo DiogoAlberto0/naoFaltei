@@ -1,4 +1,3 @@
-import { InputError } from "@/src/Errors/errors";
 import {
   addToast,
   Button,
@@ -32,6 +31,8 @@ export const ModalForm = ({
 
     try {
       handleSubmit(formData);
+
+      form.reset();
     } catch (error: any) {
       if (error.message && error.action) {
         addToast({
