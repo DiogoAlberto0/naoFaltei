@@ -15,6 +15,23 @@ export class InputError extends Error {
   }
 }
 
+interface IFetchErrorParams {
+  message: string;
+  status_code: number;
+  action?: string;
+}
+export class FetchError extends Error {
+  public status_code: number;
+  public action: string;
+
+  constructor({ message, status_code, action }: IFetchErrorParams) {
+    super(message);
+    this.name = "FetchError";
+    this.status_code = status_code;
+    this.action = action || "Contate o suporte";
+  }
+}
+
 interface IConflictErrorParams {
   message: string;
   action?: string;
