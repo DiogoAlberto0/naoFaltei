@@ -1,4 +1,4 @@
-import { useState, useEffect, FocusEvent, FormEvent } from "react";
+import { useState, useEffect, FocusEvent } from "react";
 
 //hero iu components
 import { Input } from "@heroui/input";
@@ -14,7 +14,7 @@ import { emailUtils } from "@/src/utils/email";
 import { cepUtils } from "@/src/utils/cep";
 
 //errors
-import { InputError } from "@/src/Errors/errors";
+import { FetchError, InputError } from "@/src/Errors/errors";
 
 interface IAddressResponse {
   address: string;
@@ -83,76 +83,50 @@ export const AddEstablishmentFormModal = ({
     setAddress(data.address);
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Impede o envio tradicional do formulário
+  const handleSubmit = async (formData: FormData) => {
+    const name = formData.get("name");
 
-    try {
-      const form = e.currentTarget;
-      const formData = new FormData(form);
+    const phone = formData.get("phone");
+    const email = formData.get("email");
+    const cep = formData.get("cep");
 
-      const name = formData.get("name");
+    if (!name || !phone || !email || !cep)
+      throw new InputError({
+        message: "Campos obrigatorios faltando",
+        action: "Informe o nome, telefone, email e cep do novo estabelecimento",
+      });
 
-      const phone = formData.get("phone");
-      if (!phone || !phoneUtils.isValid(phone?.toString()))
-        throw new InputError({
-          message: "Telefone inválido",
-          action:
-            "Informe um telefone válido seguindo a seguinte estrutura: (XX)XXXXX-XXXX",
-        });
-      const email = formData.get("email");
-      if (!email || !emailUtils.isValid(email?.toString()))
-        throw new InputError({
-          message: "Email inválido",
-          action:
-            "Informe um email válido seguindo a seguinte estrutura: XXXX@XXXX.XXX",
-        });
-      const cep = formData.get("cep");
-      if (!cep || !cepUtils.isValid(cep?.toString()))
-        throw new InputError({
-          message: "CEP inválido",
-          action:
-            "Informe um CEP válido seguindo a seguinte estrutura: XXXXX-XXX",
-        });
+    phoneUtils.isValidOrThrow(phone.toString());
+    emailUtils.isValidOrThrow(email.toString());
+    cepUtils.isValidOrThrow(cep.toString());
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/establishment/create`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            name,
-            phone,
-            email,
-            cep,
-            lat: address.lat,
-            lng: address.lng,
-          }),
-        },
-      );
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/establishment/create`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          name,
+          phone,
+          email,
+          cep,
+          lat: address.lat,
+          lng: address.lng,
+        }),
+      },
+    );
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (response.status !== 201) {
-        addToast({
-          title: data.message,
-          description: data.action,
-          color: "danger",
-        });
-      } else {
-        addToast({
-          title: `Empresa ${data.name} criada com sucesso`,
-          color: "success",
-        });
-        form.reset();
-      }
-    } catch (error) {
-      if (error instanceof InputError)
-        addToast({
-          title: error.message,
-          description: error.action,
-          color: "danger",
-        });
-      else throw error;
-    }
+    if (response.status !== 201)
+      throw new FetchError({
+        message: data.message,
+        status_code: response.status,
+        action: data.action,
+      });
+    addToast({
+      title: `Empresa ${data.name} criada com sucesso`,
+      color: "success",
+    });
   };
 
   return (
