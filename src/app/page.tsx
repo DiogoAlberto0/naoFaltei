@@ -1,6 +1,4 @@
-import { GoogleSigninButton } from "@/src/components/GoogleSigninButton";
-
-import { Button, ButtonGroup } from "@heroui/button";
+import { Button } from "@heroui/button";
 export default function Home() {
   return (
     <div className="bg-red-500 h-">

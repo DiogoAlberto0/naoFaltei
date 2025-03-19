@@ -7,8 +7,12 @@ interface IWorkerPageProps {
   params: Promise<{ workerId: string }>;
 }
 
-const WorkerPage = async ({ params }: IWorkerPageProps) => {
-  const { workerId } = await params;
+const WorkerPage = async (
+  {
+    //params
+  }: IWorkerPageProps,
+) => {
+  //const { workerId } = await params;
   return (
     <div className="w-full p-10 flex gap-1  ">
       <div className="max-h-max w-50 flex flex-col gap-1 ">

@@ -3,7 +3,13 @@
 import { useEffect } from "react";
 import { Button, Card } from "@heroui/react";
 
-export default function Error({ error, reset }) {
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
   useEffect(() => {
     // Log de erros ou outras ações
     console.error(error);
