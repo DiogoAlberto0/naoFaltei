@@ -43,7 +43,7 @@ export const CalendarInput = ({
           isIconOnly
           onPress={() =>
             router.replace(
-              `${onSubmitRedirect}/${1}?inicialDate=${value.start}&endDate=${value.end}`,
+              `${onSubmitRedirect}/?inicialDate=${value.start}&endDate=${value.end}`,
             )
           }
         />
