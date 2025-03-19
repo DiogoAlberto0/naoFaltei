@@ -1,9 +1,9 @@
 "use client";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // hero ui components
-import { Button, Listbox, ListboxItem, useDisclosure } from "@heroui/react";
+import { Listbox, ListboxItem, useDisclosure } from "@heroui/react";
 
 // icons
 import { ArrowIcon } from "@/assets/icons/ArrowIcon";
@@ -16,11 +16,6 @@ interface IEstablishmentProps {
   name: string;
 }
 
-export const ListboxWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="w-full h-full max-h-full overflow-hidden flex max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
-    {children}
-  </div>
-);
 export const EstablishmentToggle = () => {
   const [isOpenToggle, setIsOpenToggle] = useState(true);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -45,13 +40,24 @@ export const EstablishmentToggle = () => {
     fetchEstablishments();
   }, []);
   return (
-    <div className="relative flex h-full items-center">
-      <ListboxWrapper>
+    <div className="h-full relative ">
+      <div
+        className={`
+        border-small border-default-200 dark:border-default-100 
+        px-1 py-2 
+        rounded-small 
+        flex 
+        absolute z-50 sm:relative
+        h-full 
+        bg-content2 bg-opacity-90 
+        ${isOpenToggle && "w-screen sm:max-w-[250px]"}
+        `}
+      >
         {isOpenToggle && (
           <Listbox
-            className="overflow-auto"
+            className="overflow-auto w-full"
             aria-label="Listbox menu with icons"
-            variant="faded"
+            variant="shadow"
           >
             <>
               {establishments.map(({ id, name }) => (
@@ -81,20 +87,17 @@ export const EstablishmentToggle = () => {
           isOpen={isOpen}
           onOpenChange={onOpenChange}
         />
-        <Button
-          color="primary"
-          variant="faded"
-          onPress={() => setIsOpenToggle(!isOpenToggle)}
-          isIconOnly
-          className="mx-1"
+        <button
+          onClick={() => setIsOpenToggle(!isOpenToggle)}
+          className=" flex justify-center items-center sm:px-2"
         >
           {isOpenToggle ? (
             <ArrowIcon direction="left" />
           ) : (
             <ArrowIcon direction="right" />
           )}
-        </Button>
-      </ListboxWrapper>
+        </button>
+      </div>
     </div>
   );
 };
