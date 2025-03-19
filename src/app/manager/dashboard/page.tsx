@@ -1,7 +1,7 @@
 import { EstablishmentInfoCard } from "@/src/components/EstablishmentInfoCard/EstablishmentInfoCard";
 import { WorkersTable } from "../../../components/WorkersTable/WorkersTable";
 import { LocationCard } from "@/src/components/LocationCard/LocationCard";
-import { LastRegistersTable } from "../../../components/LastRegistersTable/LastRegistersTable";
+import { RegistersTable } from "../../../components/RegistersTable/RegistersTable";
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function ManagerDashboard(props: {
@@ -30,7 +30,7 @@ export default async function ManagerDashboard(props: {
         <WorkersTable establishmentId={establishmentId} />
       </div>
       <div className="flex-1 flex flex-col gap-1">
-        <LastRegistersTable />
+        <RegistersTable title="Últimos registros" maxRegisters={7} />
         <LocationCard
           establishmentId={establishmentId}
           markerPosition={{
