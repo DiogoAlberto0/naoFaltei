@@ -35,7 +35,7 @@ export const CalendarInput = ({
     <Card
       className={`w-full h-full flex justify-center items-center ${className}`}
     >
-      <CardHeader className="flex justify-between items-center">
+      <CardHeader className="flex justify-between items-center flex-1">
         <h1 className="text-lg">{title}</h1>
         <Button
           color="primary"
