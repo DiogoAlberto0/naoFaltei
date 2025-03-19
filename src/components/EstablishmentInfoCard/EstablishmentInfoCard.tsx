@@ -47,9 +47,9 @@ export const EstablishmentInfoCard = ({
         <CepDataIcon cep={cep} />
       </CardBody>
       <Divider />
-      <CardFooter>
+      <CardFooter className="flex justify-end">
         <Button
-          endContent={<EditIcon className="h-5 w-5 stroke-primary-500" />}
+          startContent={<EditIcon className="h-5 w-5 stroke-primary-500" />}
           onPress={onOpen}
         >
           Editar
