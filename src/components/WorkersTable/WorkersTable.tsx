@@ -42,19 +42,27 @@ const workers = [
   { id: "6", name: "Maria Souza", email: "maria@email.com", isWorking: true },
 ];
 
-const StatusChip = ({ isWorking }: { isWorking: boolean }) => (
+const StatusChip = ({
+  isWorking,
+  responsive = false,
+}: {
+  isWorking: boolean;
+  responsive?: boolean;
+}) => (
   <Chip
     className="capitalize border-none gap-1 text-default-600"
     color={isWorking ? "success" : "danger"}
     size="sm"
     variant="dot"
   >
-    {isWorking ? "Trabalhando" : "Ausente"}
+    <p className={`${responsive && "hidden sm:flex"}`}>
+      {isWorking ? "Trabalhando" : "Ausente"}
+    </p>
   </Chip>
 );
 
 const ActionsToolTips = ({ workerId }: { workerId: string }) => (
-  <div className="relative flex items-center gap-2">
+  <div className="relative flex flex-col sm:flex-row items-center justify-center gap-2 ">
     <Tooltip content="Details">
       <span
         onClick={() => redirect(`/manager/worker/${workerId}`)}
@@ -86,23 +94,32 @@ export const WorkersTable = ({ establishmentId }: IWorkersTableProps) => {
       <Table
         aria-label="Example static collection table"
         bottomContent={
-          <div className="flex w-full justify-center">
-            <Pagination
-              isCompact
-              showControls
-              showShadow
-              color="secondary"
-              page={1}
-              total={10}
-              onChange={(page) => console.log(page)}
-            />
+          <div className="flex flex-col w-full justify-center ">
+            <div className="block sm:hidden">
+              <h2 className="text-sm">Legenda:</h2>
+              <StatusChip isWorking></StatusChip>
+              <StatusChip isWorking={false}></StatusChip>
+            </div>
+            <div className="w-full flex justify-center items-center">
+              <Pagination
+                size="sm"
+                isCompact
+                showControls
+                showShadow
+                color="secondary"
+                page={1}
+                total={10}
+                onChange={(page) => console.log(page)}
+              />
+            </div>
           </div>
         }
         classNames={{
-          base: "h-full w-full", // Ocupa 100% da altura e largura disponíveis
+          base: "h-full w-full overflow-auto", // Ocupa 100% da altura e largura disponíveis
           wrapper: "grow flex flex-col", // Permite que o wrapper cresça para preencher o espaço
-          table: "flex-1", // Faz a tabela ocupar o espaço disponível
+          table: "flex-1 ", // Faz a tabela ocupar o espaço disponível
         }}
+        className="font"
         topContent={
           <div className="flex justify-between items-center">
             <h1 className="text-xl">Funcionários</h1>
@@ -136,7 +153,7 @@ export const WorkersTable = ({ establishmentId }: IWorkersTableProps) => {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <StatusChip isWorking={isWorking} />
+                  <StatusChip responsive isWorking={isWorking} />
                 </TableCell>
                 <TableCell>
                   <ActionsToolTips workerId={id} />
