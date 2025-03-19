@@ -1,23 +1,49 @@
 "use client";
-import { Chip } from "@heroui/chip";
-import { Pagination } from "@heroui/pagination";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@heroui/table";
 
-export const RegistersTable = ({ title }: { title: string }) => {
-  const registers = [0, 1, 2, 3, 4, 5, 6];
+// heroui components
+import { Pagination } from "@heroui/pagination";
+import { Table, TableBody, TableColumn, TableHeader } from "@heroui/table";
+
+// custom components
+import { TopContentRegistersTable } from "./TopContent";
+import { renderRegitersTableRow } from "./Row";
+
+export const RegistersTable = ({
+  title,
+  maxRegisters,
+  detailed = true,
+}: {
+  title: string;
+  maxRegisters: number;
+  detailed?: boolean;
+}) => {
+  const registers = [];
+
+  for (let index = 0; index < maxRegisters; index++) {
+    registers.push(index);
+  }
+
+  const tableRows = registers.map((id) =>
+    renderRegitersTableRow({
+      id: id.toString(),
+      name: "Diogo Alberto",
+      clockIn: id % 2 == 0,
+      date: new Date(),
+      hour: new Date().getHours(),
+      minute: new Date().getMinutes(),
+    }),
+  );
   return (
     <Table
       topContent={
-        <div>
-          <h1 className="text-xl">{title}</h1>
-        </div>
+        <TopContentRegistersTable
+          title={title}
+          detailed={detailed}
+          absenceDays={1}
+          hoursBank={2}
+          medicalCertificateDays={3}
+          tardinessDays={4}
+        />
       }
       classNames={{
         base: "h-full w-full",
@@ -44,22 +70,7 @@ export const RegistersTable = ({ title }: { title: string }) => {
         <TableColumn>Data</TableColumn>
         <TableColumn>Hora</TableColumn>
       </TableHeader>
-      <TableBody className="bg-blue-500">
-        <>
-          {registers.map((id) => (
-            <TableRow key={id}>
-              <TableCell>Diogo alberto</TableCell>
-              <TableCell>
-                <Chip variant="flat" color="success">
-                  Entrada
-                </Chip>
-              </TableCell>
-              <TableCell>15/03/25</TableCell>
-              <TableCell>10:30</TableCell>
-            </TableRow>
-          ))}
-        </>
-      </TableBody>
+      <TableBody className="bg-blue-500">{tableRows}</TableBody>
     </Table>
   );
 };
