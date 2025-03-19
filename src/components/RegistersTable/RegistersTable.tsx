@@ -10,13 +10,13 @@ import {
   TableRow,
 } from "@heroui/table";
 
-export const LastRegistersTable = () => {
+export const RegistersTable = ({ title }: { title: string }) => {
   const registers = [0, 1, 2, 3, 4, 5, 6];
   return (
     <Table
       topContent={
         <div>
-          <h1 className="text-xl">Últimos registros</h1>
+          <h1 className="text-xl">{title}</h1>
         </div>
       }
       classNames={{
