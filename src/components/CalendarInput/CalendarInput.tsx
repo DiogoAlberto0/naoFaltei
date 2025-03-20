@@ -10,6 +10,7 @@ import {
   Button,
   Card,
   CardHeader,
+  DateRangePicker,
   Divider,
   RangeCalendar,
 } from "@heroui/react";
@@ -33,7 +34,7 @@ export const CalendarInput = ({
   const router = useRouter();
   return (
     <Card
-      className={`w-full h-full flex justify-center items-center ${className}`}
+      className={`w-full h-full max-h-max flex justify-center items-center ${className}`}
     >
       <CardHeader className="flex justify-between items-center flex-1">
         <h1 className="text-lg">{title}</h1>
@@ -55,22 +56,14 @@ export const CalendarInput = ({
           aria-label="Date (Controlled)"
           value={value}
           onChange={setValue}
-          // topContent={
-          //   <div className="flex items-center p-2">
-          //     <h1 className="text-lg">{title}</h1>
-          //   </div>
-          // }
-          // bottomContent={
-          //   <div className="flex p-2">
-          //     <Button
-          //       color="primary"
-          //       className="w-full"
+          className="max-h-900:sm:hidden"
+        />
 
-          //     >
-          //       Buscar
-          //     </Button>
-          //   </div>
-          // }
+        <DateRangePicker
+          showMonthAndYearPickers
+          label="Birth Date"
+          variant="bordered"
+          className="hidden max-h-900:sm:block"
         />
       </I18nProvider>
     </Card>
