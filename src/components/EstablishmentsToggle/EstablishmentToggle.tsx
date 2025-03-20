@@ -44,8 +44,7 @@ export const EstablishmentToggle = () => {
       <div
         className={`
         border-small border-default-200 dark:border-default-100 
-        px-1 py-2 
-        rounded-small 
+        rounded-r-small
         flex 
         absolute z-50 sm:relative
         h-full 
@@ -55,7 +54,7 @@ export const EstablishmentToggle = () => {
       >
         {isOpenToggle && (
           <Listbox
-            className="overflow-auto w-full"
+            className="overflow-auto w-full px-1 py-2"
             aria-label="Listbox menu with icons"
             variant="shadow"
           >
@@ -89,7 +88,7 @@ export const EstablishmentToggle = () => {
         />
         <button
           onClick={() => setIsOpenToggle(!isOpenToggle)}
-          className=" flex justify-center items-center sm:px-2"
+          className=" flex justify-center items-center  w-10 "
         >
           {isOpenToggle ? (
             <ArrowIcon direction="left" />
