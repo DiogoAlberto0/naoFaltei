@@ -7,7 +7,7 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "*",
-    "./node_modules/@heroui/theme/dist/components/(alert|button|calendar|card|chip|divider|form|image|input|listbox|modal|navbar|pagination|skeleton|toggle|table|toast|ripple|spinner|checkbox|spacer).js",
+    "./node_modules/@heroui/theme/dist/components/(alert|button|calendar|card|chip|date-picker|divider|form|image|input|listbox|modal|navbar|pagination|skeleton|toggle|table|toast|ripple|spinner|date-input|popover|checkbox|spacer).js",
   ],
   theme: {
     extend: {
@@ -15,6 +15,7 @@ export default {
         "h-sm": { raw: "(max-height: 640px)" },
         "max-sm": { raw: "(max-width: 640px)" },
         "max-xs": { raw: "(max-width: 360px)" },
+        "max-h-900": { raw: "(max-height: 900px)" },
       },
     },
   },
