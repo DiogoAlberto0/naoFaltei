@@ -29,7 +29,7 @@ export const EstablishmentToggle = () => {
   useEffect(() => {
     const fetchEstablishments = async () => {
       const establishments = await fetch(
-        "http://localhost:3000/api/v1/establishment/list",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/establishment/list`,
       );
 
       const data = await establishments.json();
