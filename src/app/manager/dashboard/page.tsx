@@ -18,8 +18,8 @@ export default async function ManagerDashboard(props: {
       </div>
     );
   return (
-    <div className="w-full p-10 flex gap-1">
-      <div className="flex-1 flex flex-col gap-1">
+    <div className="w-full p-5 sm:p-10 max-sm:p-0 max-sm:pl-10 flex gap-1 flex-wrap overflow-auto h-full max-h-full">
+      <div className="flex-1 flex flex-col gap-1 md:max-h-full">
         <EstablishmentInfoCard
           id={establishmentId}
           name="Estabelecimento 1"
@@ -29,8 +29,12 @@ export default async function ManagerDashboard(props: {
         />
         <WorkersTable establishmentId={establishmentId} />
       </div>
-      <div className="flex-1 flex flex-col gap-1">
-        <RegistersTable title="Últimos registros" maxRegisters={7} />
+      <div className="flex-1 flex flex-col gap-1 md:max-h-full">
+        <RegistersTable
+          title="Últimos registros"
+          maxRegisters={7}
+          detailed={false}
+        />
         <LocationCard
           establishmentId={establishmentId}
           markerPosition={{
