@@ -1,13 +1,21 @@
 "use client";
-
 // heroui components
 import { Pagination } from "@heroui/pagination";
 import { Table, TableBody, TableColumn, TableHeader } from "@heroui/table";
 
 // custom components
 import { TopContentRegistersTable } from "./TopContent";
-import { renderRegitersTableRow } from "./Row";
+import { renderRegitersTableRow, TypeRegisterChip } from "./Row";
 
+const Legend = () => {
+  return (
+    <div className="block sm:hidden">
+      <h2 className="text-sm">Legenda:</h2>
+      <TypeRegisterChip clockIn />
+      <TypeRegisterChip clockIn={false} />
+    </div>
+  );
+};
 export const RegistersTable = ({
   title,
   maxRegisters,
@@ -46,27 +54,31 @@ export const RegistersTable = ({
         />
       }
       classNames={{
-        base: "h-full w-full",
+        base: "h-full w-full max-w-full overflow-auto",
         wrapper: "grow flex flex-col items-start",
         table: "flex-1",
       }}
       bottomContent={
-        <div className="flex w-full justify-center">
-          <Pagination
-            isCompact
-            showControls
-            showShadow
-            color="secondary"
-            page={1}
-            total={10}
-            onChange={(page) => console.log(page)}
-          />
+        <div className="flex flex-col w-full justify-center ">
+          <Legend />
+          <div className="w-full flex justify-center items-center">
+            <Pagination
+              size="sm"
+              isCompact
+              showControls
+              showShadow
+              color="secondary"
+              page={1}
+              total={10}
+              onChange={(page) => console.log(page)}
+            />
+          </div>
         </div>
       }
     >
       <TableHeader>
         <TableColumn>Funcionário</TableColumn>
-        <TableColumn>Tipo</TableColumn>
+        <TableColumn className="max-sm:hidden">Tipo</TableColumn>
         <TableColumn>Data</TableColumn>
         <TableColumn>Hora</TableColumn>
       </TableHeader>

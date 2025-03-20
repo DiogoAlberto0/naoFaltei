@@ -53,16 +53,20 @@ export const TopContentRegistersTable = ({
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
   return (
     <div className="w-full flex flex-col gap-1">
-      <TimeSheetModal isOpen={isOpen} onOpenChange={onOpenChange} />
       <div className=" w-full flex justify-between items-center">
         <h1 className="text-xl">{title}</h1>
-        <Button
-          startContent={<FullScreenIcon className="h-5 w-5" />}
-          isIconOnly
-          color="primary"
-          variant="shadow"
-          onPress={onOpen}
-        />
+        {detailed && (
+          <>
+            <TimeSheetModal isOpen={isOpen} onOpenChange={onOpenChange} />
+            <Button
+              startContent={<FullScreenIcon className="h-5 w-5" />}
+              isIconOnly
+              color="primary"
+              variant="shadow"
+              onPress={onOpen}
+            />
+          </>
+        )}
       </div>
       {detailed && <TopContentDetails {...otherProps} />}
     </div>
