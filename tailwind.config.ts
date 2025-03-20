@@ -14,6 +14,7 @@ export default {
       screens: {
         "h-sm": { raw: "(max-height: 640px)" },
         "max-sm": { raw: "(max-width: 640px)" },
+        "max-xs": { raw: "(max-width: 360px)" },
       },
     },
   },
