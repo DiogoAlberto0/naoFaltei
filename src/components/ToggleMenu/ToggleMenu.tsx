@@ -21,13 +21,13 @@ export const ToggleMenu = ({
     <div
       className={`
         border-small border-default-200 dark:border-default-100 rounded-r-small
-        bg-primary bg-opacity-50 hover:bg-opacity-90
+        bg-content4 bg-opacity-50 hover:bg-opacity-100 
         absolute z-20 bottom-0
         max-sm:w-full
         flex flex-col-reverse
         sm:h-${height} sm:flex-row
         transition-all duration-500 ease-in-out 
-        ${isOpenToggle ? `h-${height} sm:w-[250px]` : "h-12 sm:w-12"}
+        ${isOpenToggle ? `h-${height} sm:w-[250px] sm:bg-opacity-100` : "h-12 sm:w-12"}
         `}
     >
       <div className="h-full w-full">{isOpenToggle && children}</div>
