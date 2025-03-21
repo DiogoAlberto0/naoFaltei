@@ -14,7 +14,7 @@ const WorkerPage = async (
 ) => {
   //const { workerId } = await params;
   return (
-    <div className="w-full p-5 sm:p-10 max-sm:p-0 max-sm:pl-10 flex gap-1 flex-wrap overflow-auto h-full max-h-full">
+    <div className="w-full p-5 sm:p-10 max-sm:p-0 flex gap-1 flex-wrap overflow-auto h-full max-h-full">
       <div className="flex-1 flex flex-col gap-1 md:max-h-full">
         <WorkerInfoCard />
         <WorkSchedule />
