@@ -1,4 +1,5 @@
 import { genSaltSync, hashSync, compareSync } from "bcrypt";
+import { InputError } from "../Errors/errors";
 
 const genHash = (password: string) => {
   const salt = genSaltSync(10);
@@ -18,5 +19,14 @@ function isValid(password: string): boolean {
   return passwordRegex.test(password);
 }
 
-const passwordUtils = { genHash, comparePassAndHash, isValid };
+const isValidOrThrow = (password: string) => {
+  if (!isValid(password))
+    throw new InputError({
+      message: "Senha inválida",
+      action:
+        "Informe uma senha válida, a senha deve conter ao menos uma letra maiúscula um número e um caracter especial.",
+    });
+};
+
+const passwordUtils = { genHash, comparePassAndHash, isValid, isValidOrThrow };
 export { passwordUtils };
