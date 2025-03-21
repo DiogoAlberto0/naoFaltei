@@ -8,7 +8,7 @@ import { Listbox, ListboxItem, useDisclosure } from "@heroui/react";
 
 // components
 import { AddEstablishmentFormModal } from "./AddEstablishmentFormModal";
-import { ToggleMenu } from "../ToggleMenu/ToggleManu";
+import { ToggleMenu } from "../ToggleMenu/ToggleMenu";
 
 interface IEstablishmentProps {
   id: string;
@@ -59,7 +59,7 @@ export const EstablishmentToggle = () => {
     fetchEstablishments();
   }, []);
   return (
-    <ToggleMenu>
+    <ToggleMenu hasHeader>
       <Listbox
         className={`overflow-auto w-full h-full px-1 py-2 `}
         aria-label="Listbox menu with icons"
