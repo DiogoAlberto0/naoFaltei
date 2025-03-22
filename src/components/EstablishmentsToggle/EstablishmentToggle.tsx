@@ -9,23 +9,31 @@ import { Listbox, ListboxItem, useDisclosure } from "@heroui/react";
 // components
 import { AddEstablishmentFormModal } from "./AddEstablishmentFormModal";
 import { ToggleMenu } from "../ToggleMenu/ToggleMenu";
+import { AddIcon } from "@/assets/icons/AddIcon";
 
 interface IEstablishmentProps {
   id: string;
   name: string;
 }
 
-const renderItem = (
-  { id, name }: IEstablishmentProps,
-  router: AppRouterInstance,
-) => {
+interface IListboxItemProps {
+  establishmentProps: IEstablishmentProps;
+  router: AppRouterInstance;
+  showDivider?: boolean;
+}
+const renderItem = ({
+  establishmentProps: { id, name },
+  router,
+  showDivider = false,
+}: IListboxItemProps) => {
   return (
     <ListboxItem
-      onPress={() =>
+      showDivider={showDivider}
+      onPress={() => {
         router.replace(`/manager/dashboard?establishmentId=${id}`, {
           scroll: false,
-        })
-      }
+        });
+      }}
       key={id}
     >
       {name}
@@ -39,10 +47,16 @@ export const EstablishmentToggle = () => {
     [],
   );
 
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["text"]));
+
   const router = useRouter();
 
-  const items = establishments.map((establishment) =>
-    renderItem(establishment, router),
+  const items = establishments.map((establishment, index) =>
+    renderItem({
+      establishmentProps: establishment,
+      router,
+      showDivider: index == establishments.length - 1,
+    }),
   );
 
   useEffect(() => {
@@ -63,7 +77,13 @@ export const EstablishmentToggle = () => {
       <Listbox
         className={`overflow-auto w-full h-full px-1 py-2 `}
         aria-label="Listbox menu with icons"
-        variant="shadow"
+        variant="solid"
+        color="primary"
+        selectedKeys={selectedKeys}
+        selectionMode="single"
+        onSelectionChange={(keys) =>
+          setSelectedKeys(new Set(keys as Set<string>))
+        }
       >
         <>{items}</>
         <ListboxItem
@@ -71,10 +91,12 @@ export const EstablishmentToggle = () => {
           key="delete"
           className="text-success"
           color="success"
+          startContent={<AddIcon className="h-5 w-5" />}
         >
           Adicionar Estabelecimento
         </ListboxItem>
       </Listbox>
+      <AddIcon />
       <AddEstablishmentFormModal isOpen={isOpen} onOpenChange={onOpenChange} />
     </ToggleMenu>
   );
