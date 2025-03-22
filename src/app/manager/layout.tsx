@@ -20,7 +20,7 @@ export default async function RootLayout({
 
       {/* Conteúdo principal */}
       <div className="flex-1 overflow-hidden">
-        <div className="h-full max-sm:pb-12">
+        <div className="h-full max-sm:pb-12 relative">
           <EstablishmentToggle />
           {children}
         </div>
