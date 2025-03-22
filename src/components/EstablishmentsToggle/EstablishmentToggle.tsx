@@ -96,7 +96,6 @@ export const EstablishmentToggle = () => {
           Adicionar Estabelecimento
         </ListboxItem>
       </Listbox>
-      <AddIcon />
       <AddEstablishmentFormModal isOpen={isOpen} onOpenChange={onOpenChange} />
     </ToggleMenu>
   );
