@@ -7,13 +7,8 @@ import { DetailedHTMLProps, HTMLAttributes, useState } from "react";
 import { ArrowIcon } from "@/assets/icons/ArrowIcon";
 
 interface IToggleMenuProps
-  extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-  hasHeader?: boolean;
-}
-export const ToggleMenu = ({
-  children,
-  hasHeader = false,
-}: IToggleMenuProps) => {
+  extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}
+export const ToggleMenu = ({ children }: IToggleMenuProps) => {
   const [isOpenToggle, setIsOpenToggle] = useState(true);
 
   return (
@@ -24,9 +19,9 @@ export const ToggleMenu = ({
         absolute z-20 bottom-0
         max-sm:w-full
         flex flex-col-reverse
-        sm:h-${hasHeader ? "[calc(100vh-4rem)]" : "screen"} sm:flex-row
+        sm:h-full sm:flex-row
         transition-all duration-500 ease-in-out 
-        ${isOpenToggle ? `h-${hasHeader ? "[calc(100vh-4rem)]" : "screen"} sm:w-[260px] sm:bg-opacity-100` : "h-12 sm:w-12"}
+        ${isOpenToggle ? `h-full sm:w-[260px] sm:bg-opacity-100` : "h-12 sm:w-10"}
         `}
     >
       <div className="h-full w-full">{isOpenToggle && children}</div>
