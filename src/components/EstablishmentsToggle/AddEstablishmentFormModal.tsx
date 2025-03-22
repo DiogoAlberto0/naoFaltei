@@ -1,4 +1,4 @@
-import { useState, useEffect, FocusEvent } from "react";
+import { useState, useEffect } from "react";
 
 //hero iu components
 import { Input } from "@heroui/input";
@@ -51,6 +51,7 @@ export const AddEstablishmentFormModal = ({
     lng: "",
     state: "",
   });
+  const [isAddressDisabled, setIsAddressDisabled] = useState(true);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -64,9 +65,10 @@ export const AddEstablishmentFormModal = ({
     }
   }, []);
 
-  const fetchCepInfos = async (e: FocusEvent<HTMLInputElement, Element>) => {
+  const fetchCepInfos = async (cep: string) => {
+    setIsAddressDisabled(true);
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/cep/${e.target.value}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/cep/${cep}`,
     );
 
     const data = await response.json();
@@ -80,7 +82,9 @@ export const AddEstablishmentFormModal = ({
 
       return;
     }
+
     setAddress(data.address);
+    setIsAddressDisabled(false);
   };
 
   const handleSubmit = async (formData: FormData) => {
@@ -144,6 +148,7 @@ export const AddEstablishmentFormModal = ({
         name="name"
         placeholder="Digite o nome do estabelecimento"
         type="text"
+        tabIndex={1}
       />
       <Input
         isRequired
@@ -153,6 +158,7 @@ export const AddEstablishmentFormModal = ({
         name="phone"
         placeholder="Digite o telefone do estabelecimento"
         type="phone"
+        tabIndex={2}
       />
       <Input
         isRequired
@@ -162,6 +168,7 @@ export const AddEstablishmentFormModal = ({
         name="email"
         placeholder="Digite o email do estabelecimento"
         type="email"
+        tabIndex={3}
       />
       <Input
         isRequired
@@ -171,22 +178,32 @@ export const AddEstablishmentFormModal = ({
         name="cep"
         placeholder="Digite o cep do estabelecimento"
         type="text"
-        onBlur={fetchCepInfos}
+        onValueChange={(value) => {
+          console.log(value);
+          if (value.length >= 8) {
+            fetchCepInfos(value);
+          }
+        }}
+        tabIndex={4}
       />
       <Input
+        disabled={isAddressDisabled}
         isRequired
-        disabled
         label="Endereço: "
         labelPlacement="outside"
         name="address"
         placeholder="Endereço do estabelecimento..."
         type="text"
         value={address.address}
+        onChange={(e) =>
+          setAddress((prevState) => ({ ...prevState, address: e.target.value }))
+        }
         variant="underlined"
+        tabIndex={6}
       />
       <Input
+        disabled={isAddressDisabled}
         isRequired
-        disabled
         label="Estado: "
         labelPlacement="outside"
         name="state"
@@ -194,6 +211,20 @@ export const AddEstablishmentFormModal = ({
         type="text"
         variant="underlined"
         value={address.state}
+        onChange={(e) =>
+          setAddress((prevState) => ({ ...prevState, state: e.target.value }))
+        }
+        tabIndex={7}
+      />
+      <Input
+        isRequired
+        label="Número: "
+        labelPlacement="outside"
+        name="number"
+        placeholder="Estado do estabelecimento..."
+        type="number"
+        variant="underlined"
+        tabIndex={5}
       />
       <Input type="hidden" name="lat" value={address.lat} />
 
