@@ -73,7 +73,7 @@ export const EstablishmentToggle = () => {
     fetchEstablishments();
   }, []);
   return (
-    <ToggleMenu hasHeader>
+    <ToggleMenu>
       <Listbox
         className={`overflow-auto w-full h-full px-1 py-2 `}
         aria-label="Listbox menu with icons"
