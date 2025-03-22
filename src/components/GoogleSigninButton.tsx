@@ -7,7 +7,7 @@ const GoogleSigninButton = () => {
     <form
       action={async () => {
         "use server";
-        await signIn("google");
+        await signIn("google", { redirectTo: "/manager/dashboard" });
       }}
     >
       <button className="w-full flex justify-center items-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm hover:shadow-lg transition-all bg-white text-gray-700 font-medium text-sm">
