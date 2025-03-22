@@ -21,7 +21,7 @@ export const ToggleMenu = ({
     <div
       className={`
         border-small border-default-200 dark:border-default-100 rounded-r-small
-        bg-content4 bg-opacity-50 hover:bg-opacity-100 
+        bg-content4 bg-opacity-50 hover:bg-opacity-100 max-sm:bg-opacity-100
         absolute z-20 bottom-0
         max-sm:w-full
         flex flex-col-reverse
