@@ -9,7 +9,7 @@ import { ArrowIcon } from "@/assets/icons/ArrowIcon";
 interface IToggleMenuProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}
 export const ToggleMenu = ({ children }: IToggleMenuProps) => {
-  const [isOpenToggle, setIsOpenToggle] = useState(true);
+  const [isOpenToggle, setIsOpenToggle] = useState(false);
 
   return (
     <div
