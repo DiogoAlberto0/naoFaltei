@@ -7,6 +7,7 @@ import { addToast } from "@heroui/toast";
 //components
 import { Map } from "../Map/Map";
 import { ModalForm } from "../Modal/ModalForm";
+import { AddressInputs, IAddress } from "./AddressInputs";
 
 //utils
 import { phoneUtils } from "@/src/utils/phone";
@@ -16,19 +17,19 @@ import { cepUtils } from "@/src/utils/cep";
 //errors
 import { FetchError, InputError } from "@/src/Errors/errors";
 
-interface IAddressResponse {
-  address: string;
-  address_name: string;
-  address_type: string;
-  cep: string;
-  city: string;
-  city_ibge: string;
-  ddd: string;
-  district: string;
-  lat: string;
-  lng: string;
-  state: string;
-}
+const INITIAL_ADDRESS: IAddress = {
+  address: "",
+  address_name: "",
+  address_type: "",
+  cep: "",
+  city: "",
+  city_ibge: "",
+  ddd: "",
+  district: "",
+  lat: "",
+  lng: "",
+  state: "",
+};
 
 interface IAddEstablishmentFormModal {
   isOpen: boolean;
@@ -38,25 +39,12 @@ export const AddEstablishmentFormModal = ({
   isOpen,
   onOpenChange,
 }: IAddEstablishmentFormModal) => {
-  const [address, setAddress] = useState<IAddressResponse>({
-    address: "",
-    address_name: "",
-    address_type: "",
-    cep: "",
-    city: "",
-    city_ibge: "",
-    ddd: "",
-    district: "",
-    lat: "",
-    lng: "",
-    state: "",
-  });
-  const [isAddressDisabled, setIsAddressDisabled] = useState(true);
+  const [addressState, setAddressState] = useState<IAddress>(INITIAL_ADDRESS);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
-        setAddress((prevState) => ({
+        setAddressState((prevState) => ({
           ...prevState,
           lat: `${position.coords.latitude}`,
           lng: `${position.coords.longitude}`,
@@ -64,28 +52,6 @@ export const AddEstablishmentFormModal = ({
       });
     }
   }, []);
-
-  const fetchCepInfos = async (cep: string) => {
-    setIsAddressDisabled(true);
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/cep/${cep}`,
-    );
-
-    const data = await response.json();
-
-    if (!data.address) {
-      addToast({
-        title: data.message,
-        description: data.action,
-        color: "danger",
-      });
-
-      return;
-    }
-
-    setAddress(data.address);
-    setIsAddressDisabled(false);
-  };
 
   const handleSubmit = async (formData: FormData) => {
     const name = formData.get("name");
@@ -113,8 +79,8 @@ export const AddEstablishmentFormModal = ({
           phone,
           email,
           cep,
-          lat: address.lat,
-          lng: address.lng,
+          lat: addressState.lat,
+          lng: addressState.lng,
         }),
       },
     );
@@ -148,7 +114,6 @@ export const AddEstablishmentFormModal = ({
         name="name"
         placeholder="Digite o nome do estabelecimento"
         type="text"
-        tabIndex={1}
       />
       <Input
         isRequired
@@ -158,7 +123,6 @@ export const AddEstablishmentFormModal = ({
         name="phone"
         placeholder="Digite o telefone do estabelecimento"
         type="phone"
-        tabIndex={2}
       />
       <Input
         isRequired
@@ -168,81 +132,27 @@ export const AddEstablishmentFormModal = ({
         name="email"
         placeholder="Digite o email do estabelecimento"
         type="email"
-        tabIndex={3}
       />
-      <Input
-        isRequired
-        errorMessage="CEP é obrigatório"
-        label="Cep: "
-        labelPlacement="outside"
-        name="cep"
-        placeholder="Digite o cep do estabelecimento"
-        type="text"
-        onValueChange={(value) => {
-          console.log(value);
-          if (value.length >= 8) {
-            fetchCepInfos(value);
-          }
-        }}
-        tabIndex={4}
-      />
-      <Input
-        disabled={isAddressDisabled}
-        isRequired
-        label="Endereço: "
-        labelPlacement="outside"
-        name="address"
-        placeholder="Endereço do estabelecimento..."
-        type="text"
-        value={address.address}
-        onChange={(e) =>
-          setAddress((prevState) => ({ ...prevState, address: e.target.value }))
-        }
-        variant="underlined"
-        tabIndex={6}
-      />
-      <Input
-        disabled={isAddressDisabled}
-        isRequired
-        label="Estado: "
-        labelPlacement="outside"
-        name="state"
-        placeholder="Estado do estabelecimento..."
-        type="text"
-        variant="underlined"
-        value={address.state}
-        onChange={(e) =>
-          setAddress((prevState) => ({ ...prevState, state: e.target.value }))
-        }
-        tabIndex={7}
-      />
-      <Input
-        isRequired
-        label="Número: "
-        labelPlacement="outside"
-        name="number"
-        placeholder="Estado do estabelecimento..."
-        type="number"
-        variant="underlined"
-        tabIndex={5}
-      />
-      <Input type="hidden" name="lat" value={address.lat} />
 
-      <Input type="hidden" name="lng" value={address.lng} />
+      <AddressInputs address={addressState} setAddress={setAddressState} />
+
+      <Input type="hidden" name="lat" value={addressState.lat} />
+
+      <Input type="hidden" name="lng" value={addressState.lng} />
 
       <h1 className="text-xl">Clique no mapa para selecionar o local:</h1>
       <Map
         className="w-full h-[500px]"
         markerPosition={
-          address.lat && address.lng
+          addressState.lat && addressState.lng
             ? {
-                latitude: Number(address.lat),
-                longitude: Number(address.lng),
+                latitude: Number(addressState.lat),
+                longitude: Number(addressState.lng),
               }
             : undefined
         }
         onPress={(pos) => {
-          setAddress((prevState) => ({
+          setAddressState((prevState) => ({
             ...prevState,
             lat: `${pos.Lat}`,
             lng: `${pos.Lng}`,
