@@ -1,13 +1,9 @@
-import { Chip, TableCell, TableRow } from "@heroui/react";
-import { DateText } from "../Date/DateText";
+//heroui components
+import { TableCell, TableRow } from "@heroui/react";
 
-export const TypeRegisterChip = ({ clockIn }: { clockIn: boolean }) => {
-  return (
-    <Chip variant="flat" color={clockIn ? "success" : "danger"}>
-      {clockIn ? "Entrada" : "Saída"}
-    </Chip>
-  );
-};
+// custom components
+import { DateText } from "@/src/components/Date/DateText";
+import { TypeRegisterChip } from "@/src/components/Chips/TypeRegisterChip";
 
 export const renderRegitersTableRow = ({
   id,
