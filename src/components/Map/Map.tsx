@@ -7,6 +7,7 @@ import { DetailedHTMLProps, HTMLAttributes, useEffect } from "react";
 import {
   MapContainer,
   Marker,
+  Popup,
   TileLayer,
   useMap,
   useMapEvents,
@@ -27,7 +28,7 @@ interface IMapProps
 
 const markerIcon = new L.Icon({
   iconUrl: markerIconSvg.src,
-  iconSize: [25, 41],
+  iconSize: [35, 51],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
 });
@@ -112,8 +113,11 @@ export const Map = ({
                 userLocationPosition.latitude,
                 userLocationPosition.longitude,
               ]}
+              zIndexOffset={10}
               icon={userIcon}
-            />
+            >
+              <Popup>Você está aqui</Popup>
+            </Marker>
           </>
         )}
 
