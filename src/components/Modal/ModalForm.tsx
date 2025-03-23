@@ -17,7 +17,6 @@ export interface IModalFormProps extends ModalProps {
   submitButtonText: string;
 }
 export const ModalForm = ({
-  className,
   handleSubmit,
   title,
   submitButtonText,
