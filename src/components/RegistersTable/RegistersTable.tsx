@@ -4,18 +4,10 @@ import { Pagination } from "@heroui/pagination";
 import { Table, TableBody, TableColumn, TableHeader } from "@heroui/table";
 
 // custom components
-import { TopContentRegistersTable } from "./TopContent";
-import { renderRegitersTableRow, TypeRegisterChip } from "./Row";
+import { TopContentRegistersTable } from "@/src/components/RegistersTable/TopContent";
+import { renderRegitersTableRow } from "@/src/components/RegistersTable/Row";
+import { TypeRegisterChipLegend } from "@/src/components/Chips/TypeRegisterChip";
 
-const Legend = () => {
-  return (
-    <div className="block sm:hidden">
-      <h2 className="text-sm">Legenda:</h2>
-      <TypeRegisterChip clockIn />
-      <TypeRegisterChip clockIn={false} />
-    </div>
-  );
-};
 export const RegistersTable = ({
   title,
   maxRegisters,
@@ -60,7 +52,7 @@ export const RegistersTable = ({
       }}
       bottomContent={
         <div className="flex flex-col w-full justify-center ">
-          <Legend />
+          <TypeRegisterChipLegend />
           <div className="w-full flex justify-center items-center">
             <Pagination
               size="sm"
