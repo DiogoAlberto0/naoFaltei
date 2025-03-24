@@ -22,7 +22,7 @@ export const ToggleMenu = ({ children }: IToggleMenuProps) => {
   return (
     <div
       className={`
-        border-small border-default-200 dark:border-default-100 rounded-r-small
+        border-small border-default-200 dark:border-default-100 max-sm:rounded-t-medium sm:rounded-r-medium
         bg-content4 bg-opacity-50 hover:bg-opacity-100 max-sm:bg-opacity-100
         absolute z-20 bottom-0
         max-sm:w-full
