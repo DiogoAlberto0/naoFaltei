@@ -1,18 +1,20 @@
 "use client";
-import { SaveButton } from "@/src/components/Buttons/SaveButton";
-import { PasswordInput } from "@/src/components/PasswordInput";
-import { Button, Form } from "@heroui/react";
-import { Input } from "@heroui/input";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+
+//heroui components
+import { Form } from "@heroui/react";
+import { Input } from "@heroui/input";
+
+//custom components
+import { PasswordInput } from "@/src/components/PasswordInput";
+import { SaveButton } from "@/src/components/Buttons/SaveButton";
+
 export const UpdateInfosForm = () => {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const router = useRouter();
 
   if (isClient)
     return (
