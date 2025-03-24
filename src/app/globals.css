@@ -7,3 +7,6 @@
     font-size: 85%; /* Reduz o tamanho da fonte globalmente */
   }
 }
+* {
+  box-sizing: border-box;
+}
