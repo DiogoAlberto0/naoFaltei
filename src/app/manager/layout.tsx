@@ -14,14 +14,11 @@ export default async function RootLayout({
   if (!session || !session.user) return <Unauthorized />;
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
-      {/* Header fixo */}
+    <div className="h-dvh w-dvw max-h-dvh flex flex-col overflow-hidden relative">
       <NavBar />
-
-      {/* Conteúdo principal */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full max-sm:pb-12 relative">
-          <EstablishmentToggle />
+      <div className="flex-1 h-full w-full max-w-full overflow-auto relative">
+        <EstablishmentToggle />
+        <div className="flex-1 h-full w-full max-w-full overflow-auto max-sm:pb-12 sm:pl-10">
           {children}
         </div>
       </div>
