@@ -35,12 +35,12 @@ export const WorkerLastRegisters = () => {
   return (
     <Popover showArrow offset={10} placement="bottom">
       <PopoverTrigger>
-        <Button color="primary">Ùltimos registros</Button>
+        <Button color="secondary">Ùltimos registros</Button>
       </PopoverTrigger>
       <PopoverContent className="w-full">
         <Table
           aria-label="Last two registers of worker: XXX"
-          color="primary"
+          color="secondary"
           className="text-2xl"
         >
           <TableHeader className="text-[0.1rem]">
