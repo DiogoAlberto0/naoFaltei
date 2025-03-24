@@ -14,13 +14,10 @@ export default async function WorkerLayout({
   if (!session || !session.user) return <Unauthorized />;
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
-      {/* Conteúdo principal */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full max-sm:pb-12">
-          <WorkerToggleMenu />
-          <div className="sm:ml-10 h-full overflow-auto">{children}</div>
-        </div>
+    <div className="h-dvh w-dvw max-h-dvh flex flex-col overflow-hidden relative">
+      <WorkerToggleMenu />
+      <div className="flex-1 h-full w-full max-w-full overflow-auto max-sm:pb-12 sm:pl-10">
+        {children}
       </div>
     </div>
   );
