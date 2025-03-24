@@ -1,5 +1,6 @@
 "use client";
-import { DetailedHTMLProps, HTMLAttributes, useState } from "react";
+import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 // hero ui components
 
@@ -10,6 +11,13 @@ interface IToggleMenuProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}
 export const ToggleMenu = ({ children }: IToggleMenuProps) => {
   const [isOpenToggle, setIsOpenToggle] = useState(false);
+
+  const route = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    setIsOpenToggle(false);
+  }, [route, searchParams]);
 
   return (
     <div
