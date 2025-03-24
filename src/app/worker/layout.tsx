@@ -19,7 +19,7 @@ export default async function WorkerLayout({
       <div className="flex-1 overflow-hidden">
         <div className="h-full max-sm:pb-12">
           <WorkerToggleMenu />
-          <div className="bg-red-500 sm:ml-12">{children}</div>
+          <div className="sm:ml-10 h-full">{children}</div>
         </div>
       </div>
     </div>
