@@ -2,6 +2,10 @@
 import { TypeRegisterChip } from "@/src/components/Chips/TypeRegisterChip";
 import { DateText } from "@/src/components/Date/DateText";
 import {
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Table,
   TableBody,
   TableCell,
@@ -29,39 +33,46 @@ export const WorkerLastRegisters = () => {
   ];
 
   return (
-    <Table
-      aria-label="Last two registers of worker: XXX"
-      color="primary"
-      className="text-2xl"
-    >
-      <TableHeader className="text-[0.1rem]">
-        <TableColumn>Data</TableColumn>
-        <TableColumn>Tipo</TableColumn>
-        <TableColumn>Hora</TableColumn>
-      </TableHeader>
-      <TableBody>
-        {lastRegisters.map(({ id, date, clockIn, hour, minute }) => (
-          <TableRow key={id}>
-            <TableCell>
-              <DateText
-                date={date}
-                isFullDay={true}
-                isFullMonth={true}
-                isFullYear={true}
-                className="max-sm:hidden"
-              />
-              <DateText date={date} className="sm:hidden" />
-            </TableCell>
-            <TableCell>
-              <TypeRegisterChip clockIn={clockIn} />
-            </TableCell>
-            <TableCell>
-              {hour.toString().padStart(2, "0")}:
-              {minute.toString().padStart(2, "0")}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <Popover showArrow offset={10} placement="bottom">
+      <PopoverTrigger>
+        <Button color="primary">Ùltimos registros</Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full">
+        <Table
+          aria-label="Last two registers of worker: XXX"
+          color="primary"
+          className="text-2xl"
+        >
+          <TableHeader className="text-[0.1rem]">
+            <TableColumn>Data</TableColumn>
+            <TableColumn>Tipo</TableColumn>
+            <TableColumn>Hora</TableColumn>
+          </TableHeader>
+          <TableBody>
+            {lastRegisters.map(({ id, date, clockIn, hour, minute }) => (
+              <TableRow key={id}>
+                <TableCell>
+                  <DateText
+                    date={date}
+                    isFullDay={true}
+                    isFullMonth={true}
+                    isFullYear={true}
+                    className="max-sm:hidden"
+                  />
+                  <DateText date={date} className="sm:hidden" />
+                </TableCell>
+                <TableCell>
+                  <TypeRegisterChip clockIn={clockIn} />
+                </TableCell>
+                <TableCell>
+                  {hour.toString().padStart(2, "0")}:
+                  {minute.toString().padStart(2, "0")}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </PopoverContent>
+    </Popover>
   );
 };
