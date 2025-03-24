@@ -2,6 +2,7 @@
 
 import { ToggleMenu } from "@/src/components/ToggleMenu/ToggleMenu";
 import { Listbox, ListboxItem } from "@heroui/react";
+import { signOut } from "next-auth/react";
 
 export const WorkerToggleMenu = () => {
   return (
@@ -11,20 +12,22 @@ export const WorkerToggleMenu = () => {
         aria-label="Listbox menu with icons"
         variant="shadow"
       >
-        <ListboxItem onPress={() => ``} key="a" color="primary">
+        <ListboxItem href="/worker" key="a" color="primary">
           Registrar Ponto
         </ListboxItem>
 
-        <ListboxItem onPress={() => ``} key="b" color="primary">
+        <ListboxItem href="/worker/timeSheet" key="b" color="primary">
           Folha de ponto
         </ListboxItem>
 
-        <ListboxItem onPress={() => ``} key="c" color="primary">
+        <ListboxItem href="/worker/updateInfos" key="c" color="primary">
           Alterar meus dados
         </ListboxItem>
 
         <ListboxItem
-          onPress={() => ``}
+          onPress={() => {
+            signOut();
+          }}
           key="delete"
           className="text-danger"
           color="danger"
