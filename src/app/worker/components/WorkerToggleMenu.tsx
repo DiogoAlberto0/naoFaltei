@@ -1,15 +1,21 @@
 "use client";
-
-import { ToggleMenu } from "@/src/components/ToggleMenu/ToggleMenu";
-import { Listbox, ListboxItem } from "@heroui/react";
-import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+
+//next auth
+import { signOut } from "next-auth/react";
+
+//heroui components
+import { Listbox, ListboxItem } from "@heroui/react";
+
+//custom components
+import { ToggleMenu } from "@/src/components/ToggleMenu/ToggleMenu";
 
 export const WorkerToggleMenu = () => {
   const router = useRouter();
+  const pathName = usePathname();
 
-  const [selectedKeys, setSelectedKeys] = useState(new Set(["clockin"]));
+  const [selectedKeys, setSelectedKeys] = useState(new Set([pathName]));
 
   return (
     <ToggleMenu>
@@ -29,7 +35,7 @@ export const WorkerToggleMenu = () => {
               scroll: false,
             });
           }}
-          key="clockin"
+          key="/worker"
           color="primary"
         >
           Registrar Ponto
@@ -41,7 +47,7 @@ export const WorkerToggleMenu = () => {
               scroll: false,
             });
           }}
-          key="timeSheet"
+          key="/worker/timeSheet"
           color="primary"
         >
           Folha de ponto
@@ -53,7 +59,7 @@ export const WorkerToggleMenu = () => {
               scroll: false,
             });
           }}
-          key="updateInfos"
+          key="/worker/updateInfos"
           color="primary"
         >
           Alterar meus dados
