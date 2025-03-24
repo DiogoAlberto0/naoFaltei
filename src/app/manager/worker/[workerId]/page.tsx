@@ -25,7 +25,11 @@ const WorkerPage = async (
         />
       </div>
       <div className="flex-1 flex flex-col gap-1 md:max-h-full">
-        <RegistersTable title="20/03/2025 - 20/04/2025" maxRegisters={12} />
+        <RegistersTable
+          title="20/03/2025 - 20/04/2025"
+          maxRegisters={12}
+          overflowAuto={false}
+        />
       </div>
     </div>
   );
