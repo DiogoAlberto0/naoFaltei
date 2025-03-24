@@ -19,20 +19,20 @@ const TopContentDetails = ({
 }) => {
   return (
     <div className="flex flex-wrap gap-4">
-      <Chip size="lg" variant="shadow" color="primary">
+      <Chip size="sm" variant="shadow" color="primary">
         Atestados: {medicalCertificateDays} dias
       </Chip>
       <Chip
-        size="lg"
+        size="sm"
         variant="shadow"
         color={hoursBank >= 0 ? "success" : "danger"}
       >
         Banco de horas: {hoursBank}
       </Chip>
-      <Chip size="lg" variant="shadow" color="warning">
+      <Chip size="sm" variant="shadow" color="warning">
         Atrasos: {tardinessDays} dias
       </Chip>
-      <Chip size="lg" variant="shadow" color="danger">
+      <Chip size="sm" variant="shadow" color="danger">
         Faltas: {absenceDays} dias
       </Chip>
     </div>
