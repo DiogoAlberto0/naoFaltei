@@ -37,19 +37,19 @@ export const renderRegitersTableRow = ({
       key={id}
       className={`${clockIn ? "max-sm:bg-success-400 max-sm:bg-opacity-50" : "max-sm:bg-danger-400 max-sm:bg-opacity-50"}`}
     >
-      <TableCell>{name}</TableCell>
+      <TableCell className="whitespace-nowrap">
+        {name.split(" ")[0]} {name.split(" ")[1]}
+      </TableCell>
       <TableCell className="max-sm:hidden">
         <TypeRegisterChip clockIn={clockIn} />
       </TableCell>
       <TableCell>
         <DateText
           date={date}
-          isFullYear
-          isFullDay
-          isFullMonth
-          className="max-sm:hidden"
+          isFullDate
+          className="hidden sm:flex md:hidden lg:flex"
         />
-        <DateText date={date} className="sm:hidden" />
+        <DateText date={date} className="sm:hidden md:flex lg:hidden" />
       </TableCell>
       <TableCell>
         {hour}:{minute}
@@ -72,10 +72,26 @@ export const LastRegistersByEstablishment = ({
     registers.push(index);
   }
 
-  const tableRows = registers.map((id) =>
+  const names = [
+    "Lucas Andrade Costa",
+    "Mariana Silva Ferreira",
+    "Ricardo Oliveira Santos",
+    "Beatriz Rocha Almeida",
+    "Fernando Martins Correia",
+    "Juliana Mendes Souza",
+    "Gabriel Lima Fonseca",
+    "Lucas Andrade Costa",
+    "Mariana Silva Ferreira",
+    "Ricardo Oliveira Santos",
+    "Beatriz Rocha Almeida",
+    "Fernando Martins Correia",
+    "Juliana Mendes Souza",
+    "Gabriel Lima Fonseca",
+  ];
+  const tableRows = registers.map((id, index) =>
     renderRegitersTableRow({
       id: id.toString(),
-      name: "Diogo Alberto",
+      name: names[index],
       clockIn: id % 2 == 0,
       date: new Date(),
       hour: new Date().getHours(),
@@ -89,11 +105,6 @@ export const LastRegistersByEstablishment = ({
           <h1 className="text-xl">{title}</h1>
         </div>
       }
-      classNames={{
-        base: "h-full w-full max-w-full overflow-auto",
-        wrapper: "grow flex flex-col items-start",
-        table: "flex-1",
-      }}
       bottomContent={
         <div className="flex flex-col w-full justify-center ">
           <TypeRegisterChipLegend />
