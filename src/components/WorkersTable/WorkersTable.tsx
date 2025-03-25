@@ -34,6 +34,7 @@ const workers = [
   },
   { id: "5", name: "João Silva", email: "joao@email.com", isWorking: false },
   { id: "6", name: "Maria Souza", email: "maria@email.com", isWorking: true },
+  { id: "7", name: "Maria Souza", email: "maria@email.com", isWorking: true },
 ];
 
 export interface IWorkersTableProps {
@@ -78,9 +79,8 @@ export const WorkersTable = ({ establishmentId }: IWorkersTableProps) => {
           </div>
         }
         classNames={{
-          base: "h-full w-full overflow-auto", // Ocupa 100% da altura e largura disponíveis
-          wrapper: "grow flex flex-col", // Permite que o wrapper cresça para preencher o espaço
-          table: "flex-1 ", // Faz a tabela ocupar o espaço disponível
+          base: "h-full",
+          wrapper: "flex-1",
         }}
       >
         <TableHeader>
