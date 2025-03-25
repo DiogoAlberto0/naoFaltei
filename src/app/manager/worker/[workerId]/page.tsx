@@ -14,8 +14,8 @@ const WorkerPage = async (
 ) => {
   //const { workerId } = await params;
   return (
-    <div className="w-full p-5 sm:p-10 max-sm:p-5 flex gap-1 flex-wrap overflow-auto h-full max-h-full">
-      <div className="flex-1 flex flex-col gap-1 md:max-h-full">
+    <div className="w-full h-full max-h-full overflow-auto p-4 sm:p-6 md:p-8 flex flex-col md:flex-row gap-4">
+      <div className="flex-1 flex flex-col gap-4">
         <WorkerInfoCard />
         <WorkSchedule />
         <CalendarInput
@@ -24,7 +24,7 @@ const WorkerPage = async (
           className="min-h-min"
         />
       </div>
-      <div className="flex-1 flex flex-col gap-1 md:max-h-full">
+      <div className="flex-1 flex flex-col gap-4">
         <RegistersTable
           title="20/03/2025 - 20/04/2025"
           maxRegisters={12}
