@@ -2,19 +2,41 @@
 // next
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 // heroui
 import { I18nProvider } from "@react-aria/i18n";
-import { today, getLocalTimeZone } from "@internationalized/date";
+import { today, getLocalTimeZone, CalendarDate } from "@internationalized/date";
 import {
-  Button,
+  addToast,
   Card,
+  CardBody,
   CardHeader,
   DateRangePicker,
-  Divider,
-  RangeCalendar,
+  RangeValue,
 } from "@heroui/react";
-import { SearchIcon } from "@/assets/icons/SearchIcon";
+
+//icons
+import { SearchIconButton } from "../Buttons/SearchIconButton";
+
+const searchTimeSheet = (
+  value: RangeValue<CalendarDate> | null,
+  {
+    router,
+    onSubmitRedirect,
+  }: { router: AppRouterInstance; onSubmitRedirect: string },
+) => {
+  if (!value)
+    return addToast({
+      title: "Datas Inválidas",
+      description:
+        "Selecione duas datas válidas para busca da filha de ponto do funcionário",
+      color: "danger",
+    });
+  router.replace(
+    `${onSubmitRedirect}/?inicialDate=${value.start}&endDate=${value.end}`,
+  );
+};
 
 interface ICalendarInputProps {
   className?: string;
@@ -27,7 +49,7 @@ export const CalendarInput = ({
   className,
   onSubmitRedirect,
 }: ICalendarInputProps) => {
-  const [value, setValue] = useState({
+  const [value, setValue] = useState<RangeValue<CalendarDate> | null>({
     start: today(getLocalTimeZone()).set({ day: 0 }),
     end: today(getLocalTimeZone()).set({ day: 0 }).add({ months: 1 }),
   });
@@ -35,36 +57,30 @@ export const CalendarInput = ({
   const router = useRouter();
 
   return (
-    <Card
-      className={`w-full max-w-4xl mx-auto p-4 flex flex-col justify-center items-center ${className}`}
-    >
-      <CardHeader className="w-full flex justify-between items-center mb-4">
-        <h1 className="text-lg font-semibold">{title}</h1>
-        <Button
-          color="primary"
-          startContent={<SearchIcon className="h-5 w-5" />}
-          isIconOnly
-          onPress={() =>
-            router.replace(
-              `${onSubmitRedirect}/?inicialDate=${value.start}&endDate=${value.end}`,
-            )
-          }
-          className="ml-2"
+    <Card className={`min-h-min ${className}`}>
+      <CardHeader className="flex gap-2">
+        <div className="flex-1">
+          <h1 className="text-lg font-semibold">{title}</h1>
+          <h2>
+            Selecione um período com duas datas para visualizar a folha de
+            ponto.
+          </h2>
+        </div>
+        <SearchIconButton
+          onPress={() => searchTimeSheet(value, { router, onSubmitRedirect })}
         />
       </CardHeader>
-      <Divider className="my-4" />
-
-      <I18nProvider locale="pt-br">
-        <div className="w-full">
-          <RangeCalendar
-            showMonthAndYearPickers
-            aria-label="Date (Controlled)"
-            value={value}
-            onChange={setValue}
-            className="flex w-full items-center justify-center max-h-[400px] sm:max-h-[500px] md:max-h-[600px] overflow-auto"
-          />
-        </div>
-      </I18nProvider>
+      <CardBody>
+        <I18nProvider locale="pt-br">
+          <div className="w-full">
+            <DateRangePicker
+              label="Data inicial e data final: "
+              value={value}
+              onChange={setValue}
+            />
+          </div>
+        </I18nProvider>
+      </CardBody>
     </Card>
   );
 };
