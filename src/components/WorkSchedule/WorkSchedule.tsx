@@ -8,9 +8,16 @@ import {
   TableRow,
 } from "@heroui/react";
 
+const TableTitle = () => {
+  return (
+    <div>
+      <h1 className="text-xl font-semibold">Escala de trabalho:</h1>
+    </div>
+  );
+};
 export const WorkSchedule = () => {
   return (
-    <Table isCompact>
+    <Table topContent={<TableTitle />}>
       <TableHeader aria-label="Example static collection table">
         <TableColumn>Dia</TableColumn>
         <TableColumn>Entrada</TableColumn>
