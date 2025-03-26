@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { Form } from "@heroui/form";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { PasswordInput } from "../PasswordInput";
+import { PasswordInput } from "../Inputs/PasswordInput";
 import { addToast } from "@heroui/toast";
 
 //action

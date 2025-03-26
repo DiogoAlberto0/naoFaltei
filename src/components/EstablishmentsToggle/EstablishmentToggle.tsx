@@ -1,33 +1,39 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 // hero ui components
 import { Listbox, ListboxItem, useDisclosure } from "@heroui/react";
 
-// icons
-import { ArrowIcon } from "@/assets/icons/ArrowIcon";
-
 // components
 import { AddEstablishmentFormModal } from "./AddEstablishmentFormModal";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { ToggleMenu } from "../ToggleMenu/ToggleMenu";
+import { AddIcon } from "@/assets/icons/AddIcon";
 
 interface IEstablishmentProps {
   id: string;
   name: string;
 }
 
-const renderItem = (
-  { id, name }: IEstablishmentProps,
-  router: AppRouterInstance,
-) => {
+interface IListboxItemProps {
+  establishmentProps: IEstablishmentProps;
+  router: AppRouterInstance;
+  showDivider?: boolean;
+}
+const renderItem = ({
+  establishmentProps: { id, name },
+  router,
+  showDivider = false,
+}: IListboxItemProps) => {
   return (
     <ListboxItem
-      onPress={() =>
+      showDivider={showDivider}
+      onPress={() => {
         router.replace(`/manager/dashboard?establishmentId=${id}`, {
           scroll: false,
-        })
-      }
+        });
+      }}
       key={id}
     >
       {name}
@@ -35,17 +41,22 @@ const renderItem = (
   );
 };
 export const EstablishmentToggle = () => {
-  const [isOpenToggle, setIsOpenToggle] = useState(true);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const [establishments, setEstablishments] = useState<IEstablishmentProps[]>(
     [],
   );
 
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["text"]));
+
   const router = useRouter();
 
-  const items = establishments.map((establishment) =>
-    renderItem(establishment, router),
+  const items = establishments.map((establishment, index) =>
+    renderItem({
+      establishmentProps: establishment,
+      router,
+      showDivider: index == establishments.length - 1,
+    }),
   );
 
   useEffect(() => {
@@ -62,53 +73,30 @@ export const EstablishmentToggle = () => {
     fetchEstablishments();
   }, []);
   return (
-    <div
-      className={`
-        border-small border-default-200 dark:border-default-100 rounded-r-small
-        bg-primary bg-opacity-50 hover:bg-opacity-90
-        absolute z-20 bottom-0
-        max-sm:w-full
-        flex flex-col-reverse
-        sm:h-[calc(100vh-4rem)] sm:flex-row
-        transition-all duration-500 ease-in-out 
-        ${isOpenToggle ? "h-[calc(100vh-4rem)] sm:w-[250px]" : "h-12 sm:w-12"}
-        `}
-    >
-      {isOpenToggle && (
-        <Listbox
-          className={`overflow-auto w-full h-full px-1 py-2 `}
-          aria-label="Listbox menu with icons"
-          variant="shadow"
-        >
-          <>{items}</>
-          <ListboxItem
-            onPress={onOpen}
-            key="delete"
-            className="text-success"
-            color="success"
-          >
-            Adicionar Estabelecimento
-          </ListboxItem>
-        </Listbox>
-      )}
-
-      <AddEstablishmentFormModal isOpen={isOpen} onOpenChange={onOpenChange} />
-      <button
-        onClick={() => setIsOpenToggle(!isOpenToggle)}
-        className=" flex justify-center items-center w-full h-12 sm:h-full sm:w-12"
+    <ToggleMenu>
+      <Listbox
+        className={`overflow-auto w-full h-full px-1 py-2 `}
+        aria-label="Listbox menu with icons"
+        variant="solid"
+        color="primary"
+        selectedKeys={selectedKeys}
+        selectionMode="single"
+        onSelectionChange={(keys) =>
+          setSelectedKeys(new Set(keys as Set<string>))
+        }
       >
-        {isOpenToggle ? (
-          <>
-            <ArrowIcon direction="down" className="sm:hidden" />
-            <ArrowIcon direction="left" className="max-sm:hidden" />
-          </>
-        ) : (
-          <>
-            <ArrowIcon direction="top" className="sm:hidden" />
-            <ArrowIcon direction="right" className="max-sm:hidden" />
-          </>
-        )}
-      </button>
-    </div>
+        <>{items}</>
+        <ListboxItem
+          onPress={onOpen}
+          key="delete"
+          className="text-success"
+          color="success"
+          startContent={<AddIcon className="h-5 w-5" />}
+        >
+          Adicionar Estabelecimento
+        </ListboxItem>
+      </Listbox>
+      <AddEstablishmentFormModal isOpen={isOpen} onOpenChange={onOpenChange} />
+    </ToggleMenu>
   );
 };

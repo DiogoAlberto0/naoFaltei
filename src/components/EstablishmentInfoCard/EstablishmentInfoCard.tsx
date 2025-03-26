@@ -1,17 +1,6 @@
 "use client";
-// icons
-import { EditIcon } from "@/assets/icons/EditIcon";
-
 // heroui components
-import {
-  Button,
-  Divider,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  useDisclosure,
-} from "@heroui/react";
+import { Divider, Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
 
 // component
 import { CepDataIcon } from "@/src/components/DataIcons/CepDataIcon";
@@ -25,15 +14,15 @@ export const EstablishmentInfoCard = ({
   cep,
   email,
   phone,
+  isEditable = true,
 }: {
   id: string;
   name: string;
   phone: string;
   email: string;
   cep: string;
+  isEditable?: boolean;
 }) => {
-  const { onOpen, onOpenChange, isOpen } = useDisclosure();
-
   return (
     <Card className="flex flex-col min-h-max">
       <CardHeader className="flex gap-3">
@@ -46,25 +35,20 @@ export const EstablishmentInfoCard = ({
         <EmailDataIcon email={email} />
         <CepDataIcon cep={cep} />
       </CardBody>
-      <Divider />
-      <CardFooter className="flex justify-end">
-        <Button
-          startContent={<EditIcon className="h-5 w-5 stroke-primary-500" />}
-          onPress={onOpen}
-        >
-          Editar
-        </Button>
-      </CardFooter>
-
-      <UpdateEstablishmentModal
-        id={id}
-        name={name}
-        phone={phone}
-        email={email}
-        cep={cep}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-      />
+      {isEditable && (
+        <>
+          <Divider />
+          <CardFooter className="flex justify-end">
+            <UpdateEstablishmentModal
+              id={id}
+              name={name}
+              phone={phone}
+              email={email}
+              cep={cep}
+            />
+          </CardFooter>
+        </>
+      )}
     </Card>
   );
 };

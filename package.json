@@ -35,6 +35,7 @@
     "@heroui/modal": "^2.2.13",
     "@heroui/navbar": "^2.2.14",
     "@heroui/pagination": "^2.2.14",
+    "@heroui/popover": "^2.3.16",
     "@heroui/react": "^2.7.5",
     "@heroui/skeleton": "^2.2.10",
     "@heroui/switch": "^2.2.14",
