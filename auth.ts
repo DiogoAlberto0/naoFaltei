@@ -7,8 +7,8 @@ import Credentials from "next-auth/providers/credentials";
 // prisma adapter
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/prisma/prisma";
-import { userModel } from "@/src/models/user";
 import { passwordUtils } from "@/src/utils/password";
+import { workerModel } from "./src/models/worker";
 
 declare module "next-auth" {
   /**
@@ -33,12 +33,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        email: { label: "Email", type: "email", required: true },
+        login: { label: "Login", type: "text", required: true },
         password: { label: "Password", type: "password", required: true },
       },
       authorize: async (credentials) => {
-        const user = await userModel.findBy({
-          email: credentials.email as string,
+        const user = await workerModel.findBy({
+          login: credentials.login as string,
         });
 
         if (!user) throw new Error("Invalid credentials.");
@@ -54,8 +54,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return {
           id: user.id,
           name: user.name,
-          email: user.email,
-          image: user.image,
+          login: user.login,
+          isManager: user.is_manager,
         };
       },
     }),
