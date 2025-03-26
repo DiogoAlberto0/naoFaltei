@@ -6,7 +6,7 @@ import { Form } from "@heroui/react";
 import { Input } from "@heroui/input";
 
 //custom components
-import { PasswordInput } from "@/src/components/PasswordInput";
+import { PasswordInput } from "@/src/components/Inputs/PasswordInput";
 import { SaveButton } from "@/src/components/Buttons/SaveButton";
 
 export const UpdateInfosForm = () => {
