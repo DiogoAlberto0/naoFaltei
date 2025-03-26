@@ -31,7 +31,7 @@ export const WorkerToggleMenu = () => {
       >
         <ListboxItem
           onPress={() => {
-            router.replace(`/worker`, {
+            router.push(`/worker`, {
               scroll: false,
             });
           }}
@@ -43,7 +43,7 @@ export const WorkerToggleMenu = () => {
 
         <ListboxItem
           onPress={() => {
-            router.replace(`/worker/timeSheet`, {
+            router.push(`/worker/timeSheet`, {
               scroll: false,
             });
           }}
@@ -55,7 +55,7 @@ export const WorkerToggleMenu = () => {
 
         <ListboxItem
           onPress={() => {
-            router.replace(`/worker/updateInfos`, {
+            router.push(`/worker/updateInfos`, {
               scroll: false,
             });
           }}
@@ -63,6 +63,18 @@ export const WorkerToggleMenu = () => {
           color="primary"
         >
           Alterar meus dados
+        </ListboxItem>
+
+        <ListboxItem
+          onPress={() => {
+            router.push(`/worker/dashboard`, {
+              scroll: false,
+            });
+          }}
+          key="/worker/dashboard"
+          color="primary"
+        >
+          Painel do gerente
         </ListboxItem>
 
         <ListboxItem
