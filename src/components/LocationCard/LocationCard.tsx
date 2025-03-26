@@ -8,12 +8,14 @@ import { UpdateLocaleModal } from "./UpdateLocaleModal";
 
 interface ILocationCardProps extends CardProps {
   establishmentId: string;
+  isEditable?: boolean;
   markerPosition: {
     lat: number;
     lng: number;
   };
 }
 export const LocationCard = ({
+  isEditable = true,
   className,
   markerPosition,
   establishmentId,
@@ -35,10 +37,12 @@ export const LocationCard = ({
       <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100 flex justify-between items-center">
         <h1 className="text-xl">Localização</h1>
 
-        <UpdateLocaleModal
-          establishmentId={establishmentId}
-          inicialCoords={markerPosition}
-        />
+        {isEditable && (
+          <UpdateLocaleModal
+            establishmentId={establishmentId}
+            inicialCoords={markerPosition}
+          />
+        )}
       </CardFooter>
     </Card>
   );
