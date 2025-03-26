@@ -10,7 +10,13 @@ import { EyeIcon } from "@/assets/icons/EyeIcon";
 //custom components
 import { WorkerModal } from "./WorkerModal";
 
-export const ActionsToolTips = ({ workerId }: { workerId: string }) => {
+export const ActionsToolTips = ({
+  workerId,
+  isWorkerEditable,
+}: {
+  workerId: string;
+  isWorkerEditable: boolean;
+}) => {
   const router = useRouter();
   return (
     <div className="relative flex flex-col sm:flex-row items-center justify-center gap-2 ">
@@ -22,12 +28,16 @@ export const ActionsToolTips = ({ workerId }: { workerId: string }) => {
           <EyeIcon />
         </span>
       </Tooltip>
-      <WorkerModal workerId={workerId} type="update" />
-      <Tooltip color="danger" content="Delete user">
-        <span className="text-lg text-danger cursor-pointer active:opacity-50">
-          <DeleteIcon />
-        </span>
-      </Tooltip>
+      {isWorkerEditable && (
+        <>
+          <WorkerModal workerId={workerId} type="update" />
+          <Tooltip color="danger" content="Delete user">
+            <span className="text-lg text-danger cursor-pointer active:opacity-50">
+              <DeleteIcon />
+            </span>
+          </Tooltip>
+        </>
+      )}
     </div>
   );
 };

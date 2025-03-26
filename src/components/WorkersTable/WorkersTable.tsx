@@ -39,6 +39,7 @@ const workers = [
 
 export interface IWorkersTableProps {
   establishmentId: string;
+  isWorkerEditable?: boolean;
 }
 
 const Legend = () => {
@@ -50,7 +51,10 @@ const Legend = () => {
     </div>
   );
 };
-export const WorkersTable = ({ establishmentId }: IWorkersTableProps) => {
+export const WorkersTable = ({
+  establishmentId,
+  isWorkerEditable = true,
+}: IWorkersTableProps) => {
   return (
     <>
       <Table
@@ -104,7 +108,10 @@ export const WorkersTable = ({ establishmentId }: IWorkersTableProps) => {
                   <StatusChip responsive isWorking={isWorking} />
                 </TableCell>
                 <TableCell>
-                  <ActionsToolTips workerId={id} />
+                  <ActionsToolTips
+                    workerId={id}
+                    isWorkerEditable={isWorkerEditable}
+                  />
                 </TableCell>
               </TableRow>
             ))}
