@@ -1,7 +1,7 @@
 import { EstablishmentInfoCard } from "@/src/components/EstablishmentInfoCard/EstablishmentInfoCard";
 import { WorkersTable } from "../../../components/WorkersTable/WorkersTable";
 import { LocationCard } from "@/src/components/LocationCard/LocationCard";
-import { RegistersTable } from "../../../components/RegistersTable/RegistersTable";
+import { LastRegistersByEstablishment } from "./LastRegistersByEstablishment";
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function ManagerDashboard(props: {
@@ -13,13 +13,15 @@ export default async function ManagerDashboard(props: {
 
   if (typeof establishmentId != "string")
     return (
-      <div className="w-full h-full flex justify-center items-center">
+      <div className="w-full h-full flex justify-center items-center p-4 text-center">
         <h1 className="text-xl">Selecione um estabelecimento...</h1>
       </div>
     );
+
   return (
-    <div className="w-full p-5 sm:p-10 max-sm:p-0 flex gap-1 flex-wrap overflow-auto h-full max-h-full">
-      <div className="flex-1 flex flex-col gap-1 md:max-h-full">
+    <div className="w-full h-full max-h-full overflow-auto p-5 md:p-10 flex flex-col lg:flex-row gap-4">
+      {/* Coluna da esquerda */}
+      <div className="flex-1 flex flex-col gap-4 min-w-[300px]">
         <EstablishmentInfoCard
           id={establishmentId}
           name="Estabelecimento 1"
@@ -29,18 +31,17 @@ export default async function ManagerDashboard(props: {
         />
         <WorkersTable establishmentId={establishmentId} />
       </div>
-      <div className="flex-1 flex flex-col gap-1 md:max-h-full">
-        <RegistersTable
+
+      {/* Coluna da direita */}
+      <div className="flex-1 flex flex-col gap-4 min-w-[300px]">
+        <LastRegistersByEstablishment
           title="Últimos registros"
           maxRegisters={7}
-          detailed={false}
         />
         <LocationCard
+          className="w-full flex-1 min-h-[300px]"
           establishmentId={establishmentId}
-          markerPosition={{
-            lat: -15.12345,
-            lng: -45.54321,
-          }}
+          markerPosition={{ lat: -15.12345, lng: -45.54321 }}
         />
       </div>
     </div>

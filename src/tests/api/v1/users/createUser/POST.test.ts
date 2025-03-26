@@ -31,7 +31,7 @@ let validUserData: {
 
 beforeAll(async () => {
   await prisma.$queryRawUnsafe(
-    `TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE;`
+    `TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE;`,
   );
 
   validManager = await createValidManager();
@@ -73,7 +73,7 @@ describe("POST on /api/v1/user/createUser", () => {
           body: JSON.stringify({
             ...validUserData,
           }),
-        }
+        },
       );
       expect(response.status).toEqual(401);
 
@@ -97,7 +97,7 @@ describe("POST on /api/v1/user/createUser", () => {
             establishmentId: validEstablishment2.id,
           }),
           headers: { cookie },
-        }
+        },
       );
       expect(response.status).toEqual(403);
 
@@ -123,7 +123,7 @@ describe("POST on /api/v1/user/createUser", () => {
               name: "",
             }),
             headers: { cookie },
-          }
+          },
         );
         expect(response.status).toEqual(400);
         const json = await response.json();
@@ -146,7 +146,7 @@ describe("POST on /api/v1/user/createUser", () => {
               email: "test-teste.com",
             }),
             headers: { cookie },
-          }
+          },
         );
         expect(response.status).toEqual(400);
         const json = await response.json();
@@ -168,7 +168,7 @@ describe("POST on /api/v1/user/createUser", () => {
               email: "",
             }),
             headers: { cookie },
-          }
+          },
         );
         expect(response.status).toEqual(400);
         const json = await response.json();
@@ -192,7 +192,7 @@ describe("POST on /api/v1/user/createUser", () => {
               password: "1234",
             }),
             headers: { cookie },
-          }
+          },
         );
         expect(response.status).toEqual(400);
         const json = await response.json();
@@ -214,7 +214,7 @@ describe("POST on /api/v1/user/createUser", () => {
               password: "",
             }),
             headers: { cookie },
-          }
+          },
         );
         expect(response.status).toEqual(400);
         const json = await response.json();
@@ -238,7 +238,7 @@ describe("POST on /api/v1/user/createUser", () => {
               cpf: "529.982.247-26",
             }),
             headers: { cookie },
-          }
+          },
         );
         expect(response.status).toEqual(400);
         const json = await response.json();
@@ -259,7 +259,7 @@ describe("POST on /api/v1/user/createUser", () => {
               password: "",
             }),
             headers: { cookie },
-          }
+          },
         );
         expect(response.status).toEqual(400);
         const json = await response.json();
@@ -280,7 +280,7 @@ describe("POST on /api/v1/user/createUser", () => {
             method: "POST",
             body: JSON.stringify(validUserData),
             headers: { cookie },
-          }
+          },
         );
         expect(response.status).toEqual(201);
 
@@ -327,7 +327,7 @@ describe("POST on /api/v1/user/createUser", () => {
               establishmentId: validEstablishment2.id,
             }),
             headers: { cookie: cookie2 },
-          }
+          },
         );
         expect(response.status).toEqual(201);
 
@@ -373,7 +373,7 @@ describe("POST on /api/v1/user/createUser", () => {
               ...validUserData,
             }),
             headers: { cookie },
-          }
+          },
         );
         expect(response.status).toEqual(409);
 

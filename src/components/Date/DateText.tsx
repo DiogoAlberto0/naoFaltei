@@ -9,6 +9,7 @@ interface IDateTextProps
   isFullDay?: boolean;
   isFullMonth?: boolean;
   isFullYear?: boolean;
+  isFullDate?: boolean;
   locale?: Intl.LocalesArgument;
 }
 export const DateText = ({
@@ -16,15 +17,16 @@ export const DateText = ({
   isFullDay = false,
   isFullMonth = false,
   isFullYear = false,
+  isFullDate = false,
   locale = "pt-br",
   ...otherProps
 }: IDateTextProps) => {
   return (
     <p {...otherProps}>
       {date.toLocaleDateString(locale, {
-        day: isFullDay ? "numeric" : "2-digit",
-        month: isFullMonth ? "long" : "2-digit",
-        year: isFullYear ? "numeric" : "2-digit",
+        day: isFullDay || isFullDate ? "numeric" : "2-digit",
+        month: isFullMonth || isFullDate ? "long" : "2-digit",
+        year: isFullYear || isFullDate ? "numeric" : "2-digit",
       })}
     </p>
   );

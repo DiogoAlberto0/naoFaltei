@@ -56,9 +56,6 @@ model User {
   sessions      Session[]
 
   created_establishments Establishment[]
-
-  managed_establishments manager_on_establishments[]
-  worked_establishments worker_on_establishments[]
  
   @@map("users")
 }
@@ -82,33 +79,29 @@ model Establishment {
   lng String
   active Boolean @default(true)
 
-  managers manager_on_establishments[]
-  workers worker_on_establishments[]
+  workers Workers[]
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-  author User @relation(fields: [author_id], references: [id])
   author_id String
+  author User @relation(fields: [author_id], references: [id])
 
   @@map("establishments")
 }
 
-model manager_on_establishments {
-  manager User @relation(fields: [ manager_id ], references: [id])
-  manager_id String
 
-  establishments Establishment @relation(fields: [ establishment_id ], references: [id])
+model Workers {
+  id String @id @default(cuid())
+  name String
+  login String @unique
+  cpf String
+  phone String
+  email String
+  is_manager Boolean @default(false)
+  is_admin Boolean @default(false)
+  hash String
+
   establishment_id String
-
-  @@id([ manager_id, establishment_id])
-}
-
-model worker_on_establishments {
-  worker User @relation(fields: [ worker_id ], references: [id])
-  worker_id String
-
-  establishments Establishment @relation(fields: [ establishment_id ], references: [id])
-  establishment_id String
-
-  @@id([ worker_id, establishment_id])
+  establishment Establishment @relation(fields: [establishment_id], references: [id])
+  @@map("workers")
 }

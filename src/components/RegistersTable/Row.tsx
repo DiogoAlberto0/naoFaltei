@@ -1,38 +1,29 @@
-import { Chip, TableCell, TableRow } from "@heroui/react";
-import { DateText } from "../Date/DateText";
+//heroui components
+import { TableCell, TableRow } from "@heroui/react";
 
-export const TypeRegisterChip = ({ clockIn }: { clockIn: boolean }) => {
-  return (
-    <Chip variant="flat" color={clockIn ? "success" : "danger"}>
-      {clockIn ? "Entrada" : "Saída"}
-    </Chip>
-  );
-};
+// custom components
+import { DateText } from "@/src/components/Date/DateText";
+import { HourText } from "../Date/HourText";
 
 export const renderRegitersTableRow = ({
   id,
-  name,
   clockIn,
+  clockOut,
   date,
-  hour,
-  minute,
 }: {
   id: string;
-  name: string;
-  clockIn: boolean;
+  clockIn: {
+    hour: number;
+    minute: number;
+  };
+  clockOut: {
+    hour: number;
+    minute: number;
+  };
   date: Date;
-  hour: number;
-  minute: number;
 }) => {
   return (
-    <TableRow
-      key={id}
-      className={`${clockIn ? "max-sm:bg-success-400 max-sm:bg-opacity-50" : "max-sm:bg-danger-400 max-sm:bg-opacity-50"}`}
-    >
-      <TableCell>{name}</TableCell>
-      <TableCell className="max-sm:hidden">
-        <TypeRegisterChip clockIn={clockIn} />
-      </TableCell>
+    <TableRow key={id}>
       <TableCell>
         <DateText
           date={date}
@@ -44,7 +35,10 @@ export const renderRegitersTableRow = ({
         <DateText date={date} className="sm:hidden" />
       </TableCell>
       <TableCell>
-        {hour}:{minute}
+        <HourText hour={clockIn.hour} minute={clockIn.minute} />
+      </TableCell>
+      <TableCell>
+        <HourText hour={clockOut.hour} minute={clockOut.minute} />
       </TableCell>
     </TableRow>
   );

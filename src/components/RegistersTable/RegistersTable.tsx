@@ -4,26 +4,19 @@ import { Pagination } from "@heroui/pagination";
 import { Table, TableBody, TableColumn, TableHeader } from "@heroui/table";
 
 // custom components
-import { TopContentRegistersTable } from "./TopContent";
-import { renderRegitersTableRow, TypeRegisterChip } from "./Row";
+import { TopContentRegistersTable } from "@/src/components/RegistersTable/TopContent";
+import { renderRegitersTableRow } from "@/src/components/RegistersTable/Row";
 
-const Legend = () => {
-  return (
-    <div className="block sm:hidden">
-      <h2 className="text-sm">Legenda:</h2>
-      <TypeRegisterChip clockIn />
-      <TypeRegisterChip clockIn={false} />
-    </div>
-  );
-};
 export const RegistersTable = ({
   title,
   maxRegisters,
   detailed = true,
+  overflowAuto = true,
 }: {
   title: string;
   maxRegisters: number;
   detailed?: boolean;
+  overflowAuto?: boolean;
 }) => {
   const registers = [];
 
@@ -31,18 +24,26 @@ export const RegistersTable = ({
     registers.push(index);
   }
 
-  const tableRows = registers.map((id) =>
-    renderRegitersTableRow({
+  const tableRows = registers.map((id) => {
+    const clockinDate = new Date();
+    const clockOutDate = new Date();
+    clockOutDate.setHours(clockinDate.getHours() + 1);
+    return renderRegitersTableRow({
       id: id.toString(),
-      name: "Diogo Alberto",
-      clockIn: id % 2 == 0,
+      clockIn: {
+        hour: clockinDate.getHours(),
+        minute: clockinDate.getMinutes(),
+      },
+      clockOut: {
+        hour: clockOutDate.getHours(),
+        minute: clockOutDate.getMinutes(),
+      },
       date: new Date(),
-      hour: new Date().getHours(),
-      minute: new Date().getMinutes(),
-    }),
-  );
+    });
+  });
   return (
     <Table
+      isStriped
       topContent={
         <TopContentRegistersTable
           title={title}
@@ -53,36 +54,36 @@ export const RegistersTable = ({
           tardinessDays={4}
         />
       }
-      classNames={{
-        base: "h-full w-full max-w-full overflow-auto",
-        wrapper: "grow flex flex-col items-start",
-        table: "flex-1",
-      }}
+      classNames={
+        overflowAuto
+          ? {
+              base: "h-full w-full max-w-full overflow-auto",
+              wrapper: "grow flex flex-col items-start",
+              table: "flex-1",
+            }
+          : {}
+      }
       bottomContent={
-        <div className="flex flex-col w-full justify-center ">
-          <Legend />
-          <div className="w-full flex justify-center items-center">
-            <Pagination
-              size="sm"
-              isCompact
-              showControls
-              showShadow
-              color="secondary"
-              page={1}
-              total={10}
-              onChange={(page) => console.log(page)}
-            />
-          </div>
+        <div className="w-full flex justify-center items-center">
+          <Pagination
+            size="sm"
+            isCompact
+            showControls
+            showShadow
+            color="secondary"
+            page={1}
+            total={10}
+            onChange={(page) => console.log(page)}
+          />
         </div>
       }
     >
       <TableHeader>
-        <TableColumn>Funcionário</TableColumn>
-        <TableColumn className="max-sm:hidden">Tipo</TableColumn>
         <TableColumn>Data</TableColumn>
-        <TableColumn>Hora</TableColumn>
+        <TableColumn>Entrada</TableColumn>
+        <TableColumn>Saída</TableColumn>
       </TableHeader>
-      <TableBody className="bg-blue-500">{tableRows}</TableBody>
+      <TableBody>{tableRows}</TableBody>
     </Table>
   );
 };

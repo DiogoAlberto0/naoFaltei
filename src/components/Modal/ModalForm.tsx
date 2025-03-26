@@ -17,7 +17,6 @@ export interface IModalFormProps extends ModalProps {
   submitButtonText: string;
 }
 export const ModalForm = ({
-  className,
   handleSubmit,
   title,
   submitButtonText,
@@ -45,11 +44,7 @@ export const ModalForm = ({
     }
   };
   return (
-    <Modal
-      size="4xl"
-      className={`max-h-[80vh] overflow-auto ${className}`}
-      {...otherProps}
-    >
+    <Modal size="4xl" scrollBehavior="outside" {...otherProps}>
       <Form onSubmit={onSubmit}>
         <ModalContent>
           {(onClose) => (

@@ -1,4 +1,4 @@
-import { useState, useEffect, FocusEvent } from "react";
+import { useState, useEffect } from "react";
 
 //hero iu components
 import { Input } from "@heroui/input";
@@ -7,6 +7,7 @@ import { addToast } from "@heroui/toast";
 //components
 import { Map } from "../Map/Map";
 import { ModalForm } from "../Modal/ModalForm";
+import { AddressInputs, IAddress } from "./AddressInputs";
 
 //utils
 import { phoneUtils } from "@/src/utils/phone";
@@ -16,19 +17,19 @@ import { cepUtils } from "@/src/utils/cep";
 //errors
 import { FetchError, InputError } from "@/src/Errors/errors";
 
-interface IAddressResponse {
-  address: string;
-  address_name: string;
-  address_type: string;
-  cep: string;
-  city: string;
-  city_ibge: string;
-  ddd: string;
-  district: string;
-  lat: string;
-  lng: string;
-  state: string;
-}
+const INITIAL_ADDRESS: IAddress = {
+  address: "",
+  address_name: "",
+  address_type: "",
+  cep: "",
+  city: "",
+  city_ibge: "",
+  ddd: "",
+  district: "",
+  lat: "",
+  lng: "",
+  state: "",
+};
 
 interface IAddEstablishmentFormModal {
   isOpen: boolean;
@@ -38,24 +39,12 @@ export const AddEstablishmentFormModal = ({
   isOpen,
   onOpenChange,
 }: IAddEstablishmentFormModal) => {
-  const [address, setAddress] = useState<IAddressResponse>({
-    address: "",
-    address_name: "",
-    address_type: "",
-    cep: "",
-    city: "",
-    city_ibge: "",
-    ddd: "",
-    district: "",
-    lat: "",
-    lng: "",
-    state: "",
-  });
+  const [addressState, setAddressState] = useState<IAddress>(INITIAL_ADDRESS);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
-        setAddress((prevState) => ({
+        setAddressState((prevState) => ({
           ...prevState,
           lat: `${position.coords.latitude}`,
           lng: `${position.coords.longitude}`,
@@ -63,25 +52,6 @@ export const AddEstablishmentFormModal = ({
       });
     }
   }, []);
-
-  const fetchCepInfos = async (e: FocusEvent<HTMLInputElement, Element>) => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/cep/${e.target.value}`,
-    );
-
-    const data = await response.json();
-
-    if (!data.address) {
-      addToast({
-        title: data.message,
-        description: data.action,
-        color: "danger",
-      });
-
-      return;
-    }
-    setAddress(data.address);
-  };
 
   const handleSubmit = async (formData: FormData) => {
     const name = formData.get("name");
@@ -109,8 +79,8 @@ export const AddEstablishmentFormModal = ({
           phone,
           email,
           cep,
-          lat: address.lat,
-          lng: address.lng,
+          lat: addressState.lat,
+          lng: addressState.lng,
         }),
       },
     );
@@ -163,55 +133,26 @@ export const AddEstablishmentFormModal = ({
         placeholder="Digite o email do estabelecimento"
         type="email"
       />
-      <Input
-        isRequired
-        errorMessage="CEP é obrigatório"
-        label="Cep: "
-        labelPlacement="outside"
-        name="cep"
-        placeholder="Digite o cep do estabelecimento"
-        type="text"
-        onBlur={fetchCepInfos}
-      />
-      <Input
-        isRequired
-        disabled
-        label="Endereço: "
-        labelPlacement="outside"
-        name="address"
-        placeholder="Endereço do estabelecimento..."
-        type="text"
-        value={address.address}
-        variant="underlined"
-      />
-      <Input
-        isRequired
-        disabled
-        label="Estado: "
-        labelPlacement="outside"
-        name="state"
-        placeholder="Estado do estabelecimento..."
-        type="text"
-        variant="underlined"
-        value={address.state}
-      />
-      <Input type="hidden" name="lat" value={address.lat} />
 
-      <Input type="hidden" name="lng" value={address.lng} />
+      <AddressInputs address={addressState} setAddress={setAddressState} />
+
+      <Input type="hidden" name="lat" value={addressState.lat} />
+
+      <Input type="hidden" name="lng" value={addressState.lng} />
 
       <h1 className="text-xl">Clique no mapa para selecionar o local:</h1>
       <Map
         className="w-full h-[500px]"
         markerPosition={
-          address.lat && address.lng
+          addressState.lat && addressState.lng
             ? {
-                latitude: Number(address.lat),
-                longitude: Number(address.lng),
+                latitude: Number(addressState.lat),
+                longitude: Number(addressState.lng),
               }
             : undefined
         }
         onPress={(pos) => {
-          setAddress((prevState) => ({
+          setAddressState((prevState) => ({
             ...prevState,
             lat: `${pos.Lat}`,
             lng: `${pos.Lng}`,

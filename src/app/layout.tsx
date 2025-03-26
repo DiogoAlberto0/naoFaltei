@@ -18,7 +18,7 @@ export default function RootLayout({
       <body className={``}>
         <SessionProvider>
           <ThemeProvider attribute="class" defaultTheme="dark">
-            <ToastProvider />
+            <ToastProvider placement="top-right" />
             {children}
           </ThemeProvider>
         </SessionProvider>
