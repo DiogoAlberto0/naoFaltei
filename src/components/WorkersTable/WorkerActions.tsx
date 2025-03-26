@@ -22,7 +22,11 @@ export const ActionsToolTips = ({
     <div className="relative flex flex-col sm:flex-row items-center justify-center gap-2 ">
       <Tooltip content="Details">
         <span
-          onClick={() => router.push(`/manager/worker/${workerId}`)}
+          onClick={() =>
+            isWorkerEditable
+              ? router.push(`/manager/worker/${workerId}`)
+              : router.push(`/worker/worker/${workerId}`)
+          }
           className="text-lg text-default-400 cursor-pointer active:opacity-50"
         >
           <EyeIcon />
