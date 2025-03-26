@@ -1,14 +1,14 @@
 export const signinForTest = async ({
-  email,
+  login,
   password,
 }: {
-  email: string;
+  login: string;
   password: string;
 }) => {
   try {
     const loginResponse = await fetch("http://localhost:3000/api/v1/signin", {
       body: JSON.stringify({
-        email: email,
+        login: login,
         password: password,
       }),
       method: "POST",
