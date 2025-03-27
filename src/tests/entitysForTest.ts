@@ -1,6 +1,11 @@
 import { prisma } from "@/prisma/prisma";
-import { establishmentModel } from "@/src/models/establishment";
+
+//utils
 import { passwordUtils } from "@/src/utils/password";
+
+//models
+import { establishmentModel } from "@/src/models/establishment";
+import { workerModel } from "../models/worker";
 
 export interface IValidAuthor {
   id: string;
@@ -34,61 +39,63 @@ export interface IValidManager {
   password: string;
 }
 export const createValidManager = async (establishmentId: string) => {
+  const name = "validManager";
   const password = "123456789Abc.";
   const email = "validmanager@email.com";
-  const login = "validManagerLogin";
+  const login = "validManager@ValidEstablishment";
   const phone = "61999999999";
-  const validManager = await prisma.workers.create({
+  const cpf = "11144477735";
+  const createdManager = await workerModel.create({
+    name,
+    login,
+    phone,
+    email,
+    password,
+    cpf,
+    establishmentId,
+  });
+
+  await prisma.workers.update({
+    where: { id: createdManager.id },
     data: {
-      name: "Valid Manager",
-      login,
-      phone,
-      email,
-      hash: passwordUtils.genHash(password),
-      cpf: "11144477735",
-      is_admin: true,
       is_manager: true,
-      establishment: {
-        connect: {
-          id: establishmentId,
-        },
-      },
     },
   });
 
   return {
-    id: validManager.id,
-    login,
+    id: createdManager.id,
+    login: createdManager.login,
     password,
   };
 };
 
 export const createValidManager2 = async (establishmentId: string) => {
+  const name = "validManager2";
   const password = "123456789Abc.";
   const email = "validmanager2@email.com";
-  const login = "validManager2Login";
+  const login = "validManager2@validEstablishment2";
   const phone = "61999999998";
-  const validManager = await prisma.workers.create({
+  const cpf = "11144477735";
+  const createdManager = await workerModel.create({
+    name,
+    login,
+    phone,
+    email,
+    password,
+    cpf,
+    establishmentId,
+  });
+
+  await prisma.workers.update({
+    where: { id: createdManager.id },
     data: {
-      name: "Valid Manager",
-      login,
-      phone,
-      email,
-      hash: passwordUtils.genHash(password),
-      cpf: "11144477735",
-      is_admin: true,
       is_manager: true,
-      establishment: {
-        connect: {
-          id: establishmentId,
-        },
-      },
     },
   });
 
   return {
-    id: validManager.id,
-    login,
+    id: createdManager.id,
+    login: createdManager.login,
     password,
   };
 };
