@@ -42,6 +42,7 @@ export const createValidManager = async (establishmentId: string) => {
       hash: passwordUtils.genHash(password),
       cpf: "11144477735",
       is_admin: true,
+      is_manager: true,
       establishment: {
         connect: {
           id: establishmentId,
@@ -60,7 +61,7 @@ export const createValidManager = async (establishmentId: string) => {
 export const createValidManager2 = async (establishmentId: string) => {
   const password = "123456789Abc.";
   const email = "validmanager2@email.com";
-  const login = "validManagerLogin";
+  const login = "validManager2Login";
   const phone = "61999999998";
   const validManager = await prisma.workers.create({
     data: {
@@ -71,6 +72,7 @@ export const createValidManager2 = async (establishmentId: string) => {
       hash: passwordUtils.genHash(password),
       cpf: "11144477735",
       is_admin: true,
+      is_manager: true,
       establishment: {
         connect: {
           id: establishmentId,
