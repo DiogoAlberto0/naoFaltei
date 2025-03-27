@@ -11,8 +11,10 @@ import {
   createValidEstablishmentCreator,
   createValidEstablishment,
   createValidManager,
+  IValidAuthor,
 } from "@/src/tests/entitysForTest";
 
+let establishmentCreator: IValidAuthor;
 let validManager: {
   id: string;
   login: string;
@@ -23,7 +25,7 @@ beforeAll(async () => {
     `TRUNCATE TABLE "users", "establishments", "workers" RESTART IDENTITY CASCADE;`,
   );
 
-  const establishmentCreator = await createValidEstablishmentCreator();
+  establishmentCreator = await createValidEstablishmentCreator();
 
   const validEstablishment = await createValidEstablishment(
     establishmentCreator.id,
@@ -35,7 +37,21 @@ beforeAll(async () => {
   expect(await establishmentModel.count()).toEqual(1);
 });
 
-describe("POST on /api/v1/user/createUser", () => {
+describe("POST on /api/v1/signin", () => {
+  it("should be possible to signin with an valid author", async () => {
+    const response = await fetch("http://localhost:3000/api/v1/signin", {
+      body: JSON.stringify({
+        login: establishmentCreator.email,
+        password: establishmentCreator.password,
+      }),
+      method: "POST",
+      credentials: "include",
+    });
+
+    expect(response.headers.get("set-cookie")).not.toBeUndefined();
+    expect(response.headers.get("set-cookie")).not.toBeNull();
+    expect(response.headers.get("set-cookie")).toBeTypeOf("string");
+  });
   it("should be possible to signin with an valid manager data", async () => {
     const response = await fetch("http://localhost:3000/api/v1/signin", {
       body: JSON.stringify({

@@ -1,5 +1,6 @@
 import { signIn } from "@/auth";
 import { InputError, UnauthorizedError } from "@/src/Errors/errors";
+import { userModel } from "@/src/models/user";
 import { workerModel } from "@/src/models/worker";
 import { passwordUtils } from "@/src/utils/password";
 import { NextRequest, NextResponse } from "next/server";
@@ -15,19 +16,22 @@ export const POST = async (request: NextRequest) => {
         status_code: 400,
       });
 
-    const existentUser = await workerModel.findBy({
-      login,
-    });
+    const [worker, user] = await Promise.all([
+      workerModel.findBy({ login: login as string }),
+      userModel.findBy({ email: login as string }),
+    ]);
 
-    if (!existentUser)
+    const foundUser = worker || user;
+
+    if (!foundUser)
       throw new InputError({
         message: "Usuário ou senha incorretos",
         action: "Verifique os campos informados.",
       });
 
-    if (!existentUser.hash) throw new UnauthorizedError();
+    if (!foundUser.hash) throw new UnauthorizedError();
 
-    if (!passwordUtils.comparePassAndHash(password, existentUser.hash))
+    if (!passwordUtils.comparePassAndHash(password, foundUser.hash))
       throw new InputError({
         message: "Usuário ou senha incorretos",
         action: "Verifique os campos informados.",
