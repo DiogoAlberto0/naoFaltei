@@ -240,7 +240,7 @@ const verifyIfManagerIsFromEstablishment = async ({
   if (establishment.author_id === author?.id) return true;
 
   const worker = await workerModel.findBy({ id: managerId });
-  if (worker?.establishment_id != establishment.id && worker?.is_manager)
+  if (worker?.establishment_id == establishment.id && worker?.is_manager)
     return true;
 
   return false;
