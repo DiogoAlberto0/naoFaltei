@@ -5,7 +5,7 @@ import { prisma } from "@/prisma/prisma";
 import { establishmentModel } from "@/src/models/establishment";
 
 // valid entity for tests
-import { createValidManager, IValidManager } from "@/src/tests/entitysForTest";
+import { createValidAutho, IValidAuthor } from "@/src/tests/entitysForTest";
 import { signinForTest } from "@/src/tests/signinForTest";
 
 const validEstablishment = {
@@ -27,19 +27,19 @@ const validEstablishment2 = {
 };
 
 let cookie: string;
-let manager: IValidManager;
+let author: IValidAuthor;
 
 beforeAll(async () => {
   await prisma.$queryRawUnsafe(
-    `TRUNCATE TABLE "establishments", "users" RESTART IDENTITY CASCADE`
+    `TRUNCATE TABLE "establishments", "users" RESTART IDENTITY CASCADE`,
   );
   expect(await establishmentModel.count()).toEqual(0);
 
-  manager = await createValidManager();
+  author = await createValidAuthor();
 
   const { cookies } = await signinForTest({
-    email: manager.email,
-    password: manager.password,
+    email: author.email,
+    password: author.password,
   });
 
   cookie = cookies;
@@ -55,7 +55,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
           body: JSON.stringify({
             ...validEstablishment,
           }),
-        }
+        },
       );
 
       const body = await response.json();
@@ -81,7 +81,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             phone: "123456789",
           }),
           headers: { cookie },
-        }
+        },
       );
 
       const body = await response.json();
@@ -107,7 +107,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             email: "asdasd",
           }),
           headers: { cookie },
-        }
+        },
       );
 
       const body = await response.json();
@@ -133,7 +133,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             cep: "7180000",
           }),
           headers: { cookie },
-        }
+        },
       );
 
       const body = await response.json();
@@ -159,7 +159,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             lat: "-95.123456",
           }),
           headers: { cookie },
-        }
+        },
       );
 
       const body = await response.json();
@@ -184,7 +184,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             lng: "200.543210",
           }),
           headers: { cookie },
-        }
+        },
       );
 
       const body = await response.json();
@@ -206,14 +206,14 @@ describe("POST on `/api/v1/establishment/create`", () => {
           method: "POST",
           body: JSON.stringify(validEstablishment),
           headers: { cookie },
-        }
+        },
       );
 
       const createdEstablishment = await response.json();
 
       expect(createdEstablishment).toEqual({
         id: expect.any(String),
-        author_id: manager.id,
+        author_id: author.id,
         name: "Empresa teste",
         phone: "61986548270",
         email: "teste@empresa.com",
@@ -231,10 +231,10 @@ describe("POST on `/api/v1/establishment/create`", () => {
       const quantity = await establishmentModel.count();
       expect(quantity).toEqual(1);
 
-      const establishmentsByManager = await establishmentModel.listByManager({
-        managerId: manager.id,
+      const establishmentsByAuthor = await establishmentModel.listByAuthor({
+        authorId: author.id,
       });
-      expect(establishmentsByManager.length).toEqual(1);
+      expect(establishmentsByAuthor.length).toEqual(1);
     });
 
     it("should not be possible to register a new establishment if phone is already in use by another establishment", async () => {
@@ -247,7 +247,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             phone: validEstablishment.phone,
           }),
           headers: { cookie },
-        }
+        },
       );
 
       const body = await response.json();
@@ -273,7 +273,7 @@ describe("POST on `/api/v1/establishment/create`", () => {
             email: validEstablishment.email,
           }),
           headers: { cookie },
-        }
+        },
       );
 
       const body = await response.json();

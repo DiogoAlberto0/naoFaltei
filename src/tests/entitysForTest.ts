@@ -8,7 +8,7 @@ export interface IValidAuthor {
   password: string;
 }
 
-export const createValidEstablishmentCreator = async () => {
+export const createValidAutho = async () => {
   const password = "123456789Abc.";
   const email = "validmanager@email.com";
 

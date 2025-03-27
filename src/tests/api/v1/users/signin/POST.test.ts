@@ -8,7 +8,7 @@ import { workerModel } from "@/src/models/worker";
 
 //valid entitys
 import {
-  createValidEstablishmentCreator,
+  createValidAutho,
   createValidEstablishment,
   createValidManager,
   IValidAuthor,
@@ -25,7 +25,7 @@ beforeAll(async () => {
     `TRUNCATE TABLE "users", "establishments", "workers" RESTART IDENTITY CASCADE;`,
   );
 
-  establishmentCreator = await createValidEstablishmentCreator();
+  establishmentCreator = await createValidAutho();
 
   const validEstablishment = await createValidEstablishment(
     establishmentCreator.id,

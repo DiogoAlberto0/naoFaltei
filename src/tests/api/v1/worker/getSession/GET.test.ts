@@ -1,7 +1,7 @@
 import { prisma } from "@/prisma/prisma";
 import {
   createValidEstablishment,
-  createValidEstablishmentCreator,
+  createValidAutho,
   createValidManager,
   IValidManager,
 } from "@/src/tests/entitysForTest";
@@ -14,7 +14,7 @@ beforeAll(async () => {
   await prisma.$queryRawUnsafe(
     `TRUNCATE TABLE "users", "establishments", "workers" RESTART IDENTITY CASCADE;`,
   );
-  const admin = await createValidEstablishmentCreator();
+  const admin = await createValidAutho();
 
   const validEstablishment = await createValidEstablishment(admin.id);
 

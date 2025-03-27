@@ -11,7 +11,7 @@ import {
   type IValidManager,
   createValidEstablishment,
   createValidEstablishment2,
-  createValidEstablishmentCreator,
+  createValidAutho,
   createValidManager,
   createValidManager2,
 } from "@/src/tests/entitysForTest";
@@ -32,7 +32,7 @@ beforeAll(async () => {
     'TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE',
   );
 
-  const author = await createValidEstablishmentCreator();
+  const author = await createValidAutho();
   const { cookies: cookies3 } = await signinForTest({
     login: author.email,
     password: author.password,

@@ -10,7 +10,7 @@ import { workerModel } from "@/src/models/worker";
 import {
   createValidEstablishment,
   createValidEstablishment2,
-  createValidEstablishmentCreator,
+  createValidAutho,
   createValidManager,
   IValidManager,
 } from "../../../../entitysForTest";
@@ -47,7 +47,7 @@ beforeAll(async () => {
   );
 
   // criando um author
-  const establishmentCreator = await createValidEstablishmentCreator();
+  const establishmentCreator = await createValidAutho();
   expect(await userModel.count()).toEqual(1);
 
   //Criando um estabelecimento, um gerente, e logando esse gerente criado
