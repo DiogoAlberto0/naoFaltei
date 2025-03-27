@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // model user
-import { userModel } from "@/src/models/user";
+import { workerModel } from "@/src/models/worker";
 import {
   ForbiddenError,
   InputError,
@@ -18,9 +18,17 @@ export const POST = async (request: NextRequest) => {
     const session = await auth();
     if (!session || !session.user) throw new UnauthorizedError();
 
-    const { name, cpf, email, password, establishmentId } =
+    const { name, cpf, phone, login, email, password, establishmentId } =
       await request.json();
-    if (!name || !cpf || !email || !password || !establishmentId)
+    if (
+      !name ||
+      !cpf ||
+      !phone ||
+      !cpf ||
+      !email ||
+      !password ||
+      !establishmentId
+    )
       throw new InputError({
         message: "Campos obrigatórios faltando.",
         action:
@@ -35,11 +43,13 @@ export const POST = async (request: NextRequest) => {
       });
     if (!isManagerFromEstablishment) throw new ForbiddenError();
 
-    const createdUser = await userModel.create({
-      email,
-      password,
+    const createdUser = await workerModel.create({
       name,
+      email,
+      phone,
       cpf,
+      login,
+      password,
       establishmentId,
     });
 
