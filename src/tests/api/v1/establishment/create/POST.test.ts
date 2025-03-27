@@ -35,10 +35,10 @@ beforeAll(async () => {
   );
   expect(await establishmentModel.count()).toEqual(0);
 
-  author = await createValidAuthor();
+  author = await createValidAutho();
 
   const { cookies } = await signinForTest({
-    email: author.email,
+    login: author.email,
     password: author.password,
   });
 
