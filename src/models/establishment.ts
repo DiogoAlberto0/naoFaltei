@@ -1,16 +1,22 @@
 import { prisma } from "@/prisma/prisma";
 
 // ERRORS
-import { ConflictError, InputError, NotFoundError } from "@/src/Errors/errors";
+import {
+  ConflictError,
+  InputError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@/src/Errors/errors";
 
 //models
-import { userModel } from "@/src/models/user";
+import { workerModel } from "@/src/models/worker";
 
 //utils
 import { phoneUtils } from "@/src/utils/phone";
 import { emailUtils } from "@/src/utils/email";
 import { cepUtils } from "../utils/cep";
 import { coordinateUtils } from "../utils/coordinate";
+import { userModel } from "./user";
 
 interface ICreateStablishment {
   name: string;
@@ -19,7 +25,7 @@ interface ICreateStablishment {
   cep: string;
   lat: string;
   lng: string;
-  managerId: string;
+  creatorId: string;
 }
 
 interface IUpdateEstablishmentParams {
@@ -111,10 +117,10 @@ const validateEstablishment = async (establishmentId: string) => {
 };
 
 const create = async (stablishment: ICreateStablishment) => {
-  const { name, phone, email, cep, lat, lng, managerId } = stablishment;
+  const { name, phone, email, cep, lat, lng, creatorId } = stablishment;
 
   await validateParams(stablishment);
-  await userModel.validateUser(managerId);
+  await userModel.validateUser(creatorId);
 
   const newEstablishment = await prisma.establishment.create({
     data: {
@@ -126,17 +132,10 @@ const create = async (stablishment: ICreateStablishment) => {
       phone: phoneUtils.clean(phone),
       author: {
         connect: {
-          id: managerId,
+          id: creatorId,
         },
       },
     },
-  });
-
-  await addManager({
-    managerId,
-    establishmentId: newEstablishment.id,
-    isValidManager: true,
-    isValidEstablishment: true,
   });
 
   return newEstablishment;
@@ -155,7 +154,7 @@ const addManager = async ({
   isValidManager = false,
 }: IAddManagerProps) => {
   if (!isValidManager) {
-    userModel.validateUser(managerId);
+    workerModel.validateWorker(managerId);
   }
 
   if (!isValidEstablishment) {
@@ -290,13 +289,18 @@ const verifyIfManagerIsFromEstablishment = async ({
 }: {
   managerId: string;
   establishmentId: string;
-}) => {
-  const establishmentsFromAuthenticatedManager =
-    await establishmentModel.listByManager({ managerId });
+}): Promise<boolean> => {
+  const establishment = await findBy({ id: establishmentId });
+  if (!establishment) return false;
 
-  return establishmentsFromAuthenticatedManager.some(
-    ({ id }) => id === establishmentId,
-  );
+  if (establishment.author_id === managerId) return true;
+
+  const worker = await workerModel.findBy({ id: managerId });
+  if (!worker || worker.establishment_id != establishmentId) return false;
+
+  if (worker.is_manager) return true;
+
+  return false;
 };
 
 const verifyIfIsAuthorFromEstablishment = async ({
@@ -306,21 +310,22 @@ const verifyIfIsAuthorFromEstablishment = async ({
   userId: string;
   establishmentId: string;
 }) => {
-  const establishment = await prisma.establishment.findUnique({
-    where: { id: establishmentId },
-    select: {
-      author_id: true,
-    },
-  });
-
+  const establishment = await findBy({ id: establishmentId });
   if (!establishment)
     throw new NotFoundError({
-      message: "Estabelecimento não encontrado",
-      action:
-        "Verifique se os dados informados do estabelecimento estão corretos",
+      message: "Estabelecimento nâo encontrado",
+      action: "Verifique o ID do estabelecimento",
     });
 
-  return establishment.author_id == userId;
+  if (establishment.author_id === userId) return true;
+
+  const worker = await workerModel.findBy({ id: userId });
+  if (!worker || worker.establishment_id != establishmentId)
+    throw new UnauthorizedError();
+
+  if (worker.is_admin) return true;
+
+  return false;
 };
 
 const removeManager = async ({
@@ -330,7 +335,7 @@ const removeManager = async ({
   managerId: string;
   establishmentId: string;
 }) => {
-  await userModel.validateUser(managerId);
+  await workerModel.validateWorker(managerId);
   await validateEstablishment(establishmentId);
 
   const isManagerFromEstablishment = await verifyIfManagerIsFromEstablishment({
