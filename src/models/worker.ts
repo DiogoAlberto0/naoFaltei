@@ -8,6 +8,7 @@ import { passwordUtils } from "@/src/utils/password";
 import { cpfUtils } from "../utils/cpf";
 import { establishmentModel } from "./establishment";
 import { phoneUtils } from "../utils/phone";
+import { loginUtils } from "../utils/login";
 
 const findBy = async ({
   id,
@@ -76,6 +77,7 @@ const create = async ({
   phoneUtils.isValidOrThrow(phone);
   passwordUtils.isValidOrThrow(password);
   cpfUtils.isValidOrThrow(cpf);
+  loginUtils.isValidOrThrow(login);
 
   const establishment = await establishmentModel.findBy({
     id: establishmentId,
@@ -89,59 +91,39 @@ const create = async ({
     });
 
   const existentWorker = await findBy({
-    cpf,
-    email,
+    login,
   });
 
-  if (!existentWorker) {
-    const hashedPass = passwordUtils.genHash(password);
+  if (existentWorker)
+    throw new ConflictError({
+      message: "O login informado ja está em uso por outro funcionário.",
+      action: "Informe outro login",
+    });
 
-    const createdWorker = await prisma.workers.create({
-      data: {
-        name,
-        login,
-        phone: phoneUtils.clean(phone),
-        establishment: {
-          connect: {
-            id: establishment.id,
-          },
+  const hashedPass = passwordUtils.genHash(password);
+  const createdWorker = await prisma.workers.create({
+    data: {
+      name,
+      login,
+      phone: phoneUtils.clean(phone),
+      establishment: {
+        connect: {
+          id: establishment.id,
         },
-        email: emailUtils.normalize(email),
-        cpf: cpfUtils.clean(cpf),
-        hash: hashedPass,
       },
-    });
+      email: emailUtils.normalize(email),
+      cpf: cpfUtils.clean(cpf),
+      hash: hashedPass,
+    },
+  });
 
-    return {
-      id: createdWorker.id,
-      name: createdWorker.name,
-      email: createdWorker.email,
-      login: createdWorker.login,
-      cpf: createdWorker.cpf,
-    };
-  } else {
-    const establishmentFromWorker = await establishmentModel.listByWorker({
-      workerId: existentWorker.id,
-    });
-
-    const isAlreadyAssociated = establishmentFromWorker.some(
-      ({ id }) => establishment.id === id,
-    );
-
-    if (isAlreadyAssociated)
-      throw new ConflictError({
-        message: "O usuário informado ja está associado ao estabelecimento",
-        action: "Verifique o usuário e o estabelecimento",
-      });
-
-    return {
-      id: existentWorker.id,
-      login: existentWorker.login,
-      name: existentWorker.name,
-      email: existentWorker.email,
-      cpf: existentWorker.cpf,
-    };
-  }
+  return {
+    id: createdWorker.id,
+    name: createdWorker.name,
+    email: createdWorker.email,
+    login: createdWorker.login,
+    cpf: createdWorker.cpf,
+  };
 };
 
 const count = async () => {
