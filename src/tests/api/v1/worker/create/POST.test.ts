@@ -19,6 +19,9 @@ import { signinForTest } from "../../../../signinForTest";
 //utils
 import { cpfUtils } from "@/src/utils/cpf";
 import { establishmentModel } from "@/src/models/establishment";
+import { phoneUtils } from "@/src/utils/phone";
+import { emailUtils } from "@/src/utils/email";
+import { loginUtils } from "@/src/utils/login";
 
 let authorCookies: string;
 
@@ -121,7 +124,7 @@ describe("POST on /api/v1/worker/create", () => {
     });
   });
   describe("Authenticated user but unauthorized", () => {
-    it("should not be possible to update if manager is not from establishment", async () => {
+    it("should not be possible to create if manager is not from establishment", async () => {
       const response = await fetch(
         "http://localhost:3000/api/v1/worker/create",
         {
@@ -357,9 +360,9 @@ describe("POST on /api/v1/worker/create", () => {
         expect(json).toEqual({
           id: expect.any(String),
           name: validNewUser.name,
-          email: validNewUser.email,
+          email: emailUtils.normalize(validNewUser.email),
           cpf: cpfUtils.clean(validNewUser.cpf),
-          login: validNewUser.login,
+          login: loginUtils.normalize(validNewUser.login),
         });
         const userFromDB = await workerModel.findBy({
           login: validNewUser.login,
@@ -368,12 +371,12 @@ describe("POST on /api/v1/worker/create", () => {
         expect(userFromDB).toEqual({
           id: expect.any(String),
           name: validNewUser.name,
-          email: validNewUser.email,
+          email: emailUtils.normalize(validNewUser.email),
           cpf: cpfUtils.clean(validNewUser.cpf),
-          phone: validNewUser.phone,
+          phone: phoneUtils.clean(validNewUser.phone),
           is_admin: false,
           is_manager: false,
-          login: validNewUser.login,
+          login: loginUtils.normalize(validNewUser.login),
           establishment_id: validNewUser.establishmentId,
           hash: expect.any(String),
         });
@@ -635,27 +638,28 @@ describe("POST on /api/v1/worker/create", () => {
         );
         expect(response.status).toEqual(201);
         const json = await response.json();
-        expect(json).toEqual({
+
+        expect(json).toStrictEqual({
           id: expect.any(String),
           name: validNewUser2.name,
-          email: validNewUser2.email,
+          email: emailUtils.normalize(validNewUser2.email),
           cpf: cpfUtils.clean(validNewUser2.cpf),
-          login: validNewUser2.login,
+          login: loginUtils.normalize(validNewUser2.login),
         });
         const userFromDB = await workerModel.findBy({
-          login: validNewUser.login,
+          login: validNewUser2.login,
         });
         if (!userFromDB) throw new Error("Usuário não foi criado");
         expect(userFromDB).toEqual({
           id: expect.any(String),
-          name: validNewUser.name,
-          email: validNewUser.email,
-          cpf: cpfUtils.clean(validNewUser.cpf),
-          phone: validNewUser.phone,
+          name: validNewUser2.name,
+          email: emailUtils.normalize(validNewUser2.email),
+          cpf: cpfUtils.clean(validNewUser2.cpf),
+          phone: phoneUtils.clean(validNewUser2.phone),
           is_admin: false,
           is_manager: false,
-          login: validNewUser.login,
-          establishment_id: validNewUser.establishmentId,
+          login: loginUtils.normalize(validNewUser2.login),
+          establishment_id: validNewUser2.establishmentId,
           hash: expect.any(String),
         });
 
@@ -676,6 +680,8 @@ describe("POST on /api/v1/worker/create", () => {
           },
         );
         const json = await response.json();
+
+        console.log(json);
         expect(response.status).toEqual(409);
 
         expect(json).toStrictEqual({
