@@ -31,8 +31,8 @@ export const PUT = async (
     const { establishmentId } = await params;
 
     const isManagerFromEstablishment =
-      await establishmentModel.verifyIfManagerIsFromEstablishment({
-        managerId: session.user.id,
+      await establishmentModel.verifyIfIsAuthorFromEstablishment({
+        authorId: session.user.id,
         establishmentId,
       });
 

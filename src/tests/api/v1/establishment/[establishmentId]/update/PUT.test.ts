@@ -15,12 +15,16 @@ import { cepUtils } from "@/src/utils/cep";
 //valid entitys for tests
 import {
   type IValidManager,
+  createValidAutho,
   createValidEstablishment,
   createValidEstablishment2,
   createValidManager,
   createValidManager2,
 } from "@/src/tests/entitysForTest";
 import { signinForTest } from "@/src/tests/signinForTest";
+import { workerModel } from "@/src/models/worker";
+
+let authorCookies: string;
 
 let validEstablishment: IEstablishmentFromDB;
 let validManager: IValidManager;
@@ -48,29 +52,39 @@ beforeEach(async () => {
   expect(await userModel.count()).toEqual(0);
   expect(await establishmentModel.count()).toEqual(0);
 
-  validManager = await createValidManager();
-  validEstablishment = await createValidEstablishment(validManager.id);
+  const author = await createValidAutho();
+  const { cookies: aCookies } = await signinForTest({
+    login: author.email,
+    password: author.password,
+  });
+
+  authorCookies = aCookies;
+
+  validEstablishment = await createValidEstablishment(author.id);
+  validManager = await createValidManager(validEstablishment.id);
+
   const { cookies } = await signinForTest({
-    email: validManager.email,
+    login: validManager.login,
     password: validManager.password,
   });
   cookieManager = cookies;
 
-  validManager2 = await createValidManager2();
-  validEstablishment2 = await createValidEstablishment2(validManager2.id);
+  validEstablishment2 = await createValidEstablishment2(author.id);
+  validManager2 = await createValidManager2(validEstablishment2.id);
   const { cookies: cookies2 } = await signinForTest({
-    email: validManager2.email,
+    login: validManager2.login,
     password: validManager2.password,
   });
   cookieManager2 = cookies2;
 
-  expect(await userModel.count()).toEqual(2);
+  expect(await userModel.count()).toEqual(1);
+  expect(await workerModel.count()).toEqual(2);
   expect(await establishmentModel.count()).toEqual(2);
 });
 
 describe("PUT on /api/v1/establishment/update/:ID", () => {
   describe("Authenticated manager from anohter establishment", () => {
-    it("should be return error if user is not authenticated", async () => {
+    it("should be return error if user is not author from establishment", async () => {
       const newName = "Novo nome";
       const body = {
         name: newName,
@@ -81,6 +95,31 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           method: "PUT",
           body: JSON.stringify(body),
           headers: { cookie: cookieManager2 },
+        },
+      );
+
+      expect(response.status).toEqual(403);
+
+      const data = await response.json();
+
+      expect(data).toEqual({
+        message: "Usuário não tem permissão para fazer essa operação.",
+        action: "Contate o suporte.",
+      });
+    });
+  });
+  describe("Authenticated manager from establishment but arent the author", () => {
+    it("should be return error if user is not author from establishment", async () => {
+      const newName = "Novo nome";
+      const body = {
+        name: newName,
+      };
+      const response = await fetch(
+        `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
+        {
+          method: "PUT",
+          body: JSON.stringify(body),
+          headers: { cookie: cookieManager },
         },
       );
 
@@ -118,7 +157,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       });
     });
   });
-  describe("Authenticated manager from establishment", () => {
+  describe("Authenticated author from establishment", () => {
     describe("UPDATE NAME TESTS", () => {
       it("should be possible to update name of an valid establishment", async () => {
         const newName = "Novo nome";
@@ -130,7 +169,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -149,7 +188,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
-          author_id: validManager.id,
+          author_id: validEstablishment.author_id,
         });
 
         validateTimestamps(data);
@@ -167,7 +206,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -186,7 +225,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
-          author_id: validManager.id,
+          author_id: validEstablishment.author_id,
         });
 
         validateTimestamps(data);
@@ -202,7 +241,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -233,7 +272,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -266,7 +305,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -285,7 +324,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
-          author_id: validManager.id,
+          author_id: validEstablishment.author_id,
         });
 
         validateTimestamps(data);
@@ -301,7 +340,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -320,7 +359,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
-          author_id: validManager.id,
+          author_id: validEstablishment.author_id,
         });
 
         validateTimestamps(data);
@@ -336,7 +375,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -367,7 +406,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -401,7 +440,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -420,7 +459,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
-          author_id: validManager.id,
+          author_id: validEstablishment.author_id,
         });
 
         validateTimestamps(data);
@@ -448,7 +487,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -467,7 +506,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
-          author_id: validManager.id,
+          author_id: validEstablishment.author_id,
         });
 
         validateTimestamps(data);
@@ -495,7 +534,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -535,7 +574,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -554,7 +593,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           active: validEstablishment.active,
           created_at: expect.any(String),
           updated_at: expect.any(String),
-          author_id: validManager.id,
+          author_id: validEstablishment.author_id,
         });
 
         validateTimestamps(data);
@@ -587,7 +626,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
@@ -624,7 +663,7 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           {
             method: "PUT",
             body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
+            headers: { cookie: authorCookies },
           },
         );
 
