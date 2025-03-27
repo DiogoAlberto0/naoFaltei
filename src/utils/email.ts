@@ -6,7 +6,7 @@ const isValid = (email: string): boolean => {
 };
 
 const normalize = (email: string) => {
-  return email.toLowerCase();
+  return email.trim().toLowerCase();
 };
 
 const isValidOrThrow = (email: string) => {
