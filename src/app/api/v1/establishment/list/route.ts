@@ -10,11 +10,12 @@ import { UnauthorizedError } from "@/src/Errors/errors";
 export const GET = async () => {
   try {
     const session = await auth();
-    console.log(session);
     if (!session || !session.user) throw new UnauthorizedError();
 
-    const establishments = await establishmentModel.listByManager({
-      managerId: session.user.id,
+    console.log(session);
+
+    const establishments = await establishmentModel.listByAuthor({
+      authorId: session.user.id,
     });
 
     return NextResponse.json({
@@ -28,7 +29,7 @@ export const GET = async () => {
       },
       {
         status: error.status_code || 500,
-      }
+      },
     );
   }
 };

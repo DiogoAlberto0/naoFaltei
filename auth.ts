@@ -7,8 +7,9 @@ import Credentials from "next-auth/providers/credentials";
 // prisma adapter
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/prisma/prisma";
-import { userModel } from "@/src/models/user";
 import { passwordUtils } from "@/src/utils/password";
+import { workerModel } from "./src/models/worker";
+import { userModel } from "./src/models/user";
 
 declare module "next-auth" {
   /**
@@ -33,29 +34,40 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        email: { label: "Email", type: "email", required: true },
+        login: { label: "Login", type: "text", required: true },
         password: { label: "Password", type: "password", required: true },
       },
       authorize: async (credentials) => {
-        const user = await userModel.findBy({
-          email: credentials.email as string,
-        });
+        if (!credentials?.login || !credentials?.password) {
+          throw new Error("Login e senha são obrigatórios.");
+        }
 
-        if (!user) throw new Error("Invalid credentials.");
-        if (!user.hash) throw new Error("Invalid credentials.");
+        // Buscar usuário tanto em `workerModel` quanto `userModel` simultaneamente
+        const [worker, user] = await Promise.all([
+          workerModel.findBy({ login: credentials.login as string }),
+          userModel.findBy({ email: credentials.login as string }),
+        ]);
 
+        // Definir o usuário encontrado
+        const foundUser = worker || user;
+        if (!foundUser || !foundUser.hash) {
+          throw new Error("Credenciais inválidas.");
+        }
+
+        // Verificar senha
         const isCorrectPass = passwordUtils.comparePassAndHash(
           credentials.password as string,
-          user.hash,
+          foundUser.hash,
         );
 
-        if (!isCorrectPass) throw new Error("Invalid credentials.");
+        if (!isCorrectPass) {
+          throw new Error("Credenciais inválidas.");
+        }
 
         return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          image: user.image,
+          id: foundUser.id,
+          name: foundUser.name,
+          login: "login" in foundUser ? foundUser.login : foundUser.email,
         };
       },
     }),

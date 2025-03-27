@@ -27,7 +27,7 @@ export const POST = async (request: NextRequest) => {
       cep,
       lat,
       lng,
-      managerId: session.user.id,
+      creatorId: session.user.id,
     });
     return NextResponse.json(createdEstablishment, { status: 201 });
   } catch (error: any) {
@@ -39,7 +39,7 @@ export const POST = async (request: NextRequest) => {
       },
       {
         status: error.status_code || 500,
-      }
+      },
     );
   }
 };
