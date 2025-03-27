@@ -44,7 +44,7 @@ const findBy = async ({
   }
 
   if (login) {
-    filters.push({ login });
+    filters.push({ login: loginUtils.normalize(login) });
   }
 
   if (filters.length === 0) return null;
@@ -104,7 +104,7 @@ const create = async ({
   const createdWorker = await prisma.workers.create({
     data: {
       name,
-      login,
+      login: loginUtils.normalize(login),
       phone: phoneUtils.clean(phone),
       establishment: {
         connect: {
@@ -141,5 +141,64 @@ const validateWorker = async (workerId: string) => {
       status_code: 400,
     });
 };
-const workerModel = { create, findBy, count, validateWorker };
+
+const update = async ({
+  id,
+  cpf,
+  email,
+  isManager,
+  login,
+  name,
+  phone,
+  password,
+}: {
+  id: string;
+  name: string;
+  cpf: string;
+  phone: string;
+  login: string;
+  email: string;
+  isManager: boolean;
+  password?: string;
+}) => {
+  cpfUtils.isValidOrThrow(cpf);
+  phoneUtils.isValidOrThrow(phone);
+  loginUtils.isValidOrThrow(login);
+  emailUtils.isValidOrThrow(email);
+  if (password) passwordUtils.isValidOrThrow(password);
+
+  const isAlreadyLoginInUse = await findBy({ login });
+  if (isAlreadyLoginInUse && isAlreadyLoginInUse.id != id)
+    throw new ConflictError({
+      message: "O Login informado já está em uso por outro funcionário",
+      action: "Informe outro login",
+    });
+
+  const worker = await prisma.workers.update({
+    where: {
+      id,
+    },
+    data: {
+      name,
+      cpf: cpfUtils.clean(cpf),
+      email: emailUtils.normalize(email),
+      phone: phoneUtils.clean(phone),
+      login: loginUtils.normalize(login),
+      is_manager: isManager,
+      hash: password ? passwordUtils.genHash(password) : undefined,
+    },
+  });
+
+  return {
+    name: worker.name,
+    id: worker.id,
+    email: worker.email,
+    cpf: worker.cpf,
+    phone: worker.phone,
+    login: worker.login,
+    is_manager: worker.is_manager,
+    establishment_id: worker.establishment_id,
+  };
+};
+const workerModel = { create, findBy, count, validateWorker, update };
 export { workerModel };
