@@ -1,12 +1,7 @@
 import { prisma } from "@/prisma/prisma";
 
 // ERRORS
-import {
-  ConflictError,
-  InputError,
-  NotFoundError,
-  UnauthorizedError,
-} from "@/src/Errors/errors";
+import { ConflictError, InputError, NotFoundError } from "@/src/Errors/errors";
 
 //models
 import { workerModel } from "@/src/models/worker";
@@ -141,46 +136,6 @@ const create = async (stablishment: ICreateStablishment) => {
   return newEstablishment;
 };
 
-interface IAddManagerProps {
-  managerId: string;
-  establishmentId: string;
-  isValidManager?: boolean;
-  isValidEstablishment?: boolean;
-}
-const addManager = async ({
-  managerId,
-  establishmentId,
-  isValidEstablishment = false,
-  isValidManager = false,
-}: IAddManagerProps) => {
-  if (!isValidManager) {
-    workerModel.validateWorker(managerId);
-  }
-
-  if (!isValidEstablishment) {
-    validateEstablishment(establishmentId);
-  }
-
-  const managedEstablishments = await listByManager({ managerId });
-
-  const isAlreadyManager = managedEstablishments.some(
-    ({ id }) => establishmentId === id,
-  );
-
-  if (isAlreadyManager)
-    throw new ConflictError({
-      message: "O usuário já é gerênte do estabelecimento.",
-      action: "Verifique o email do usuário",
-    });
-
-  await prisma.manager_on_establishments.create({
-    data: {
-      manager_id: managerId,
-      establishment_id: establishmentId,
-    },
-  });
-};
-
 const countByPhone = async (phone: string) => {
   const cleanedPhone = phoneUtils.clean(phone);
   return await prisma.establishment.count({
@@ -243,18 +198,6 @@ const listByAuthor = async ({ authorId }: { authorId: string }) => {
   });
 };
 
-const listByWorker = async ({ workerId }: { workerId: string }) => {
-  return await prisma.establishment.findMany({
-    where: {
-      workers: {
-        some: {
-          worker_id: workerId,
-        },
-      },
-    },
-  });
-};
-
 const findBy = async ({
   id,
   email,
@@ -304,59 +247,18 @@ const verifyIfManagerIsFromEstablishment = async ({
 };
 
 const verifyIfIsAuthorFromEstablishment = async ({
-  userId,
+  authorId,
   establishmentId,
 }: {
-  userId: string;
+  authorId: string;
   establishmentId: string;
-}) => {
+}): Promise<boolean> => {
   const establishment = await findBy({ id: establishmentId });
-  if (!establishment)
-    throw new NotFoundError({
-      message: "Estabelecimento nâo encontrado",
-      action: "Verifique o ID do estabelecimento",
-    });
+  if (!establishment) return false;
 
-  if (establishment.author_id === userId) return true;
-
-  const worker = await workerModel.findBy({ id: userId });
-  if (!worker || worker.establishment_id != establishmentId)
-    throw new UnauthorizedError();
-
-  if (worker.is_admin) return true;
+  if (establishment.author_id === authorId) return true;
 
   return false;
-};
-
-const removeManager = async ({
-  establishmentId,
-  managerId,
-}: {
-  managerId: string;
-  establishmentId: string;
-}) => {
-  await workerModel.validateWorker(managerId);
-  await validateEstablishment(establishmentId);
-
-  const isManagerFromEstablishment = await verifyIfManagerIsFromEstablishment({
-    establishmentId,
-    managerId,
-  });
-
-  if (!isManagerFromEstablishment)
-    throw new NotFoundError({
-      message: "Gerente não encontrado no estabelecimento",
-      action: "Verifique se os dados do gerente foram informados corretamente",
-    });
-
-  await prisma.manager_on_establishments.delete({
-    where: {
-      manager_id_establishment_id: {
-        manager_id: managerId,
-        establishment_id: establishmentId,
-      },
-    },
-  });
 };
 
 const establishmentModel = {
@@ -367,11 +269,9 @@ const establishmentModel = {
   update,
   listByAuthor,
   findBy,
-  listByWorker,
-  addManager,
   verifyIfManagerIsFromEstablishment,
   verifyIfIsAuthorFromEstablishment,
-  removeManager,
+  validateEstablishment,
 };
 
 export { establishmentModel };
