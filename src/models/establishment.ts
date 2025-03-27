@@ -233,6 +233,10 @@ const update = async ({
 
 const listByAuthor = async ({ authorId }: { authorId: string }) => {
   return await prisma.establishment.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
     where: {
       author_id: authorId,
     },

@@ -80,9 +80,8 @@ describe("GET on /api/v1/establishment/list", () => {
       expect(data.establishments).toHaveLength(2);
 
       expect(data.establishments[0]).toStrictEqual({
-        ...establishment,
-        created_at: new Date(establishment.created_at).toISOString(),
-        updated_at: new Date(establishment.updated_at).toISOString(),
+        id: establishment.id,
+        name: establishment.name,
       });
     });
   });
