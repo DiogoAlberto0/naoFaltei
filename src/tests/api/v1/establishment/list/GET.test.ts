@@ -1,18 +1,23 @@
 import { describe, it, expect, beforeAll } from "vitest";
 
 import { prisma, type IEstablishmentFromDB } from "@/prisma/prisma";
+
+// models
 import { establishmentModel } from "@/src/models/establishment";
-import { userModel } from "@/src/models/user";
+import { workerModel } from "@/src/models/worker";
 
 // valid entitys for test
 import {
   type IValidManager,
   createValidEstablishment,
   createValidEstablishment2,
+  createValidEstablishmentCreator,
   createValidManager,
   createValidManager2,
 } from "@/src/tests/entitysForTest";
 import { signinForTest } from "@/src/tests/signinForTest";
+
+let authorCookie: string;
 
 let validManager: IValidManager;
 let establishment: IEstablishmentFromDB;
@@ -24,39 +29,47 @@ let cookieManager2: string;
 
 beforeAll(async () => {
   await prisma.$executeRawUnsafe(
-    'TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE'
+    'TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE',
   );
 
-  validManager = await createValidManager();
-  establishment = await createValidEstablishment(validManager.id);
+  const author = await createValidEstablishmentCreator();
+  const { cookies: cookies3 } = await signinForTest({
+    login: author.email,
+    password: author.password,
+  });
+  authorCookie = cookies3;
+
+  establishment = await createValidEstablishment(author.id);
+  validManager = await createValidManager(establishment.id);
   const { cookies } = await signinForTest({
-    email: validManager.email,
+    login: validManager.login,
     password: validManager.password,
   });
   cookieManager = cookies;
   console.log(cookieManager);
 
-  validManager2 = await createValidManager2();
-  establishment2 = await createValidEstablishment2(validManager2.id);
+  establishment2 = await createValidEstablishment2(author.id);
+  validManager2 = await createValidManager2(establishment2.id);
   const { cookies: cookies2 } = await signinForTest({
-    email: validManager2.email,
+    login: validManager2.login,
     password: validManager2.password,
   });
   cookieManager2 = cookies2;
+  console.log(cookieManager2);
 
-  expect(await userModel.count()).toEqual(2);
+  expect(await workerModel.count()).toEqual(2);
   expect(await establishmentModel.count()).toEqual(2);
 });
 
 describe("GET on /api/v1/establishment/list", () => {
-  describe("Valid Manager Authenticated", () => {
+  describe("Valid author Authenticated", () => {
     it("should return establishment", async () => {
       const response = await fetch(
         "http://localhost:3000/api/v1/establishment/list",
         {
           method: "GET",
-          headers: { cookie: cookieManager },
-        }
+          headers: { cookie: authorCookie },
+        },
       );
 
       expect(response.status).toEqual(200);
@@ -64,7 +77,7 @@ describe("GET on /api/v1/establishment/list", () => {
       const data = await response.json();
 
       expect(data.establishments).toBeInstanceOf(Array);
-      expect(data.establishments).toHaveLength(1);
+      expect(data.establishments).toHaveLength(2);
 
       expect(data.establishments[0]).toStrictEqual({
         ...establishment,
@@ -80,7 +93,7 @@ describe("GET on /api/v1/establishment/list", () => {
         {
           headers: { cookie: cookieManager2 },
           method: "GET",
-        }
+        },
       );
 
       expect(response.status).toEqual(200);
@@ -88,13 +101,7 @@ describe("GET on /api/v1/establishment/list", () => {
       const data = await response.json();
 
       expect(data.establishments).toBeInstanceOf(Array);
-      expect(data.establishments).toHaveLength(1);
-
-      expect(data.establishments[0]).toStrictEqual({
-        ...establishment2,
-        created_at: new Date(establishment2.created_at).toISOString(),
-        updated_at: new Date(establishment2.updated_at).toISOString(),
-      });
+      expect(data.establishments).toHaveLength(0);
     });
   });
   describe("Anonymous user", () => {
@@ -103,7 +110,7 @@ describe("GET on /api/v1/establishment/list", () => {
         "http://localhost:3000/api/v1/establishment/list",
         {
           method: "GET",
-        }
+        },
       );
 
       expect(response.status).toEqual(401);
