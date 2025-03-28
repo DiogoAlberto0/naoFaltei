@@ -17,7 +17,7 @@ export const POST = async (request: NextRequest) => {
       });
 
     const [worker, user] = await Promise.all([
-      workerModel.findBy({ login: login as string }),
+      workerModel.findUniqueBy({ login: login as string }),
       userModel.findBy({ email: login as string }),
     ]);
 

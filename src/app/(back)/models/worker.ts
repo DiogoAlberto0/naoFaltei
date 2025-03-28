@@ -10,25 +10,28 @@ import { establishmentModel } from "./establishment";
 import { phoneUtils } from "@/src/utils/phone";
 import { loginUtils } from "@/src/utils/login";
 
-const findBy = async ({
-  id,
-  cpf,
-  email,
-  name,
-  login,
-}: {
-  id?: string;
-  email?: string;
-  name?: string;
-  cpf?: string;
-  login?: string;
-}) => {
+const findUniqueBy = ({ id, login }: { id?: string; login?: string }) => {
   if (id) {
     return prisma.workers.findUnique({
       where: { id },
     });
   }
 
+  if (login) {
+    return prisma.workers.findUnique({
+      where: { login: loginUtils.normalize(login) },
+    });
+  }
+};
+const findBy = async ({
+  cpf,
+  email,
+  name,
+}: {
+  email?: string;
+  name?: string;
+  cpf?: string;
+}) => {
   const filters = [];
 
   if (email) {
@@ -41,10 +44,6 @@ const findBy = async ({
 
   if (name) {
     filters.push({ name });
-  }
-
-  if (login) {
-    filters.push({ login: loginUtils.normalize(login) });
   }
 
   if (filters.length === 0) return null;
@@ -90,7 +89,7 @@ const create = async ({
       status_code: 400,
     });
 
-  const existentWorker = await findBy({
+  const existentWorker = await findUniqueBy({
     login,
   });
 
@@ -131,7 +130,7 @@ const count = async () => {
 };
 
 const validateWorker = async (workerId: string) => {
-  const worker = await findBy({ id: workerId });
+  const worker = await findUniqueBy({ id: workerId });
 
   if (!worker)
     throw new InputError({
@@ -167,7 +166,7 @@ const update = async ({
   emailUtils.isValidOrThrow(email);
   if (password) passwordUtils.isValidOrThrow(password);
 
-  const isAlreadyLoginInUse = await findBy({ login });
+  const isAlreadyLoginInUse = await findUniqueBy({ login });
   if (isAlreadyLoginInUse && isAlreadyLoginInUse.id != id)
     throw new ConflictError({
       message: "O Login informado já está em uso por outro funcionário",
@@ -200,5 +199,12 @@ const update = async ({
     establishment_id: worker.establishment_id,
   };
 };
-const workerModel = { create, findBy, count, validateWorker, update };
+const workerModel = {
+  create,
+  findBy,
+  count,
+  validateWorker,
+  update,
+  findUniqueBy,
+};
 export { workerModel };

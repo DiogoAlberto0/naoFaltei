@@ -364,7 +364,7 @@ describe("POST on /api/v1/worker/create", () => {
           cpf: cpfUtils.clean(validNewUser.cpf),
           login: loginUtils.normalize(validNewUser.login),
         });
-        const userFromDB = await workerModel.findBy({
+        const userFromDB = await workerModel.findUniqueBy({
           login: validNewUser.login,
         });
         if (!userFromDB) throw new Error("Usuário não foi criado");
@@ -646,7 +646,7 @@ describe("POST on /api/v1/worker/create", () => {
           cpf: cpfUtils.clean(validNewUser2.cpf),
           login: loginUtils.normalize(validNewUser2.login),
         });
-        const userFromDB = await workerModel.findBy({
+        const userFromDB = await workerModel.findUniqueBy({
           login: validNewUser2.login,
         });
         if (!userFromDB) throw new Error("Usuário não foi criado");

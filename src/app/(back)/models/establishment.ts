@@ -239,7 +239,7 @@ const verifyIfManagerIsFromEstablishment = async ({
   const author = await userModel.findBy({ id: managerId });
   if (establishment.author_id === author?.id) return true;
 
-  const worker = await workerModel.findBy({ id: managerId });
+  const worker = await workerModel.findUniqueBy({ id: managerId });
   if (worker?.establishment_id == establishment.id && worker?.is_manager)
     return true;
 

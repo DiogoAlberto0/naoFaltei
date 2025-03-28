@@ -44,7 +44,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // Buscar usuário tanto em `workerModel` quanto `userModel` simultaneamente
         const [worker, user] = await Promise.all([
-          workerModel.findBy({ login: credentials.login as string }),
+          workerModel.findUniqueBy({ login: credentials.login as string }),
           userModel.findBy({ email: credentials.login as string }),
         ]);
 
