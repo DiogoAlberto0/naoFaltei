@@ -199,6 +199,15 @@ const update = async ({
     establishment_id: worker.establishment_id,
   };
 };
+
+const setManager = async (workerId: string) => {
+  await prisma.workers.update({
+    where: { id: workerId },
+    data: {
+      is_manager: true,
+    },
+  });
+};
 const workerModel = {
   create,
   findBy,
@@ -206,5 +215,6 @@ const workerModel = {
   validateWorker,
   update,
   findUniqueBy,
+  setManager,
 };
 export { workerModel };
