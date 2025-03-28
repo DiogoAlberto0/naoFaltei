@@ -8,7 +8,7 @@ import { workerModel } from "@/src/app/(back)/models/worker";
 
 //valid entitys
 import {
-  createValidAutho,
+  createValidAuthor,
   createValidEstablishment,
   createValidManager,
   IValidAuthor,
@@ -23,7 +23,7 @@ let validManager: {
 beforeAll(async () => {
   await resetAllDatabase();
 
-  establishmentCreator = await createValidAutho();
+  establishmentCreator = await createValidAuthor();
 
   const validEstablishment = await createValidEstablishment(
     establishmentCreator.id,
@@ -40,6 +40,21 @@ describe("POST on /api/v1/signin", () => {
     const response = await fetch("http://localhost:3000/api/v1/signin", {
       body: JSON.stringify({
         login: establishmentCreator.email,
+        password: establishmentCreator.password,
+      }),
+      method: "POST",
+      credentials: "include",
+    });
+
+    expect(response.headers.get("set-cookie")).not.toBeUndefined();
+    expect(response.headers.get("set-cookie")).not.toBeNull();
+    expect(response.headers.get("set-cookie")).toBeTypeOf("string");
+  });
+
+  it("should be possible to signin with an valid author with captalize email", async () => {
+    const response = await fetch("http://localhost:3000/api/v1/signin", {
+      body: JSON.stringify({
+        login: establishmentCreator.email.toUpperCase(),
         password: establishmentCreator.password,
       }),
       method: "POST",
