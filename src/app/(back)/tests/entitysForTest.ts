@@ -120,40 +120,50 @@ export const createValidManager2 = async (establishmentId: string) => {
   };
 };
 
-export const createValidUser = async () => {
+export const createValidWorker = async (establishmentId: string) => {
+  const name = "validWorker";
   const password = "123456789Abc.";
-  const email = "validuser@email.com";
-  const validManager = await prisma.user.create({
-    data: {
-      name: "Valid User",
-      email,
-      hash: passwordUtils.genHash(password),
-      cpf: "09489226050",
-    },
+  const email = "validworker@email.com";
+  const login = "validWorker@validEstablishment2";
+  const phone = "61999999991";
+  const cpf = "11512075000";
+  const createdWorker = await workerModel.create({
+    name,
+    login,
+    phone,
+    email,
+    password,
+    cpf,
+    establishmentId,
   });
 
   return {
-    id: validManager.id,
-    email,
+    id: createdWorker.id,
+    login: createdWorker.login,
     password,
   };
 };
 
-export const createValidUser2 = async () => {
+export const createValidWorker2 = async (establishmentId: string) => {
+  const name = "validWorker2";
   const password = "123456789Abc.";
-  const email = "validuser2@email.com";
-  const validManager = await prisma.user.create({
-    data: {
-      name: "Valid User 2",
-      email,
-      hash: passwordUtils.genHash(password),
-      cpf: "06601607061",
-    },
+  const email = "validworker2@email.com";
+  const login = "validWorker2@validEstablishment2";
+  const phone = "61999999998";
+  const cpf = "97476783069";
+  const createdWorker = await workerModel.create({
+    name,
+    login,
+    phone,
+    email,
+    password,
+    cpf,
+    establishmentId,
   });
 
   return {
-    id: validManager.id,
-    email,
+    id: createdWorker.id,
+    login: createdWorker.login,
     password,
   };
 };
