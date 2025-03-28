@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { prisma } from "@/prisma/prisma";
+import { resetAllDatabase } from "@/prisma/prisma";
 
 //models
 import { establishmentModel } from "@/src/app/(back)/models/establishment";
@@ -21,9 +21,7 @@ let validManager: {
   password: string;
 };
 beforeAll(async () => {
-  await prisma.$queryRawUnsafe(
-    `TRUNCATE TABLE "users", "establishments", "workers" RESTART IDENTITY CASCADE;`,
-  );
+  await resetAllDatabase();
 
   establishmentCreator = await createValidAutho();
 

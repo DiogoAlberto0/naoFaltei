@@ -33,6 +33,26 @@ export const createValidAutho = async () => {
   };
 };
 
+export const createValidAutho2 = async () => {
+  const password = "123456789Abc.";
+  const email = "validAuthor2@email.com";
+
+  const validManager = await prisma.user.create({
+    data: {
+      name: "Valid Author 2",
+      email,
+      hash: passwordUtils.genHash(password),
+      cpf: "46363146038",
+    },
+  });
+
+  return {
+    id: validManager.id,
+    email,
+    password,
+  };
+};
+
 export interface IValidManager {
   id: string;
   login: string;

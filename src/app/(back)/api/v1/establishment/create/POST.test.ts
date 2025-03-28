@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 
-import { prisma } from "@/prisma/prisma";
+import { resetAllDatabase } from "@/prisma/prisma";
 
 import { establishmentModel } from "@/src/app/(back)/models/establishment";
 
@@ -33,9 +33,7 @@ let cookie: string;
 let author: IValidAuthor;
 
 beforeAll(async () => {
-  await prisma.$queryRawUnsafe(
-    `TRUNCATE TABLE "establishments", "users" RESTART IDENTITY CASCADE`,
-  );
+  await resetAllDatabase();
   expect(await establishmentModel.count()).toEqual(0);
 
   author = await createValidAutho();

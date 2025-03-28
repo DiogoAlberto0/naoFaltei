@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
 // client
-import { prisma, type IEstablishmentFromDB } from "@/prisma/prisma";
+import {
+  prisma,
+  resetAllDatabase,
+  type IEstablishmentFromDB,
+} from "@/prisma/prisma";
 
 // models
 import { establishmentModel } from "@/src/app/(back)/models/establishment";
@@ -46,9 +50,7 @@ const validateTimestamps = (data: {
   );
 };
 beforeEach(async () => {
-  await prisma.$queryRawUnsafe(
-    `TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE`,
-  );
+  await resetAllDatabase();
   expect(await userModel.count()).toEqual(0);
   expect(await establishmentModel.count()).toEqual(0);
 

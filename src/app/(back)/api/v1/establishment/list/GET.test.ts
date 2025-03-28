@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeAll } from "vitest";
 
-import { prisma, type IEstablishmentFromDB } from "@/prisma/prisma";
+import {
+  prisma,
+  resetAllDatabase,
+  type IEstablishmentFromDB,
+} from "@/prisma/prisma";
 
 // models
 import { establishmentModel } from "@/src/app/(back)/models/establishment";
@@ -28,9 +32,7 @@ let establishment2: IEstablishmentFromDB;
 let cookieManager2: string;
 
 beforeAll(async () => {
-  await prisma.$executeRawUnsafe(
-    'TRUNCATE TABLE "users", "establishments" RESTART IDENTITY CASCADE',
-  );
+  await resetAllDatabase();
 
   const author = await createValidAutho();
   const { cookies: cookies3 } = await signinForTest({

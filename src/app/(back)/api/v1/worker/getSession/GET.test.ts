@@ -1,4 +1,4 @@
-import { prisma } from "@/prisma/prisma";
+import { resetAllDatabase } from "@/prisma/prisma";
 import {
   createValidEstablishment,
   createValidAutho,
@@ -11,9 +11,7 @@ import { beforeAll, describe, it, expect } from "vitest";
 let validManager: IValidManager;
 let managerCookie: string;
 beforeAll(async () => {
-  await prisma.$queryRawUnsafe(
-    `TRUNCATE TABLE "users", "establishments", "workers" RESTART IDENTITY CASCADE;`,
-  );
+  await resetAllDatabase();
   const admin = await createValidAutho();
 
   const validEstablishment = await createValidEstablishment(admin.id);
