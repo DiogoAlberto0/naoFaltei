@@ -1,11 +1,8 @@
-import { prisma } from "@/prisma/prisma";
-
-//utils
-import { passwordUtils } from "@/src/utils/password";
-
 //models
 import { establishmentModel } from "@/src/app/(back)/models/establishment";
 import { workerModel } from "../models/worker";
+import { signinForTest } from "./signinForTest";
+import { userModel } from "../models/user";
 
 export interface IValidAuthor {
   id: string;
@@ -13,161 +10,221 @@ export interface IValidAuthor {
   password: string;
 }
 
-export const createValidAutho = async () => {
-  const password = "123456789Abc.";
-  const email = "validmanager@email.com";
-
-  const validManager = await prisma.user.create({
-    data: {
-      name: "Valid Manager",
-      email,
-      hash: passwordUtils.genHash(password),
-      cpf: "11144477735",
-    },
-  });
+// cria cenários
+export const createScenario1 = async () => {
+  const author = await createAndAuthAuthor();
+  const establishment = await createValidEstablishment(author.id);
+  const manager = await createAndAuthValidManager(establishment.id);
+  const worker = await createAndAuthWorker(establishment.id);
 
   return {
-    id: validManager.id,
+    author: {
+      id: author.id,
+      cookies: author.cookies,
+    },
+    establishment: {
+      id: establishment.id,
+    },
+    manager: {
+      id: manager.id,
+      cookie: manager.cookies,
+    },
+    worker: {
+      id: worker.id,
+      cookie: worker.cookies,
+    },
+  };
+};
+
+export const createScenario2 = async () => {
+  const author = await createAndAuthAuthor2();
+  const establishment = await createValidEstablishment2(author.id);
+  const manager = await createAndAuthValidManager2(establishment.id);
+  const worker = await createAndAuthWorker2(establishment.id);
+
+  return {
+    author: {
+      id: author.id,
+      cookies: author.cookies,
+    },
+    establishment: {
+      id: establishment.id,
+    },
+    manager: {
+      id: manager.id,
+      cookie: manager.cookies,
+    },
+    worker: {
+      id: worker.id,
+      cookie: worker.cookies,
+    },
+  };
+};
+
+// helper function
+
+const createWorker = async (
+  name: string,
+  email: string,
+  login: string,
+  phone: string,
+  cpf: string,
+  isManager: boolean,
+  establishmentId: string,
+) => {
+  const password = "123456789Abc.";
+  const createdWorker = await workerModel.create({
+    name,
+    login,
+    phone,
     email,
+    password,
+    cpf,
+    establishmentId,
+  });
+
+  if (isManager) await workerModel.setManager(createdWorker.id);
+
+  return {
+    id: createdWorker.id,
+    login: createdWorker.login,
     password,
   };
 };
 
-export const createValidAutho2 = async () => {
-  const password = "123456789Abc.";
-  const email = "validAuthor2@email.com";
+const createAndAuth = async (
+  createfunction: () => Promise<{
+    id: string;
+    login?: string;
+    email?: string;
+    password: string;
+  }>,
+) => {
+  const validUser = await createfunction();
 
-  const validManager = await prisma.user.create({
-    data: {
-      name: "Valid Author 2",
-      email,
-      hash: passwordUtils.genHash(password),
-      cpf: "46363146038",
-    },
+  const { cookies } = await signinForTest({
+    login:
+      validUser.login || validUser.email || "invalidUser@invalidEstablishment",
+    password: validUser.password,
   });
 
   return {
-    id: validManager.id,
-    email,
-    password,
+    id: validUser.id,
+    cookies,
   };
 };
+
+const createAuthor = async (name: string, email: string, cpf: string) => {
+  const password = "123456789Abc.";
+
+  const user = await userModel.create({
+    name,
+    email,
+    cpf,
+    password,
+  });
+
+  return { id: user.id, email, password };
+};
+// authors
+export const createValidAuthor = async () => {
+  return await createAuthor(
+    "Valid Author",
+    "validAuthor@email.com",
+    "11144477735",
+  );
+};
+
+export const createValidAuthor2 = async () => {
+  return await createAuthor(
+    "Valid Author 2",
+    "validAuthor2@email.com",
+    "46363146038",
+  );
+};
+
+export const createAndAuthAuthor = async () => {
+  return createAndAuth(() => createValidAuthor());
+};
+
+export const createAndAuthAuthor2 = async () => {
+  return createAndAuth(() => createValidAuthor2());
+};
+
+// manager
 
 export interface IValidManager {
   id: string;
   login: string;
   password: string;
 }
+
 export const createValidManager = async (establishmentId: string) => {
-  const name = "validManager";
-  const password = "123456789Abc.";
-  const email = "validmanager@email.com";
-  const login = "validManager@ValidEstablishment";
-  const phone = "61999999999";
-  const cpf = "11144477735";
-  const createdManager = await workerModel.create({
-    name,
-    login,
-    phone,
-    email,
-    password,
-    cpf,
+  return await createWorker(
+    "Valid Manager",
+    "validManager@email.com",
+    "validManager@validEstablishment",
+    "61999999999",
+    "04090242010",
+    true,
     establishmentId,
-  });
-
-  await prisma.workers.update({
-    where: { id: createdManager.id },
-    data: {
-      is_manager: true,
-    },
-  });
-
-  return {
-    id: createdManager.id,
-    login: createdManager.login,
-    password,
-  };
+  );
 };
 
 export const createValidManager2 = async (establishmentId: string) => {
-  const name = "validManager2";
-  const password = "123456789Abc.";
-  const email = "validmanager2@email.com";
-  const login = "validManager2@validEstablishment2";
-  const phone = "61999999998";
-  const cpf = "11144477735";
-  const createdManager = await workerModel.create({
-    name,
-    login,
-    phone,
-    email,
-    password,
-    cpf,
+  return await createWorker(
+    "Valid Manager 2",
+    "validManager2@email.com",
+    "validManager2@validEstablishment2",
+    "61999999998",
+    "66042295055",
+    true,
     establishmentId,
-  });
-
-  await prisma.workers.update({
-    where: { id: createdManager.id },
-    data: {
-      is_manager: true,
-    },
-  });
-
-  return {
-    id: createdManager.id,
-    login: createdManager.login,
-    password,
-  };
+  );
 };
 
-export const createValidWorker = async (establishmentId: string) => {
-  const name = "validWorker";
-  const password = "123456789Abc.";
-  const email = "validworker@email.com";
-  const login = "validWorker@validEstablishment2";
-  const phone = "61999999991";
-  const cpf = "11512075000";
-  const createdWorker = await workerModel.create({
-    name,
-    login,
-    phone,
-    email,
-    password,
-    cpf,
-    establishmentId,
-  });
+export const createAndAuthValidManager = async (establishmentId: string) => {
+  return await createAndAuth(() => createValidManager(establishmentId));
+};
 
-  return {
-    id: createdWorker.id,
-    login: createdWorker.login,
-    password,
-  };
+export const createAndAuthValidManager2 = async (establishmentId: string) => {
+  return await createAndAuth(() => createValidManager2(establishmentId));
+};
+
+// worker
+
+export const createValidWorker = async (establishmentId: string) => {
+  return await createWorker(
+    "Valid Worker",
+    "validWorker@email.com",
+    "validWorker@validEstablishment",
+    "61999999997",
+    "45479864017",
+    false,
+    establishmentId,
+  );
 };
 
 export const createValidWorker2 = async (establishmentId: string) => {
-  const name = "validWorker2";
-  const password = "123456789Abc.";
-  const email = "validworker2@email.com";
-  const login = "validWorker2@validEstablishment2";
-  const phone = "61999999998";
-  const cpf = "97476783069";
-  const createdWorker = await workerModel.create({
-    name,
-    login,
-    phone,
-    email,
-    password,
-    cpf,
+  return await createWorker(
+    "Valid Worker 2",
+    "validWorker2@email.com",
+    "validWorker2@validEstablishment2",
+    "61999999996",
+    "93707149013",
+    false,
     establishmentId,
-  });
-
-  return {
-    id: createdWorker.id,
-    login: createdWorker.login,
-    password,
-  };
+  );
+};
+export const createAndAuthWorker = async (establishmentId: string) => {
+  return await createAndAuth(() => createValidWorker(establishmentId));
 };
 
+export const createAndAuthWorker2 = async (establishmentId: string) => {
+  return await createAndAuth(() => createValidWorker2(establishmentId));
+};
+
+// establishment
 export const createValidEstablishment = async (creatorId: string) => {
   const establishment = await establishmentModel.create({
     cep: "01001000",
