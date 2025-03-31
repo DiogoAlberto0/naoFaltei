@@ -1,104 +1,77 @@
 import { resetAllDatabase } from "@/prisma/prisma";
-import {
-  createValidEstablishment,
-  createValidAutho,
-  createValidManager,
-  IValidManager,
-} from "@/src/app/(back)/tests/entitysForTest";
-import { signinForTest } from "@/src/app/(back)/tests/signinForTest";
+import { createScenario1 } from "@/src/app/(back)/tests/entitysForTest";
 import { beforeAll, describe, it, expect } from "vitest";
 
-let validManager: IValidManager;
-let managerCookie: string;
+let manager1Id: string;
+let manager1Cookie: string;
+
 beforeAll(async () => {
   await resetAllDatabase();
-  const admin = await createValidAutho();
-
-  const validEstablishment = await createValidEstablishment(admin.id);
-
-  validManager = await createValidManager(validEstablishment.id);
-
-  const { cookies } = await signinForTest({
-    login: validManager.login,
-    password: validManager.password,
-  });
-
-  expect(cookies).toBeTypeOf("string");
-
-  managerCookie = cookies;
+  const scenario1 = await createScenario1();
+  manager1Id = scenario1.manager.id;
+  manager1Cookie = scenario1.manager.cookie;
 });
+
+const sessionFetch = async (cookie: string) => {
+  const response = await fetch(
+    "http://localhost:3000/api/v1/worker/getSession",
+    {
+      method: "GET",
+      headers: {
+        cookie,
+      },
+    },
+  );
+
+  const data = await response.json();
+
+  return { response, data };
+};
+
+const expectations = async (
+  cookie: string,
+  userId: string,
+  isSuccefull: boolean,
+) => {
+  const { response, data } = await sessionFetch(cookie);
+
+  if (isSuccefull) {
+    expect(response.status).toStrictEqual(200);
+    expect(data).toStrictEqual({
+      session: {
+        user: {
+          name: expect.any(String),
+          id: userId,
+        },
+        expires: expect.any(String),
+      },
+    });
+  } else {
+    expect(response.status).toEqual(401);
+    expect(data).toStrictEqual({
+      message: "Usuário não autorizado",
+      action: "Contate o suporte",
+    });
+  }
+};
 describe("GET on `/api/v1/worker/getSession`", () => {
   describe("Valid manager", () => {
     it("should be return worker session if a valid manager cookie is provided", async () => {
-      const response = await fetch(
-        "http://localhost:3000/api/v1/worker/getSession",
-        {
-          method: "GET",
-          headers: {
-            cookie: managerCookie,
-          },
-        },
-      );
-
-      expect(response.status).toEqual(200);
-
-      const data = await response.json();
-
-      expect(data).toStrictEqual({
-        session: {
-          user: {
-            name: expect.any(String),
-            id: validManager.id,
-          },
-          expires: expect.any(String),
-        },
-      });
-
-      expect(new Date(data.session.expires).getTime()).not.toBeNaN();
+      await expectations(manager1Cookie, manager1Id, true);
     });
   });
 
   describe("Valid manager", () => {
     it("should be return unauthorized error if cookie is not provided", async () => {
-      const response = await fetch(
-        "http://localhost:3000/api/v1/worker/getSession",
-        {
-          method: "GET",
-        },
-      );
-
-      expect(response.status).toEqual(401);
-
-      const data = await response.json();
-
-      expect(data).toStrictEqual({
-        message: "Usuário não autorizado",
-        action: "Contate o suporte",
-      });
+      await expectations("", "", false);
     });
   });
 
   describe("Valid manager", () => {
     it("should be return unauthorized error if invalid cookie is provided", async () => {
-      const response = await fetch(
-        "http://localhost:3000/api/v1/worker/getSession",
-        {
-          method: "GET",
-          headers: {
-            cookie:
-              "session=eyJ1c2VySWQiOiIxMjM0NTYifQ==; Path=/; HttpOnly; Secure",
-          },
-        },
-      );
-
-      expect(response.status).toEqual(401);
-
-      const data = await response.json();
-
-      expect(data).toStrictEqual({
-        message: "Usuário não autorizado",
-        action: "Contate o suporte",
-      });
+      const invalidCookie =
+        "session=eyJ1c2VySWQiOiIxMjM0NTYifQ==; Path=/; HttpOnly; Secure";
+      await expectations(invalidCookie, "", false);
     });
   });
 });

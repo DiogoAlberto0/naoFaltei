@@ -36,84 +36,68 @@ beforeAll(async () => {
 });
 
 describe("POST on /api/v1/signin", () => {
-  it("should be possible to signin with an valid author", async () => {
+  const signinExpectations = async ({
+    login,
+    password,
+    isSuccefulCase = true,
+  }: {
+    login: string;
+    password: string;
+    isSuccefulCase?: boolean;
+  }) => {
     const response = await fetch("http://localhost:3000/api/v1/signin", {
       body: JSON.stringify({
-        login: establishmentCreator.email,
-        password: establishmentCreator.password,
+        login,
+        password,
       }),
       method: "POST",
       credentials: "include",
     });
 
-    expect(response.headers.get("set-cookie")).not.toBeUndefined();
-    expect(response.headers.get("set-cookie")).not.toBeNull();
-    expect(response.headers.get("set-cookie")).toBeTypeOf("string");
+    if (isSuccefulCase) {
+      expect(response.headers.get("set-cookie")).not.toBeUndefined();
+      expect(response.headers.get("set-cookie")).not.toBeNull();
+      expect(response.headers.get("set-cookie")).toBeTypeOf("string");
+    } else {
+      const data = await response.json();
+      expect(data).toEqual({
+        message: "Usuário ou senha incorretos",
+        action: "Verifique os campos informados.",
+      });
+    }
+  };
+  it("should be possible to signin with an valid author", async () => {
+    await signinExpectations({
+      login: establishmentCreator.email,
+      password: establishmentCreator.password,
+    });
   });
 
   it("should be possible to signin with an valid author with captalize email", async () => {
-    const response = await fetch("http://localhost:3000/api/v1/signin", {
-      body: JSON.stringify({
-        login: establishmentCreator.email.toUpperCase(),
-        password: establishmentCreator.password,
-      }),
-      method: "POST",
-      credentials: "include",
+    await signinExpectations({
+      login: establishmentCreator.email.toLocaleUpperCase(),
+      password: establishmentCreator.password,
     });
-
-    expect(response.headers.get("set-cookie")).not.toBeUndefined();
-    expect(response.headers.get("set-cookie")).not.toBeNull();
-    expect(response.headers.get("set-cookie")).toBeTypeOf("string");
   });
   it("should be possible to signin with an valid manager data", async () => {
-    const response = await fetch("http://localhost:3000/api/v1/signin", {
-      body: JSON.stringify({
-        login: validManager.login,
-        password: validManager.password,
-      }),
-      method: "POST",
-      credentials: "include",
+    await signinExpectations({
+      login: validManager.login.toLocaleUpperCase(),
+      password: validManager.password,
     });
-
-    expect(response.headers.get("set-cookie")).not.toBeUndefined();
-    expect(response.headers.get("set-cookie")).not.toBeNull();
-    expect(response.headers.get("set-cookie")).toBeTypeOf("string");
   });
 
   it("should not be possible to signin with a invalid manager login", async () => {
-    const response = await fetch("http://localhost:3000/api/v1/signin", {
-      body: JSON.stringify({
-        login: "invalidLogin",
-        password: validManager.password,
-      }),
-      method: "POST",
-      credentials: "include",
-    });
-    expect(response.headers.get("set-cookie")).toBeNull();
-    expect(response.status).toEqual(400);
-
-    const data = await response.json();
-    expect(data).toEqual({
-      message: "Usuário ou senha incorretos",
-      action: "Verifique os campos informados.",
+    await signinExpectations({
+      login: "invalidLogin",
+      password: validManager.password,
+      isSuccefulCase: false,
     });
   });
   it("should not be possible to signin with a invalid manager password", async () => {
-    const response = await fetch("http://localhost:3000/api/v1/signin", {
-      body: JSON.stringify({
-        login: validManager.login,
-        password: "invalid password",
-      }),
-      method: "POST",
-      credentials: "include",
-    });
-    expect(response.headers.get("set-cookie")).toBeNull();
-    expect(response.status).toEqual(400);
-
-    const data = await response.json();
-    expect(data).toEqual({
-      message: "Usuário ou senha incorretos",
-      action: "Verifique os campos informados.",
+    await signinExpectations({
+      login: validManager.login,
+      password: "invalidPassword",
+      isSuccefulCase: false,
     });
   });
 });

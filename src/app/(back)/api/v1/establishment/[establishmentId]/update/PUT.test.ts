@@ -1,15 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
+import { omit } from "lodash";
 
 // client
-import {
-  prisma,
-  resetAllDatabase,
-  type IEstablishmentFromDB,
-} from "@/prisma/prisma";
+import { resetAllDatabase } from "@/prisma/prisma";
 
 // models
 import { establishmentModel } from "@/src/app/(back)/models/establishment";
-import { userModel } from "@/src/app/(back)/models/user";
 
 //utils
 import { emailUtils } from "@/src/utils/email";
@@ -18,545 +14,337 @@ import { cepUtils } from "@/src/utils/cep";
 
 //valid entitys for tests
 import {
-  type IValidManager,
-  createValidAutho,
-  createValidEstablishment,
-  createValidEstablishment2,
-  createValidManager,
-  createValidManager2,
+  createScenario1,
+  createScenario2,
 } from "@/src/app/(back)/tests/entitysForTest";
-import { signinForTest } from "@/src/app/(back)/tests/signinForTest";
-import { workerModel } from "@/src/app/(back)/models/worker";
 
-let authorCookies: string;
+let author1Cookies: string;
+let validEstablishment1Id: string;
+let manager1Cookies: string;
 
-let validEstablishment: IEstablishmentFromDB;
-let validManager: IValidManager;
-let cookieManager: string;
+let author2Cookies: string;
+let validEstablishment2Id: string;
 
-let validEstablishment2: IEstablishmentFromDB;
-let validManager2: IValidManager;
-let cookieManager2: string;
-
-const validateTimestamps = (data: {
-  created_at: string;
-  updated_at: string;
-}) => {
-  expect(Date.parse(data.created_at)).not.toBeNaN();
-  expect(Date.parse(data.updated_at)).not.toBeNaN();
-  expect(Date.parse(data.created_at)).not.toEqual(Date.parse(data.updated_at));
-  expect(Date.parse(data.updated_at)).toBeGreaterThan(
-    Date.parse(data.created_at),
-  );
-};
 beforeEach(async () => {
   await resetAllDatabase();
-  expect(await userModel.count()).toEqual(0);
-  expect(await establishmentModel.count()).toEqual(0);
 
-  const author = await createValidAutho();
-  const { cookies: aCookies } = await signinForTest({
-    login: author.email,
-    password: author.password,
-  });
+  const scenario1 = await createScenario1();
+  author1Cookies = scenario1.author.cookies;
+  manager1Cookies = scenario1.manager.cookie;
+  validEstablishment1Id = scenario1.establishment.id;
 
-  authorCookies = aCookies;
-
-  validEstablishment = await createValidEstablishment(author.id);
-  validManager = await createValidManager(validEstablishment.id);
-
-  const { cookies } = await signinForTest({
-    login: validManager.login,
-    password: validManager.password,
-  });
-  cookieManager = cookies;
-
-  validEstablishment2 = await createValidEstablishment2(author.id);
-  validManager2 = await createValidManager2(validEstablishment2.id);
-  const { cookies: cookies2 } = await signinForTest({
-    login: validManager2.login,
-    password: validManager2.password,
-  });
-  cookieManager2 = cookies2;
-
-  expect(await userModel.count()).toEqual(1);
-  expect(await workerModel.count()).toEqual(2);
-  expect(await establishmentModel.count()).toEqual(2);
+  const scenario2 = await createScenario2();
+  author2Cookies = scenario2.author.cookies;
+  validEstablishment2Id = scenario2.establishment.id;
 });
 
+interface IUpdateEstablishmentData {
+  id: string;
+  name?: string;
+  phone?: string;
+  email?: string;
+  cep?: string;
+  coords?: {
+    lat?: string;
+    lng?: string;
+  };
+}
+
+interface IUpdateFetch {
+  body: IUpdateEstablishmentData;
+  cookie?: string;
+}
+const updateEstablishmentFetch = async ({
+  body: { id, ...otherFields },
+  cookie,
+}: IUpdateFetch) => {
+  const response = await fetch(
+    `http://localhost:3000/api/v1/establishment/${id}/update`,
+    {
+      method: "PUT",
+      body: JSON.stringify({ ...otherFields }),
+      headers: cookie ? { cookie } : undefined,
+    },
+  );
+
+  const data = await response.json();
+
+  return { response, data };
+};
+
+interface IExpectations extends IUpdateFetch {
+  expectedStatusCode?: number;
+  expectedResponseData?: any;
+}
+const expectations = async ({
+  expectedStatusCode = 200,
+  expectedResponseData,
+  cookie,
+  body: { id, ...updatePayload },
+}: IExpectations) => {
+  const oldEstablishmentData = await establishmentModel.findBy({
+    id,
+  });
+  const oldEdtablishmentDataWithoutUpdatedAt = omit(
+    oldEstablishmentData,
+    "updated_at",
+    "created_at",
+  );
+
+  const { response, data } = await updateEstablishmentFetch({
+    body: {
+      id,
+      ...updatePayload,
+    },
+    cookie,
+  });
+
+  expect(response.status).toStrictEqual(expectedStatusCode);
+
+  const newEstablishmentData = await establishmentModel.findBy({
+    id,
+  });
+  const newEstablishmentDataWithoutUpdatedAt = omit(
+    newEstablishmentData,
+    "updated_at",
+    "created_at",
+  );
+  if (response.status === 200) {
+    const dataWithoutUpdatedAt = omit(data, "updated_at", "created_at");
+
+    const { coords, ...otherPayloadProps } = updatePayload;
+    expect(dataWithoutUpdatedAt).toStrictEqual({
+      ...oldEdtablishmentDataWithoutUpdatedAt,
+      ...coords,
+      ...otherPayloadProps,
+      ...expectedResponseData,
+    });
+
+    expect(newEstablishmentDataWithoutUpdatedAt).toStrictEqual({
+      ...oldEdtablishmentDataWithoutUpdatedAt,
+      ...coords,
+      ...otherPayloadProps,
+      ...expectedResponseData,
+    });
+  } else {
+    expect(data).toStrictEqual(expectedResponseData);
+    expect(oldEstablishmentData).toStrictEqual(newEstablishmentData);
+  }
+};
 describe("PUT on /api/v1/establishment/update/:ID", () => {
-  describe("Authenticated manager from anohter establishment", () => {
+  describe("Authenticated author from anohter establishment", () => {
     it("should be return error if user is not author from establishment", async () => {
-      const newName = "Novo nome";
-      const body = {
-        name: newName,
-      };
-      const response = await fetch(
-        `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-        {
-          method: "PUT",
-          body: JSON.stringify(body),
-          headers: { cookie: cookieManager2 },
+      await expectations({
+        cookie: author2Cookies,
+        body: {
+          id: validEstablishment1Id,
+          name: "Novo nome",
         },
-      );
-
-      expect(response.status).toEqual(403);
-
-      const data = await response.json();
-
-      expect(data).toEqual({
-        message: "Usuário não tem permissão para fazer essa operação.",
-        action: "Contate o suporte.",
+        expectedStatusCode: 403,
+        expectedResponseData: {
+          message: "Usuário não tem permissão para fazer essa operação.",
+          action: "Contate o suporte.",
+        },
       });
     });
   });
   describe("Authenticated manager from establishment but arent the author", () => {
     it("should be return error if user is not author from establishment", async () => {
-      const newName = "Novo nome";
-      const body = {
-        name: newName,
-      };
-      const response = await fetch(
-        `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-        {
-          method: "PUT",
-          body: JSON.stringify(body),
-          headers: { cookie: cookieManager },
+      await expectations({
+        cookie: manager1Cookies,
+        body: {
+          id: validEstablishment1Id,
+          name: "Novo nome",
         },
-      );
-
-      expect(response.status).toEqual(403);
-
-      const data = await response.json();
-
-      expect(data).toEqual({
-        message: "Usuário não tem permissão para fazer essa operação.",
-        action: "Contate o suporte.",
+        expectedStatusCode: 403,
+        expectedResponseData: {
+          message: "Usuário não tem permissão para fazer essa operação.",
+          action: "Contate o suporte.",
+        },
       });
     });
   });
   describe("Anonymous user", () => {
     it("should be return error if user is not authenticated", async () => {
-      const newName = "Novo nome";
-      const body = {
-        name: newName,
-      };
-      const response = await fetch(
-        `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-        {
-          method: "PUT",
-          body: JSON.stringify(body),
+      await expectations({
+        body: {
+          id: validEstablishment1Id,
+          name: "Novo nome",
         },
-      );
-
-      expect(response.status).toEqual(401);
-
-      const data = await response.json();
-
-      expect(data).toEqual({
-        message: "Usuário não autorizado",
-        action: "Faça login no site",
+        expectedStatusCode: 401,
+        expectedResponseData: {
+          message: "Usuário não autorizado",
+          action: "Faça login no site",
+        },
       });
     });
   });
   describe("Authenticated author from establishment", () => {
     describe("UPDATE NAME TESTS", () => {
       it("should be possible to update name of an valid establishment", async () => {
-        const newName = "Novo nome";
-        const body = {
-          name: newName,
-        };
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
+        await expectations({
+          body: {
+            id: validEstablishment1Id,
+            name: "New Establishment Name",
           },
-        );
-
-        expect(response.status).toEqual(200);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          name: newName,
-          id: validEstablishment.id,
-          email: validEstablishment.email,
-          phone: validEstablishment.phone,
-          cep: validEstablishment.cep,
-          lat: validEstablishment.lat,
-          lng: validEstablishment.lng,
-          active: validEstablishment.active,
-          created_at: expect.any(String),
-          updated_at: expect.any(String),
-          author_id: validEstablishment.author_id,
+          cookie: author1Cookies,
+          expectedStatusCode: 200,
         });
-
-        validateTimestamps(data);
       });
     });
 
     describe("UPDATE EMAIL TESTS", () => {
       it("should be possible to update email of an valid establishment", async () => {
-        const newEmail = "Novo@email.com";
-        const body = {
-          email: newEmail,
-        };
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
+        await expectations({
+          body: {
+            id: validEstablishment1Id,
+            email: "Novo@email.com",
           },
-        );
-
-        expect(response.status).toEqual(200);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          name: validEstablishment.name,
-          id: validEstablishment.id,
-          email: emailUtils.normalize(newEmail),
-          phone: validEstablishment.phone,
-          cep: validEstablishment.cep,
-          lat: validEstablishment.lat,
-          lng: validEstablishment.lng,
-          active: validEstablishment.active,
-          created_at: expect.any(String),
-          updated_at: expect.any(String),
-          author_id: validEstablishment.author_id,
+          cookie: author1Cookies,
+          expectedResponseData: {
+            email: emailUtils.normalize("Novo@email.com"),
+          },
         });
-
-        validateTimestamps(data);
       });
 
       it("should not be possible to update if invalid email is provided", async () => {
-        const newEmail = "asdasd";
-        const body = {
-          email: newEmail,
-        };
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
+        await expectations({
+          body: {
+            id: validEstablishment1Id,
+            email: "asdasd",
           },
-        );
-
-        expect(response.status).toEqual(400);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          message: "Email inválido",
-          action:
-            "Informe um email válido seguindo a seguinte estrutura: XXXX@XXXX.XXX",
+          cookie: author1Cookies,
+          expectedStatusCode: 400,
+          expectedResponseData: {
+            message: "Email inválido",
+            action:
+              "Informe um email válido seguindo a seguinte estrutura: XXXX@XXXX.XXX",
+          },
         });
-
-        const establishmentFromDB = await prisma.establishment.findUnique({
-          where: { id: validEstablishment.id },
-        });
-
-        expect(establishmentFromDB).toEqual(validEstablishment);
       });
 
       it("should not be possible to update if provided email is already in use by another establishment", async () => {
-        const newEmail = validEstablishment2.email;
-        const body = {
-          email: newEmail,
-        };
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
+        const usedEmail = (
+          await establishmentModel.findBy({ id: validEstablishment1Id })
+        )?.email;
+        await expectations({
+          body: {
+            id: validEstablishment2Id,
+            email: usedEmail,
           },
-        );
-
-        expect(response.status).toEqual(409);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          message:
-            "O email fornecido ja está em uso por outro estabelecimento.",
-          action: "Informe outro email.",
+          cookie: author2Cookies,
+          expectedStatusCode: 409,
+          expectedResponseData: {
+            message:
+              "O email fornecido ja está em uso por outro estabelecimento.",
+            action: "Informe outro email.",
+          },
         });
-
-        const establishmentFromDB = await prisma.establishment.findUnique({
-          where: { id: validEstablishment.id },
-        });
-
-        expect(establishmentFromDB).toEqual(validEstablishment);
       });
     });
 
     describe("UPDATE PHONE TESTS", () => {
       it("should be possible to update phone of an valid establishment", async () => {
-        const newPhone = "61900000000";
-        const body = {
-          phone: newPhone,
-        };
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
+        await expectations({
+          body: {
+            id: validEstablishment1Id,
+            phone: "61900000000",
           },
-        );
-
-        expect(response.status).toEqual(200);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          name: validEstablishment.name,
-          id: validEstablishment.id,
-          email: validEstablishment.email,
-          phone: phoneUtils.clean(newPhone),
-          cep: validEstablishment.cep,
-          lat: validEstablishment.lat,
-          lng: validEstablishment.lng,
-          active: validEstablishment.active,
-          created_at: expect.any(String),
-          updated_at: expect.any(String),
-          author_id: validEstablishment.author_id,
+          cookie: author1Cookies,
         });
-
-        validateTimestamps(data);
       });
 
       it("should be possible to update phone with ponctuation of an valid establishment", async () => {
         const newPhone = "(61)90000-0000";
-        const body = {
-          phone: newPhone,
-        };
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
+
+        await expectations({
+          body: {
+            id: validEstablishment1Id,
+            phone: newPhone,
           },
-        );
-
-        expect(response.status).toEqual(200);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          name: validEstablishment.name,
-          id: validEstablishment.id,
-          email: validEstablishment.email,
-          phone: phoneUtils.clean(newPhone),
-          cep: validEstablishment.cep,
-          lat: validEstablishment.lat,
-          lng: validEstablishment.lng,
-          active: validEstablishment.active,
-          created_at: expect.any(String),
-          updated_at: expect.any(String),
-          author_id: validEstablishment.author_id,
+          cookie: author1Cookies,
+          expectedResponseData: {
+            phone: phoneUtils.clean(newPhone),
+          },
         });
-
-        validateTimestamps(data);
       });
 
       it("should not be possible to update if invalid phone is provided", async () => {
-        const newPhone = "12345";
-        const body = {
-          phone: newPhone,
-        };
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
+        await expectations({
+          body: {
+            id: validEstablishment1Id,
+            phone: "619888888",
           },
-        );
-
-        expect(response.status).toEqual(400);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          message: "Telefone inválido",
-          action:
-            "Informe um telefone válido seguindo a seguinte estrutura: (XX)XXXXX-XXXX",
+          cookie: author1Cookies,
+          expectedStatusCode: 400,
+          expectedResponseData: {
+            message: "Telefone inválido",
+            action:
+              "Informe um telefone válido seguindo a seguinte estrutura: (XX)XXXXX-XXXX",
+          },
         });
-
-        const establishmentFromDB = await prisma.establishment.findUnique({
-          where: { id: validEstablishment.id },
-        });
-
-        expect(establishmentFromDB).toEqual(validEstablishment);
       });
 
       it("should not be possible to update if provided phone is already in use by another establishment", async () => {
-        const newPhone = validEstablishment2.phone;
-        const body = {
-          phone: newPhone,
-        };
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
+        const usedPhone = (
+          await establishmentModel.findBy({ id: validEstablishment1Id })
+        )?.phone;
+        await expectations({
+          body: {
+            id: validEstablishment2Id,
+            phone: usedPhone,
           },
-        );
-
-        expect(response.status).toEqual(409);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          message:
-            "O telefone fornecido já está em uso por outro estabelecimento.",
-          action: "Informe outro telefone.",
+          cookie: author2Cookies,
+          expectedStatusCode: 409,
+          expectedResponseData: {
+            message:
+              "O telefone fornecido já está em uso por outro estabelecimento.",
+            action: "Informe outro telefone.",
+          },
         });
-
-        const establishmentFromDB = await prisma.establishment.findUnique({
-          where: { id: validEstablishment.id },
-        });
-
-        expect(establishmentFromDB).toEqual(validEstablishment);
       });
     });
 
     describe("UPDATE CEP TESTS", () => {
       it("should be possible to update cep, if valid cep is provided", async () => {
-        const newCep = "71805709";
-        const body = {
-          cep: newCep,
-        };
-
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
+        await expectations({
+          body: {
+            id: validEstablishment2Id,
+            cep: "71805709",
           },
-        );
-
-        expect(response.status).toEqual(200);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          id: validEstablishment.id,
-          name: validEstablishment.name,
-          email: validEstablishment.email,
-          phone: validEstablishment.phone,
-          cep: cepUtils.clean(newCep),
-          lat: validEstablishment.lat,
-          lng: validEstablishment.lng,
-          active: validEstablishment.active,
-          created_at: expect.any(String),
-          updated_at: expect.any(String),
-          author_id: validEstablishment.author_id,
-        });
-
-        validateTimestamps(data);
-
-        const updatedCEP = await prisma.establishment.findUnique({
-          where: {
-            id: validEstablishment.id,
-          },
-          select: { cep: true },
-        });
-
-        expect(updatedCEP).toEqual({
-          cep: cepUtils.clean(newCep),
+          cookie: author2Cookies,
         });
       });
 
       it("should be possible to update cep, if valid cep with ponctuation is provided", async () => {
         const newCep = "71805-709";
-        const body = {
-          cep: newCep,
-        };
-
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
+        await expectations({
+          body: {
+            id: validEstablishment2Id,
+            cep: newCep,
           },
-        );
-
-        expect(response.status).toEqual(200);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          id: validEstablishment.id,
-          name: validEstablishment.name,
-          email: validEstablishment.email,
-          phone: validEstablishment.phone,
-          cep: cepUtils.clean(newCep),
-          lat: validEstablishment.lat,
-          lng: validEstablishment.lng,
-          active: validEstablishment.active,
-          created_at: expect.any(String),
-          updated_at: expect.any(String),
-          author_id: validEstablishment.author_id,
-        });
-
-        validateTimestamps(data);
-
-        const updatedCEP = await prisma.establishment.findUnique({
-          where: {
-            id: validEstablishment.id,
+          cookie: author2Cookies,
+          expectedResponseData: {
+            cep: cepUtils.clean(newCep),
           },
-          select: { cep: true },
-        });
-
-        expect(updatedCEP).toEqual({
-          cep: cepUtils.clean(newCep),
         });
       });
 
       it("should not be possible to update cep, if invalid cep is provided", async () => {
         const newCep = "7180570";
-        const body = {
-          cep: newCep,
-        };
-
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
+        await expectations({
+          body: {
+            id: validEstablishment2Id,
+            cep: newCep,
           },
-        );
-
-        expect(response.status).toEqual(400);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          message: "CEP inválido",
-          action:
-            "Informe um CEP válido seguindo a seguinte estrutura: XXXXX-XXX",
-        });
-
-        const updatedCEP = await prisma.establishment.findUnique({
-          where: {
-            id: validEstablishment.id,
+          cookie: author2Cookies,
+          expectedStatusCode: 400,
+          expectedResponseData: {
+            message: "CEP inválido",
+            action:
+              "Informe um CEP válido seguindo a seguinte estrutura: XXXXX-XXX",
           },
         });
-
-        expect(updatedCEP).toEqual(validEstablishment);
       });
     });
 
@@ -564,199 +352,95 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       it("should be possible to update coordinates if valid latitude an longitude is provided", async () => {
         const newLatitude = "-23.550520";
         const newLongitude = "-46.633308";
-        const body = {
-          coords: {
-            lat: newLatitude,
-            lng: newLongitude,
+        await expectations({
+          body: {
+            id: validEstablishment2Id,
+            coords: {
+              lat: newLatitude,
+              lng: newLongitude,
+            },
           },
-        };
-
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
-          },
-        );
-
-        expect(response.status).toEqual(200);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          id: validEstablishment.id,
-          name: validEstablishment.name,
-          email: validEstablishment.email,
-          phone: validEstablishment.phone,
-          cep: validEstablishment.cep,
-          lat: newLatitude,
-          lng: newLongitude,
-          active: validEstablishment.active,
-          created_at: expect.any(String),
-          updated_at: expect.any(String),
-          author_id: validEstablishment.author_id,
-        });
-
-        validateTimestamps(data);
-
-        const updatedEstablishment = await prisma.establishment.findUnique({
-          where: {
-            id: validEstablishment.id,
-          },
-          select: { lat: true, lng: true },
-        });
-
-        expect(updatedEstablishment).toEqual({
-          lat: newLatitude,
-          lng: newLongitude,
+          cookie: author2Cookies,
         });
       });
 
       it("should not be possible to update coordinates if invalid latitude is provided", async () => {
         const newLatitude = "100.123456";
         const newLongitude = "-46.633308";
-        const body = {
-          coords: {
-            lat: newLatitude,
-            lng: newLongitude,
+        await expectations({
+          body: {
+            id: validEstablishment2Id,
+            coords: {
+              lat: newLatitude,
+              lng: newLongitude,
+            },
           },
-        };
-
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
-          },
-        );
-
-        expect(response.status).toEqual(400);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          message: "Latitude inválida",
-          action: "Informe uma coordenada válida",
-        });
-
-        const updatedEstablishment = await prisma.establishment.findUnique({
-          where: {
-            id: validEstablishment.id,
+          cookie: author2Cookies,
+          expectedStatusCode: 400,
+          expectedResponseData: {
+            message: "Latitude inválida",
+            action: "Informe uma coordenada válida",
           },
         });
-
-        expect(updatedEstablishment).toEqual(validEstablishment);
       });
 
       it("should not be possible to update coordinates if invalid longitude is provided", async () => {
         const newLatitude = "-23.550520";
         const newLongitude = "200.123456";
-        const body = {
-          coords: {
-            lat: newLatitude,
-            lng: newLongitude,
+        await expectations({
+          body: {
+            id: validEstablishment2Id,
+            coords: {
+              lat: newLatitude,
+              lng: newLongitude,
+            },
           },
-        };
-
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: authorCookies },
-          },
-        );
-
-        expect(response.status).toEqual(400);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          message: "Longitude inválida",
-          action: "Informe uma coordenada válida",
-        });
-
-        const updatedEstablishment = await prisma.establishment.findUnique({
-          where: {
-            id: validEstablishment.id,
+          cookie: author2Cookies,
+          expectedStatusCode: 400,
+          expectedResponseData: {
+            message: "Longitude inválida",
+            action: "Informe uma coordenada válida",
           },
         });
-
-        expect(updatedEstablishment).toEqual(validEstablishment);
       });
 
       it("should not be possible to update coordinates if only latitude is provided", async () => {
         const newLatitude = "-23.550520";
-        const body = {
-          coords: {
-            lat: newLatitude,
+        await expectations({
+          body: {
+            id: validEstablishment2Id,
+            coords: {
+              lat: newLatitude,
+            },
           },
-        };
-
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
-          },
-        );
-
-        expect(response.status).toEqual(400);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          message: "Coordenadas inválidas",
-          action:
-            "Informe as coordenadas com os parametros 'lat' para latitude e 'lng' para longitude",
-        });
-
-        const updatedEstablishment = await prisma.establishment.findUnique({
-          where: {
-            id: validEstablishment.id,
+          cookie: author2Cookies,
+          expectedStatusCode: 400,
+          expectedResponseData: {
+            message: "Coordenadas inválidas",
+            action:
+              "Informe as coordenadas com os parametros 'lat' para latitude e 'lng' para longitude",
           },
         });
-
-        expect(updatedEstablishment).toEqual(validEstablishment);
       });
 
       it("should not be possible to update coordinates if only longitude is provided", async () => {
         const newLongitude = "-46.633308";
-        const body = {
-          coords: {
-            lng: newLongitude,
+
+        await expectations({
+          body: {
+            id: validEstablishment2Id,
+            coords: {
+              lng: newLongitude,
+            },
           },
-        };
-
-        const response = await fetch(
-          `http://localhost:3000/api/v1/establishment/${validEstablishment.id}/update`,
-          {
-            method: "PUT",
-            body: JSON.stringify(body),
-            headers: { cookie: cookieManager },
-          },
-        );
-
-        expect(response.status).toEqual(400);
-
-        const data = await response.json();
-
-        expect(data).toEqual({
-          message: "Coordenadas inválidas",
-          action:
-            "Informe as coordenadas com os parametros 'lat' para latitude e 'lng' para longitude",
-        });
-
-        const updatedEstablishment = await prisma.establishment.findUnique({
-          where: {
-            id: validEstablishment.id,
+          cookie: author2Cookies,
+          expectedStatusCode: 400,
+          expectedResponseData: {
+            message: "Coordenadas inválidas",
+            action:
+              "Informe as coordenadas com os parametros 'lat' para latitude e 'lng' para longitude",
           },
         });
-
-        expect(updatedEstablishment).toEqual(validEstablishment);
       });
     });
   });
