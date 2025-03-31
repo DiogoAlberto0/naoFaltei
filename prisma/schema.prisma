@@ -103,5 +103,34 @@ model Workers {
 
   establishment_id String
   establishment Establishment @relation(fields: [establishment_id], references: [id])
+
+
+  worker_schedule WorkerSchedule[]
   @@map("workers")
+}
+
+enum WeekDay {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+model WorkerSchedule {
+  id String @id @default(cuid())
+  week_day WeekDay
+  start_hour Int
+  start_minute Int
+  end_hour Int
+  end_minute Int
+  rest_time_in_minutes Int
+  is_day_off Boolean @default(false)
+
+  worker_id String
+  worker Workers @relation(fields: [worker_id], references: [id])
+
+
+  @@map("worker_schedule")
 }
