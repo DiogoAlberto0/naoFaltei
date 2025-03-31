@@ -122,6 +122,7 @@ const create = async ({
     email: createdWorker.email,
     login: createdWorker.login,
     cpf: createdWorker.cpf,
+    phone: createdWorker.phone,
   };
 };
 
