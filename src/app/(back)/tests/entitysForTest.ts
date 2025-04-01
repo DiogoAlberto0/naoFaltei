@@ -10,6 +10,34 @@ export interface IValidAuthor {
   password: string;
 }
 
+//cria muitos workers
+
+export const createManyWorkers = async (establishmentId: string) => {
+  const cpfsValidos = [
+    "819.268.970-05",
+    "648.041.340-77",
+    "174.333.640-30",
+    "492.196.190-59",
+    "688.862.070-00",
+    "916.278.980-50",
+    "890.313.020-07",
+    "032.116.740-63",
+    "545.437.330-37",
+    "469.770.410-05",
+  ];
+  cpfsValidos.forEach(
+    async (cpf, index) =>
+      await workerModel.create({
+        name: `Worker ${index}`,
+        email: `worker${index}@email.com`,
+        cpf,
+        phone: `619999900${index.toString().padStart(2, "0")}`,
+        establishmentId,
+        login: `Worker${index}@Establishment1`,
+        password: `Worker${index}.`,
+      }),
+  );
+};
 // cria cenários
 export const createScenario1 = async () => {
   const author = await createAndAuthAuthor();
