@@ -130,7 +130,7 @@ const create = async ({
 };
 
 const count = async () => {
-  return await prisma.workers.count();
+  return await prisma.workers.count({ where: { is_active: true } });
 };
 
 const validateWorker = async (workerId: string) => {
@@ -209,6 +209,17 @@ const setManager = async (workerId: string) => {
     where: { id: workerId },
     data: {
       is_manager: true,
+    },
+  });
+};
+
+const disable = async (workerId: string) => {
+  await prisma.workers.update({
+    where: {
+      id: workerId,
+    },
+    data: {
+      is_active: false,
     },
   });
 };
@@ -312,6 +323,7 @@ const workerModel = {
   validateWorker,
   update,
   findUniqueBy,
+  disable,
   setManager,
   setSchedule,
   deleteSchedule,
