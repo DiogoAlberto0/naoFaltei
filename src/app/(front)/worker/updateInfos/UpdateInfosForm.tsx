@@ -6,8 +6,8 @@ import { Form } from "@heroui/react";
 import { Input } from "@heroui/input";
 
 //custom components
-import { PasswordInput } from "@/src/app/(front)/Inputs/PasswordInput";
-import { SaveButton } from "@/src/app/(front)/Buttons/SaveButton";
+import { PasswordInput } from "@/src/app/(front)/components/Inputs/PasswordInput";
+import { SaveButton } from "@/src/app/(front)/components/Buttons/SaveButton";
 
 export const UpdateInfosForm = () => {
   const [isClient, setIsClient] = useState(false);

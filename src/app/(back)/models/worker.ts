@@ -129,12 +129,12 @@ const create = async ({
   };
 };
 
-const count = async ({ establishmentId }: { establishmentId?: string }) => {
+const count = async (props?: { establishmentId?: string }) => {
   return await prisma.workers.count({
     where: {
       is_active: true,
       establishment: {
-        id: establishmentId,
+        id: props?.establishmentId,
       },
     },
   });

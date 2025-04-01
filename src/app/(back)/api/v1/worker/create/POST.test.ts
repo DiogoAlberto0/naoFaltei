@@ -134,6 +134,7 @@ const expectations = async ({
       hash: expect.any(String),
       is_manager: false,
       is_admin: false,
+      is_active: true,
       establishment_id: newUser.establishmentId,
     });
 

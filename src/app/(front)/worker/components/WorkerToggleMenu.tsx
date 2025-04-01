@@ -9,7 +9,7 @@ import { signOut } from "next-auth/react";
 import { Listbox, ListboxItem } from "@heroui/react";
 
 //custom components
-import { ToggleMenu } from "@/src/app/(front)/ToggleMenu/ToggleMenu";
+import { ToggleMenu } from "@/src/app/(front)/components/ToggleMenu/ToggleMenu";
 
 export const WorkerToggleMenu = () => {
   const router = useRouter();

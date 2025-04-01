@@ -2,7 +2,7 @@ import { DetailedHTMLProps, HTMLAttributes } from "react";
 // custom components
 import { DateText } from "@/src/app/(front)/components/Date/DateText";
 import { WorkerLastRegisters } from "./WorkerLastRegisters";
-import { HourText } from "@/src/app/(front)/Date/HourText";
+import { HourText } from "@/src/app/(front)/components/Date/HourText";
 
 interface IDateInfosHeader
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}

@@ -92,7 +92,7 @@ const expectations = async ({
   expectedUpdatedData,
 }: IExpectations) => {
   const oldWorkerData = await workerModel.findUniqueBy({ id: workerId });
-  const sanitizedOldData = omit(oldWorkerData, "hash", "is_admin");
+  const sanitizedOldData = omit(oldWorkerData, "hash", "is_admin", "is_active");
 
   const { response, data } = await updateFetch({
     workerId,
@@ -108,7 +108,7 @@ const expectations = async ({
   );
 
   const newWorkerData = await workerModel.findUniqueBy({ id: workerId });
-  const sanitizedNewData = omit(newWorkerData, "hash", "is_admin");
+  const sanitizedNewData = omit(newWorkerData, "hash", "is_admin", "is_active");
 
   const expectedFinalData = expectedUpdatedData ?? updatePayload;
 
