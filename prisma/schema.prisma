@@ -100,6 +100,7 @@ model Workers {
   is_manager Boolean @default(false)
   is_admin Boolean @default(false)
   hash String
+  is_active Boolean @default(true)
 
   establishment_id String
   establishment Establishment @relation(fields: [establishment_id], references: [id])
