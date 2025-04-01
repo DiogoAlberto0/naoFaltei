@@ -1,6 +1,6 @@
 "use client";
 
-import { Map } from "@/src/components/Map/Map";
+import { Map } from "@/src/app/(front)/components/Map/Map";
 import { Button } from "@heroui/react";
 import { addToast } from "@heroui/toast";
 import { useEffect, useState } from "react";

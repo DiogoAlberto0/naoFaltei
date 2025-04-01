@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 
 //components
-import { Unauthorized } from "@/src/components/Unauthorized";
+import { Unauthorized } from "@/src/app/(front)/components/Unauthorized";
 import { WorkerToggleMenu } from "./components/WorkerToggleMenu";
 
 export default async function WorkerLayout({

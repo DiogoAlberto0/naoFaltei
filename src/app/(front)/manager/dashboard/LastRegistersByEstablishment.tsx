@@ -14,8 +14,8 @@ import {
 import {
   TypeRegisterChip,
   TypeRegisterChipLegend,
-} from "@/src/components/Chips/TypeRegisterChip";
-import { DateText } from "@/src/components/Date/DateText";
+} from "@/src/app/(front)/components/Chips/TypeRegisterChip";
+import { DateText } from "@/src/app/(front)/components/Date/DateText";
 
 export const renderRegitersTableRow = ({
   id,

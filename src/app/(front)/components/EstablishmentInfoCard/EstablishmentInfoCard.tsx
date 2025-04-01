@@ -3,9 +3,9 @@
 import { Divider, Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
 
 // component
-import { CepDataIcon } from "@/src/components/DataIcons/CepDataIcon";
-import { EmailDataIcon } from "@/src/components/DataIcons/EmailDataIcon";
-import { PhoneDataIcon } from "@/src/components/DataIcons/PhoneDataIcon";
+import { CepDataIcon } from "@/src/app/(front)/components/DataIcons/CepDataIcon";
+import { EmailDataIcon } from "@/src/app/(front)/components/DataIcons/EmailDataIcon";
+import { PhoneDataIcon } from "@/src/app/(front)/components/DataIcons/PhoneDataIcon";
 import { UpdateEstablishmentModal } from "./UpdateEstablishmentModal";
 
 export const EstablishmentInfoCard = ({

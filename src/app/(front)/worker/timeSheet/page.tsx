@@ -1,5 +1,5 @@
 "use client";
-import { RegistersTable } from "@/src/components/RegistersTable/RegistersTable";
+import { RegistersTable } from "@/src/app/(front)/components/RegistersTable/RegistersTable";
 import { Button, DatePicker } from "@heroui/react";
 
 const TimeSheetPage = () => {

@@ -1,7 +1,7 @@
-import { CalendarInput } from "@/src/components/CalendarInput/CalendarInput";
-import { RegistersTable } from "@/src/components/RegistersTable/RegistersTable";
-import { WorkerInfoCard } from "@/src/components/WorkerInfoCard/WorkerInfoCard";
-import { WorkSchedule } from "@/src/components/WorkSchedule/WorkSchedule";
+import { CalendarInput } from "@/src/app/(front)/components/CalendarInput/CalendarInput";
+import { RegistersTable } from "@/src/app/(front)/components/RegistersTable/RegistersTable";
+import { WorkerInfoCard } from "@/src/app/(front)/components/WorkerInfoCard/WorkerInfoCard";
+import { WorkSchedule } from "@/src/app/(front)/components/WorkSchedule/WorkSchedule";
 import { RegisterClockModal } from "./RegisterClockModal";
 
 interface IWorkerPageProps {

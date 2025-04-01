@@ -2,7 +2,7 @@
 import { TableCell, TableRow } from "@heroui/react";
 
 // custom components
-import { DateText } from "@/src/components/Date/DateText";
+import { DateText } from "@/src/app/(front)/components/Date/DateText";
 import { HourText } from "../Date/HourText";
 
 export const renderRegitersTableRow = ({

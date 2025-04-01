@@ -1,11 +1,11 @@
-import { GoogleSigninButton } from "@/src/components/GoogleSigninButton";
+import { GoogleSigninButton } from "@/src/app/(front)/components/GoogleSigninButton";
 
 import Image from "next/image";
 
 import workersBackground from "@/assets/workersBackground.jpg";
-import { ThemeSwitcher } from "@/src/components/ThemeSwitcher";
+import { ThemeSwitcher } from "@/src/app/(front)/components/ThemeSwitcher";
 import { Divider } from "@heroui/react";
-import { CredentialsSigninForm } from "@/src/components/CredentialsSigninForm/CredentialsSigninForm";
+import { CredentialsSigninForm } from "@/src/app/(front)/components/CredentialsSigninForm/CredentialsSigninForm";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -64,7 +64,7 @@ export default async function SigninPage({
         />
       </div>
 
-      <div className="bg-red-500 w-2/5 max-sm:w-full">
+      <div className="w-2/5 max-sm:w-full">
         <Image
           src={workersBackground}
           alt=""

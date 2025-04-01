@@ -9,10 +9,10 @@ import { I18nProvider } from "@react-aria/i18n";
 import { now, getLocalTimeZone } from "@internationalized/date";
 
 // custom components
-import { AddIconButton } from "@/src/components/Buttons/AddIconButton";
-import { ModalForm } from "@/src/components/Modal/ModalForm";
-import { DeleteIconButton } from "@/src/components/Buttons/DeleteIconButton";
-import { DoubleSwitch } from "@/src/components/Inputs/DoubleSwitch";
+import { AddIconButton } from "@/src/app/(front)/components/Buttons/AddIconButton";
+import { ModalForm } from "@/src/app/(front)/components/Modal/ModalForm";
+import { DeleteIconButton } from "@/src/app/(front)/components/Buttons/DeleteIconButton";
+import { DoubleSwitch } from "@/src/app/(front)/components/Inputs/DoubleSwitch";
 
 const ClockInputs = ({ onRemoveInput }: { onRemoveInput: () => void }) => {
   return (

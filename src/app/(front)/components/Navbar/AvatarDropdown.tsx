@@ -8,7 +8,7 @@ import {
   Divider,
   Skeleton,
 } from "@heroui/react";
-import defaultAvatar from "../../../assets/defaultAvatar.png";
+import defaultAvatar from "@/assets/defaultAvatar.png";
 
 import { signOut } from "next-auth/react";
 import Image from "next/image";

@@ -4,8 +4,8 @@ import { Pagination } from "@heroui/pagination";
 import { Table, TableBody, TableColumn, TableHeader } from "@heroui/table";
 
 // custom components
-import { TopContentRegistersTable } from "@/src/components/RegistersTable/TopContent";
-import { renderRegitersTableRow } from "@/src/components/RegistersTable/Row";
+import { TopContentRegistersTable } from "@/src/app/(front)/components/RegistersTable/TopContent";
+import { renderRegitersTableRow } from "@/src/app/(front)/components/RegistersTable/Row";
 
 export const RegistersTable = ({
   title,

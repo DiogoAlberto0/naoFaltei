@@ -1,6 +1,6 @@
 "use client";
-import { TypeRegisterChip } from "@/src/components/Chips/TypeRegisterChip";
-import { DateText } from "@/src/components/Date/DateText";
+import { TypeRegisterChip } from "@/src/app/(front)/components/Chips/TypeRegisterChip";
+import { DateText } from "@/src/app/(front)/components/Date/DateText";
 import {
   Button,
   Popover,

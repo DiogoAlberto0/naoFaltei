@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
-import { EstablishmentToggle } from "@/src/components/EstablishmentsToggle/EstablishmentToggle";
+import { EstablishmentToggle } from "@/src/app/(front)/components/EstablishmentsToggle/EstablishmentToggle";
 
-import { NavBar } from "@/src/components/Navbar/Navbar";
-import { Unauthorized } from "@/src/components/Unauthorized";
+import { NavBar } from "@/src/app/(front)/components/Navbar/Navbar";
+import { Unauthorized } from "@/src/app/(front)/components/Unauthorized";
 
 export default async function RootLayout({
   children,

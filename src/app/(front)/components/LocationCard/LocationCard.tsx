@@ -3,7 +3,7 @@
 import { Card, CardFooter, CardProps } from "@heroui/card";
 
 //components
-import { Map } from "@/src/components/Map/Map";
+import { Map } from "@/src/app/(front)/components/Map/Map";
 import { UpdateLocaleModal } from "./UpdateLocaleModal";
 
 interface ILocationCardProps extends CardProps {

@@ -1,6 +1,6 @@
-import { EstablishmentInfoCard } from "@/src/components/EstablishmentInfoCard/EstablishmentInfoCard";
-import { WorkersTable } from "../../../components/WorkersTable/WorkersTable";
-import { LocationCard } from "@/src/components/LocationCard/LocationCard";
+import { EstablishmentInfoCard } from "@/src/app/(front)/components/EstablishmentInfoCard/EstablishmentInfoCard";
+import { WorkersTable } from "@/src/app/(front)/components/WorkersTable/WorkersTable";
+import { LocationCard } from "@/src/app/(front)/components/LocationCard/LocationCard";
 import { LastRegistersByEstablishment } from "./LastRegistersByEstablishment";
 
 export default async function ManagerDashboard() {
