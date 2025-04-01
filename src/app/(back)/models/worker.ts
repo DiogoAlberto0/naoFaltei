@@ -129,8 +129,15 @@ const create = async ({
   };
 };
 
-const count = async () => {
-  return await prisma.workers.count({ where: { is_active: true } });
+const count = async ({ establishmentId }: { establishmentId?: string }) => {
+  return await prisma.workers.count({
+    where: {
+      is_active: true,
+      establishment: {
+        id: establishmentId,
+      },
+    },
+  });
 };
 
 const validateWorker = async (workerId: string) => {
@@ -316,6 +323,36 @@ const getSchedule = async (workerId: string) => {
 
   return schedulesObj;
 };
+
+const listByEstablishment = async ({
+  establishmentId,
+  page,
+  pageSize,
+}: {
+  page: number;
+  pageSize: number;
+  establishmentId: string;
+}) => {
+  const workers = await prisma.workers.findMany({
+    where: {
+      establishment_id: {
+        equals: establishmentId,
+      },
+    },
+    orderBy: {
+      name: "asc",
+    },
+    take: pageSize,
+    skip: (page - 1) * pageSize,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+  });
+
+  return workers;
+};
 const workerModel = {
   create,
   findBy,
@@ -323,6 +360,7 @@ const workerModel = {
   validateWorker,
   update,
   findUniqueBy,
+  listByEstablishment,
   disable,
   setManager,
   setSchedule,
