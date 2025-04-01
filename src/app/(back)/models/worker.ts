@@ -1,12 +1,15 @@
+//prisma
 import { prisma } from "@/prisma/prisma";
+import { $Enums } from "@prisma/client";
 
+//models
+import { establishmentModel } from "./establishment";
 // Errors
 import { ConflictError, InputError } from "@/src/Errors/errors";
 //utils
 import { emailUtils } from "@/src/utils/email";
 import { passwordUtils } from "@/src/utils/password";
 import { cpfUtils } from "@/src/utils/cpf";
-import { establishmentModel } from "./establishment";
 import { phoneUtils } from "@/src/utils/phone";
 import { loginUtils } from "@/src/utils/login";
 
@@ -209,6 +212,99 @@ const setManager = async (workerId: string) => {
     },
   });
 };
+
+type WeekDays =
+  | "sunday"
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday";
+
+interface IScheduleProps {
+  startHour: number;
+  startMinute: number;
+  endHour: number;
+  endMinute: number;
+  restTimeInMinutes: number;
+}
+
+const WeekDayEnumMap: Record<WeekDays, $Enums.WeekDay> = {
+  sunday: $Enums.WeekDay.SUNDAY,
+  monday: $Enums.WeekDay.MONDAY,
+  tuesday: $Enums.WeekDay.TUESDAY,
+  wednesday: $Enums.WeekDay.WEDNESDAY,
+  thursday: $Enums.WeekDay.THURSDAY,
+  friday: $Enums.WeekDay.FRIDAY,
+  saturday: $Enums.WeekDay.SATURDAY,
+};
+interface ICreateSchedule {
+  workerId: string;
+  schedule: Record<WeekDays, IScheduleProps | null>;
+}
+const setSchedule = async ({ workerId, schedule }: ICreateSchedule) => {
+  for (const [day, shift] of Object.entries(schedule) as [
+    WeekDays,
+    IScheduleProps | null,
+  ][]) {
+    const weekDayEnum = WeekDayEnumMap[day]; // Converte para o Enum correto
+
+    if (!weekDayEnum) continue; // Evita erro caso o dia seja inválido
+    await prisma.workerSchedule.create({
+      data: {
+        worker_id: workerId,
+        week_day: weekDayEnum,
+        start_hour: shift?.startHour ?? 0,
+        start_minute: shift?.startMinute ?? 0,
+        end_hour: shift?.endHour ?? 0,
+        end_minute: shift?.endMinute ?? 0,
+        rest_time_in_minutes: shift?.restTimeInMinutes ?? 0,
+        is_day_off: shift === null,
+      },
+    });
+  }
+};
+
+const deleteSchedule = async (workerId: string) => {
+  await prisma.workerSchedule.deleteMany({
+    where: {
+      worker_id: workerId,
+    },
+  });
+};
+
+const getSchedule = async (workerId: string) => {
+  const schedules = await prisma.workerSchedule.findMany({
+    where: { worker_id: workerId },
+  });
+
+  const schedulesObj = Object.fromEntries(
+    schedules.map(
+      ({
+        week_day,
+        start_hour,
+        start_minute,
+        end_hour,
+        end_minute,
+        rest_time_in_minutes,
+        is_day_off,
+      }) => [
+        week_day.toLowerCase(),
+        {
+          startHour: start_hour,
+          startMinute: start_minute,
+          endHour: end_hour,
+          endMinute: end_minute,
+          restTimeInMinutes: rest_time_in_minutes,
+          isDayOff: is_day_off,
+        },
+      ],
+    ),
+  );
+
+  return schedulesObj;
+};
 const workerModel = {
   create,
   findBy,
@@ -217,5 +313,8 @@ const workerModel = {
   update,
   findUniqueBy,
   setManager,
+  setSchedule,
+  deleteSchedule,
+  getSchedule,
 };
 export { workerModel };
