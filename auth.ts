@@ -8,8 +8,8 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/prisma/prisma";
 import { passwordUtils } from "@/src/utils/password";
-import { workerModel } from "./src/models/worker";
-import { userModel } from "./src/models/user";
+import { workerModel } from "@/src/app/(back)/models/worker";
+import { userModel } from "@/src/app/(back)/models/user";
 
 declare module "next-auth" {
   /**
@@ -44,7 +44,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // Buscar usuário tanto em `workerModel` quanto `userModel` simultaneamente
         const [worker, user] = await Promise.all([
-          workerModel.findBy({ login: credentials.login as string }),
+          workerModel.findUniqueBy({ login: credentials.login as string }),
           userModel.findBy({ email: credentials.login as string }),
         ]);
 

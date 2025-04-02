@@ -12,4 +12,9 @@ interface IUserFromDB extends User {}
 
 interface IUserWithoutHash extends Omit<User, "hash"> {}
 
+export const resetAllDatabase = async () => {
+  await prisma.$queryRawUnsafe(
+    `TRUNCATE TABLE "users", "establishments", "accounts", "sessions", "verification_tokens", "workers" RESTART IDENTITY CASCADE`,
+  );
+};
 export { type IEstablishmentFromDB, type IUserFromDB, type IUserWithoutHash };
