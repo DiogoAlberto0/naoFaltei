@@ -105,6 +105,7 @@ model Workers {
   establishment_id String
   establishment Establishment @relation(fields: [establishment_id], references: [id])
 
+  worker_clockin Clockin[]
 
   worker_schedule WorkerSchedule[]
   @@map("workers")
@@ -134,4 +135,22 @@ model WorkerSchedule {
 
 
   @@map("worker_schedule")
+}
+
+model Clockin{
+  id String @id @default(cuid())
+  date_time DateTime @default(now())
+  is_medical_certificate Boolean @default(false)
+  is_tardiness Boolean @default(false)
+
+  is_entry Boolean @default(false)
+  lat String
+  lng String
+
+  worker_id String
+  worker Workers @relation(fields: [worker_id], references: [id])
+
+  registered_by String
+
+  @@map("clockin")
 }
