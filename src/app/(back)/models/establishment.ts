@@ -261,6 +261,34 @@ const verifyIfIsAuthorFromEstablishment = async ({
   return false;
 };
 
+const getLocaleInfos = async ({
+  establishmentId,
+  workerId,
+}: {
+  establishmentId?: string;
+  workerId?: string;
+}) => {
+  return await prisma.establishment.findUnique({
+    where: {
+      id: establishmentId,
+      OR: [
+        {
+          workers: {
+            some: {
+              id: workerId,
+            },
+          },
+        },
+      ],
+    },
+    select: {
+      lat: true,
+      lng: true,
+      ratio: true,
+    },
+  });
+};
+
 const establishmentModel = {
   create,
   countByEmail,
@@ -272,6 +300,7 @@ const establishmentModel = {
   verifyIfManagerIsFromEstablishment,
   verifyIfIsAuthorFromEstablishment,
   validateEstablishment,
+  getLocaleInfos,
 };
 
 export { establishmentModel };
