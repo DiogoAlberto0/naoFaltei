@@ -30,7 +30,6 @@ const getDistanceBetween = (
       message: "Coordenadas inválidas",
       action: "Verifique as coordenadas informadas",
     });
-
   const lat1Number = Number(lat1);
   const lng1Number = Number(lng1);
 
@@ -55,6 +54,24 @@ const getDistanceBetween = (
   return R * c;
 };
 
-const coordinateUtils = { isValidLat, isValidLng, getDistanceBetween };
+const isOnRatio = (
+  lat1: string,
+  lng1: string,
+  lat2: string,
+  lng2: string,
+  ratio: number,
+) => {
+  const distance = getDistanceBetween(lat1, lng1, lat2, lng2);
+
+  if (ratio >= distance) return true;
+  else return false;
+};
+
+const coordinateUtils = {
+  isValidLat,
+  isValidLng,
+  getDistanceBetween,
+  isOnRatio,
+};
 
 export { coordinateUtils };
