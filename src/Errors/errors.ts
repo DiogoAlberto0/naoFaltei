@@ -15,6 +15,23 @@ export class InputError extends Error {
   }
 }
 
+interface IBadRequestErrorParams {
+  message: string;
+  status_code?: number;
+  action?: string;
+}
+export class BadRequestError extends Error {
+  public status_code: number;
+  public action: string;
+
+  constructor({ message, status_code, action }: IBadRequestErrorParams) {
+    super(message);
+    this.name = "BadRequestError";
+    this.status_code = status_code || 400;
+    this.action = action || "Contate o suporte";
+  }
+}
+
 interface IFetchErrorParams {
   message: string;
   status_code: number;
