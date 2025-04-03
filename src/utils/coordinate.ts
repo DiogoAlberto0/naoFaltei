@@ -1,24 +1,50 @@
 import { InputError } from "../Errors/errors";
 
-const isValidLat = (latitude: string) => {
+const isValidLat = (latitude: string | number) => {
+  latitude = latitude.toString();
   return (
     /^-?([0-8]?[0-9](\.\d+)?|90(\.0+)?)$/.test(latitude) &&
     !isNaN(parseFloat(latitude))
   );
 };
 
-const isValidLng = (longitude: string) => {
+const isValidLng = (longitude: string | number) => {
+  longitude = longitude.toString();
   return (
     /^-?(1[0-7][0-9](\.\d+)?|180(\.0+)?|[0-9]{1,2}(\.\d+)?)$/.test(longitude) &&
     !isNaN(parseFloat(longitude))
   );
 };
 
+const validateAndParse = ({
+  lat,
+  lng,
+}: {
+  lat?: string | number;
+  lng?: string | number;
+}) => {
+  if (
+    lat == undefined ||
+    lng == undefined ||
+    !coordinateUtils.isValidLat(lat) ||
+    !coordinateUtils.isValidLng(lng)
+  )
+    throw new InputError({
+      message: "Coordanadas inválidas",
+      action: "Verifique as coordenadas informadas, latitude e longitude",
+    });
+
+  return {
+    lat: parseFloat(lat.toString()),
+    lng: parseFloat(lng.toString()),
+  };
+};
+
 const getDistanceBetween = (
-  lat1: string,
-  lng1: string,
-  lat2: string,
-  lng2: string,
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
 ): number => {
   if (
     !isValidLat(lat1) ||
@@ -55,16 +81,16 @@ const getDistanceBetween = (
 };
 
 const isOnRatio = (
-  lat1: string,
-  lng1: string,
-  lat2: string,
-  lng2: string,
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
   ratio: number,
 ) => {
   const distance = getDistanceBetween(lat1, lng1, lat2, lng2);
 
-  if (ratio >= distance) return true;
-  else return false;
+  if (ratio >= distance) return { isOnRatio: true, distance };
+  else return { isOnRatio: false, distance };
 };
 
 const coordinateUtils = {
@@ -72,6 +98,7 @@ const coordinateUtils = {
   isValidLng,
   getDistanceBetween,
   isOnRatio,
+  validateAndParse,
 };
 
 export { coordinateUtils };

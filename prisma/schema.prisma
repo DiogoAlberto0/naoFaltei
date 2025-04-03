@@ -75,8 +75,8 @@ model Establishment {
   phone String @unique
   email String @unique
   cep String 
-  lat String 
-  lng String
+  lat Float @default(0.0)
+  lng Float @default(0.0)
   ratio Int @default(20)
   active Boolean @default(true)
 
@@ -145,8 +145,8 @@ model Clockin{
   is_tardiness Boolean @default(false)
 
   is_entry Boolean @default(false)
-  lat String
-  lng String
+  lat Float
+  lng Float
 
   worker_id String
   worker Workers @relation(fields: [worker_id], references: [id])

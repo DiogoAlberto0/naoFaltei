@@ -27,8 +27,8 @@ const register = async ({
   workerId: string;
   isEntry: boolean;
   isTardiness: boolean;
-  lat: string;
-  lng: string;
+  lat: number;
+  lng: number;
 }) => {
   await prisma.clockin.create({
     data: {

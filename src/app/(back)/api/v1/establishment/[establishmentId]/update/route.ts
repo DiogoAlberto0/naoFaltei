@@ -2,14 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 
 // Errors
-import {
-  InputError,
-  UnauthorizedError,
-  ForbiddenError,
-} from "@/src/Errors/errors";
+import { UnauthorizedError, ForbiddenError } from "@/src/Errors/errors";
 
 // models
 import { establishmentModel } from "@/src/app/(back)/models/establishment";
+import { coordinateUtils } from "@/src/utils/coordinate";
 
 export const PUT = async (
   request: NextRequest,
@@ -19,14 +16,16 @@ export const PUT = async (
     const session = await auth();
     if (!session || !session.user) throw new UnauthorizedError();
 
-    const { name, phone, email, cep, coords } = await request.json();
-    if (coords && (!coords.lat || !coords.lng))
-      throw new InputError({
-        message: "Coordenadas inválidas",
-        action:
-          "Informe as coordenadas com os parametros 'lat' para latitude e 'lng' para longitude",
-        status_code: 400,
-      });
+    const { name, phone, email, cep, coords, ratio } = await request.json();
+
+    let lat: number | undefined = undefined;
+    let lng: number | undefined = undefined;
+    if (coords) {
+      const { lat: latNum, lng: lngNum } =
+        coordinateUtils.validateAndParse(coords);
+      lat = latNum;
+      lng = lngNum;
+    }
 
     const { establishmentId } = await params;
 
@@ -44,8 +43,9 @@ export const PUT = async (
       phone,
       email,
       cep,
-      lat: coords ? coords.lat : undefined,
-      lng: coords ? coords.lng : undefined,
+      ratio,
+      lat: lat && lng ? lat : undefined,
+      lng: lat && lng ? lng : undefined,
     });
 
     return NextResponse.json(updatedEstablishment);
