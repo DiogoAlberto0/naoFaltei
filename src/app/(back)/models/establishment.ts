@@ -268,7 +268,7 @@ const getLocaleInfos = async ({
   establishmentId?: string;
   workerId?: string;
 }) => {
-  return await prisma.establishment.findUnique({
+  return await prisma.establishment.findFirst({
     where: {
       id: establishmentId,
       OR: [
