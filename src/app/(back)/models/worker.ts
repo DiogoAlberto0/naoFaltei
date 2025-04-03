@@ -257,6 +257,16 @@ const WeekDayEnumMap: Record<WeekDays, $Enums.WeekDay> = {
   friday: $Enums.WeekDay.FRIDAY,
   saturday: $Enums.WeekDay.SATURDAY,
 };
+
+const WeekDayNumberEnumMap: Record<number, $Enums.WeekDay> = {
+  0: $Enums.WeekDay.SUNDAY,
+  1: $Enums.WeekDay.MONDAY,
+  2: $Enums.WeekDay.TUESDAY,
+  3: $Enums.WeekDay.WEDNESDAY,
+  4: $Enums.WeekDay.THURSDAY,
+  5: $Enums.WeekDay.FRIDAY,
+  6: $Enums.WeekDay.SATURDAY,
+};
 interface ICreateSchedule {
   workerId: string;
   schedule: Record<WeekDays, IScheduleProps | null>;
@@ -324,6 +334,12 @@ const getSchedule = async (workerId: string) => {
   return schedulesObj;
 };
 
+const getScheduleByDay = async (workerId: string, weekDay: number) => {
+  return await prisma.workerSchedule.findFirst({
+    where: { worker_id: workerId, week_day: WeekDayNumberEnumMap[weekDay] },
+  });
+};
+
 const listByEstablishment = async ({
   establishmentId,
   page,
@@ -366,5 +382,6 @@ const workerModel = {
   setSchedule,
   deleteSchedule,
   getSchedule,
+  getScheduleByDay,
 };
 export { workerModel };
