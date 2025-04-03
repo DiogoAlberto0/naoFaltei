@@ -262,6 +262,7 @@ export const createValidEstablishment = async (creatorId: string) => {
     creatorId,
     name: "João da Silva",
     phone: "11987654321",
+    ratio: 20,
   });
 
   return establishment; // 🔥 Certifique-se de retornar o objeto completo
@@ -276,5 +277,6 @@ export const createValidEstablishment2 = async (creatorId: string) => {
     creatorId, // UUID válido
     name: "Maria Oliveira", // Nome normalizado
     phone: "21999998888", // Sem espaços, parênteses ou traços
+    ratio: 20,
   });
 };
