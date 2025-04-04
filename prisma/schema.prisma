@@ -75,8 +75,9 @@ model Establishment {
   phone String @unique
   email String @unique
   cep String 
-  lat String 
-  lng String
+  lat Float @default(0.0)
+  lng Float @default(0.0)
+  ratio Int @default(20)
   active Boolean @default(true)
 
   workers Workers[]
@@ -105,6 +106,8 @@ model Workers {
   establishment_id String
   establishment Establishment @relation(fields: [establishment_id], references: [id])
 
+  worker_clockin Clockin[]
+  work_day_summarys WorkDaySummary[]
 
   worker_schedule WorkerSchedule[]
   @@map("workers")
@@ -134,4 +137,37 @@ model WorkerSchedule {
 
 
   @@map("worker_schedule")
+}
+
+model Clockin{
+  id String @id @default(cuid())
+  clocked_at DateTime @default(now())
+  is_entry Boolean @default(false)
+  lat Float
+  lng Float
+
+  worker_id String
+  worker Workers @relation(fields: [worker_id], references: [id])
+
+  registered_by String
+
+  @@map("clockin")
+}
+
+model WorkDaySummary{
+  id String @id @default(cuid())
+  work_date DateTime @db.Date
+  expected_minutes Int @default(0)
+  worked_minutes Int @default(0)
+  rested_minutes Int @default(0)
+  time_balance Int @default(0)
+  is_medical_leave Boolean @default(false)
+  status String @default("present")
+
+  worker_id String
+  worker Workers @relation(fields: [worker_id], references: [id])
+
+  @@unique([worker_id, work_date])
+
+  @@map("work_day_summary")
 }

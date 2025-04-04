@@ -257,6 +257,16 @@ const WeekDayEnumMap: Record<WeekDays, $Enums.WeekDay> = {
   friday: $Enums.WeekDay.FRIDAY,
   saturday: $Enums.WeekDay.SATURDAY,
 };
+
+const WeekDayNumberEnumMap: Record<number, $Enums.WeekDay> = {
+  0: $Enums.WeekDay.SUNDAY,
+  1: $Enums.WeekDay.MONDAY,
+  2: $Enums.WeekDay.TUESDAY,
+  3: $Enums.WeekDay.WEDNESDAY,
+  4: $Enums.WeekDay.THURSDAY,
+  5: $Enums.WeekDay.FRIDAY,
+  6: $Enums.WeekDay.SATURDAY,
+};
 interface ICreateSchedule {
   workerId: string;
   schedule: Record<WeekDays, IScheduleProps | null>;
@@ -324,6 +334,12 @@ const getSchedule = async (workerId: string) => {
   return schedulesObj;
 };
 
+const getScheduleByDay = async (workerId: string, weekDay: number) => {
+  return await prisma.workerSchedule.findFirst({
+    where: { worker_id: workerId, week_day: WeekDayNumberEnumMap[weekDay] },
+  });
+};
+
 const listByEstablishment = async ({
   establishmentId,
   page,
@@ -353,6 +369,38 @@ const listByEstablishment = async ({
 
   return workers;
 };
+
+const getExpectedMinutes = async (workerId: string, date: Date) => {
+  const calculateExpectedMinutes = ({
+    start,
+    end,
+    restTime,
+  }: {
+    start: { hour: number; minute: number };
+    end: { hour: number; minute: number };
+    restTime: number;
+  }) => {
+    const startTime = start.hour * 60 + start.minute;
+    const endTime = end.hour * 60 + end.minute;
+    const rest = restTime;
+
+    return endTime - startTime - rest;
+  };
+
+  const scheduleDay = await getScheduleByDay(workerId, date.getDay());
+  if (!scheduleDay) return 0;
+  return calculateExpectedMinutes({
+    start: {
+      hour: scheduleDay.start_hour,
+      minute: scheduleDay.start_minute,
+    },
+    end: {
+      hour: scheduleDay.end_hour,
+      minute: scheduleDay.end_minute,
+    },
+    restTime: scheduleDay.rest_time_in_minutes,
+  });
+};
 const workerModel = {
   create,
   findBy,
@@ -366,5 +414,7 @@ const workerModel = {
   setSchedule,
   deleteSchedule,
   getSchedule,
+  getScheduleByDay,
+  getExpectedMinutes,
 };
 export { workerModel };

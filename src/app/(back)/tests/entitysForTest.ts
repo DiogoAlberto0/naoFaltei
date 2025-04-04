@@ -38,6 +38,24 @@ export const createManyWorkers = async (establishmentId: string) => {
       }),
   );
 };
+
+export interface IScenario {
+  author: {
+    id: string;
+    cookies: string;
+  };
+  establishment: {
+    id: string;
+  };
+  manager: {
+    id: string;
+    cookie: string;
+  };
+  worker: {
+    id: string;
+    cookie: string;
+  };
+}
 // cria cenários
 export const createScenario1 = async () => {
   const author = await createAndAuthAuthor();
@@ -257,11 +275,12 @@ export const createValidEstablishment = async (creatorId: string) => {
   const establishment = await establishmentModel.create({
     cep: "01001000",
     email: "teste@example.com",
-    lat: "-23.55052",
-    lng: "-46.633308",
+    lat: -23.55052,
+    lng: -46.633308,
     creatorId,
     name: "João da Silva",
     phone: "11987654321",
+    ratio: 20,
   });
 
   return establishment; // 🔥 Certifique-se de retornar o objeto completo
@@ -271,10 +290,11 @@ export const createValidEstablishment2 = async (creatorId: string) => {
   return await establishmentModel.create({
     cep: "20040002", // Sem pontos ou hífen
     email: "contato@empresa.com", // Normalizado em minúsculas
-    lat: "-22.906847", // Latitude válida (Rio de Janeiro como exemplo)
-    lng: "-43.172897", // Longitude válida (Rio de Janeiro como exemplo)
+    lat: -22.906847, // Latitude válida (Rio de Janeiro como exemplo)
+    lng: -43.172897, // Longitude válida (Rio de Janeiro como exemplo)
     creatorId, // UUID válido
     name: "Maria Oliveira", // Nome normalizado
     phone: "21999998888", // Sem espaços, parênteses ou traços
+    ratio: 20,
   });
 };

@@ -44,9 +44,10 @@ interface IUpdateEstablishmentData {
   phone?: string;
   email?: string;
   cep?: string;
+  ratio?: number;
   coords?: {
-    lat?: string;
-    lng?: string;
+    lat?: string | number;
+    lng?: string | number;
   };
 }
 
@@ -113,16 +114,23 @@ const expectations = async ({
     const dataWithoutUpdatedAt = omit(data, "updated_at", "created_at");
 
     const { coords, ...otherPayloadProps } = updatePayload;
+
+    const expectedCoords = coords
+      ? {
+          lat: Number(coords.lat),
+          lng: Number(coords.lng),
+        }
+      : {};
     expect(dataWithoutUpdatedAt).toStrictEqual({
       ...oldEdtablishmentDataWithoutUpdatedAt,
-      ...coords,
+      ...expectedCoords,
       ...otherPayloadProps,
       ...expectedResponseData,
     });
 
     expect(newEstablishmentDataWithoutUpdatedAt).toStrictEqual({
       ...oldEdtablishmentDataWithoutUpdatedAt,
-      ...coords,
+      ...expectedCoords,
       ...otherPayloadProps,
       ...expectedResponseData,
     });
@@ -349,6 +357,21 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
     });
 
     describe("UPDATE COORDS TESTS", () => {
+      it("should be possible to update coordinates if valid latitude an longitude number is provided", async () => {
+        const newLatitude = -23.55052;
+        const newLongitude = -46.633308;
+        await expectations({
+          body: {
+            id: validEstablishment2Id,
+            coords: {
+              lat: newLatitude,
+              lng: newLongitude,
+            },
+          },
+          cookie: author2Cookies,
+        });
+      });
+
       it("should be possible to update coordinates if valid latitude an longitude is provided", async () => {
         const newLatitude = "-23.550520";
         const newLongitude = "-46.633308";
@@ -378,8 +401,8 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           cookie: author2Cookies,
           expectedStatusCode: 400,
           expectedResponseData: {
-            message: "Latitude inválida",
-            action: "Informe uma coordenada válida",
+            message: "Coordanadas inválidas",
+            action: "Verifique as coordenadas informadas, latitude e longitude",
           },
         });
       });
@@ -398,8 +421,8 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           cookie: author2Cookies,
           expectedStatusCode: 400,
           expectedResponseData: {
-            message: "Longitude inválida",
-            action: "Informe uma coordenada válida",
+            message: "Coordanadas inválidas",
+            action: "Verifique as coordenadas informadas, latitude e longitude",
           },
         });
       });
@@ -416,9 +439,8 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           cookie: author2Cookies,
           expectedStatusCode: 400,
           expectedResponseData: {
-            message: "Coordenadas inválidas",
-            action:
-              "Informe as coordenadas com os parametros 'lat' para latitude e 'lng' para longitude",
+            message: "Coordanadas inválidas",
+            action: "Verifique as coordenadas informadas, latitude e longitude",
           },
         });
       });
@@ -436,10 +458,21 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
           cookie: author2Cookies,
           expectedStatusCode: 400,
           expectedResponseData: {
-            message: "Coordenadas inválidas",
-            action:
-              "Informe as coordenadas com os parametros 'lat' para latitude e 'lng' para longitude",
+            message: "Coordanadas inválidas",
+            action: "Verifique as coordenadas informadas, latitude e longitude",
           },
+        });
+      });
+      describe("UPDATE ratio TESTS", () => {
+        it("should be possible to update ratio of an valid establishment", async () => {
+          await expectations({
+            body: {
+              id: validEstablishment1Id,
+              ratio: 50,
+            },
+            cookie: author1Cookies,
+            expectedStatusCode: 200,
+          });
         });
       });
     });

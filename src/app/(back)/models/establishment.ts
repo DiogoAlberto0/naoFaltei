@@ -18,9 +18,10 @@ interface ICreateStablishment {
   email: string;
   phone: string;
   cep: string;
-  lat: string;
-  lng: string;
+  lat: number | string;
+  lng: number | string;
   creatorId: string;
+  ratio: number;
 }
 
 interface IUpdateEstablishmentParams {
@@ -29,24 +30,21 @@ interface IUpdateEstablishmentParams {
   email?: string;
   phone?: string;
   cep?: string;
-  lat?: string;
-  lng?: string;
+  lat?: number;
+  lng?: number;
+  ratio?: number;
 }
 
 interface IValidateStablishmentParams {
   email?: string;
   phone?: string;
   cep?: string;
-  lat?: string;
-  lng?: string;
 }
 
 const validateParams = async ({
   phone,
   email,
   cep,
-  lat,
-  lng,
 }: IValidateStablishmentParams) => {
   if (phone && !phoneUtils.isValid(phone))
     throw new InputError({
@@ -69,20 +67,6 @@ const validateParams = async ({
       message: "CEP inválido",
       status_code: 400,
       action: "Informe um CEP válido seguindo a seguinte estrutura: XXXXX-XXX",
-    });
-
-  if (lat && !coordinateUtils.isValidLat(lat))
-    throw new InputError({
-      message: "Latitude inválida",
-      status_code: 400,
-      action: "Informe uma coordenada válida",
-    });
-
-  if (lng && !coordinateUtils.isValidLng(lng))
-    throw new InputError({
-      message: "Longitude inválida",
-      status_code: 400,
-      action: "Informe uma coordenada válida",
     });
 
   if (email && (await countByEmail(email)) > 0)
@@ -112,9 +96,14 @@ const validateEstablishment = async (establishmentId: string) => {
 };
 
 const create = async (stablishment: ICreateStablishment) => {
-  const { name, phone, email, cep, lat, lng, creatorId } = stablishment;
+  const { name, phone, email, cep, creatorId, ratio, ...coords } = stablishment;
 
-  await validateParams(stablishment);
+  await validateParams({
+    cep,
+    email,
+    phone,
+  });
+  const { lat, lng } = coordinateUtils.validateAndParse(coords);
   await userModel.validateUser(creatorId);
 
   const newEstablishment = await prisma.establishment.create({
@@ -124,6 +113,7 @@ const create = async (stablishment: ICreateStablishment) => {
       lat,
       lng,
       name,
+      ratio,
       phone: phoneUtils.clean(phone),
       author: {
         connect: {
@@ -162,13 +152,12 @@ const update = async ({
   cep,
   lat,
   lng,
+  ratio,
 }: IUpdateEstablishmentParams) => {
   await validateParams({
     email,
     phone,
     cep,
-    lat,
-    lng,
   });
   return await prisma.establishment.update({
     where: {
@@ -181,6 +170,7 @@ const update = async ({
       cep: cep && cepUtils.clean(cep),
       lat,
       lng,
+      ratio,
       updated_at: new Date(),
     },
   });
@@ -261,6 +251,34 @@ const verifyIfIsAuthorFromEstablishment = async ({
   return false;
 };
 
+const getLocaleInfos = async ({
+  establishmentId,
+  workerId,
+}: {
+  establishmentId?: string;
+  workerId?: string;
+}) => {
+  return await prisma.establishment.findFirst({
+    where: {
+      id: establishmentId,
+      OR: [
+        {
+          workers: {
+            some: {
+              id: workerId,
+            },
+          },
+        },
+      ],
+    },
+    select: {
+      lat: true,
+      lng: true,
+      ratio: true,
+    },
+  });
+};
+
 const establishmentModel = {
   create,
   countByEmail,
@@ -272,6 +290,7 @@ const establishmentModel = {
   verifyIfManagerIsFromEstablishment,
   verifyIfIsAuthorFromEstablishment,
   validateEstablishment,
+  getLocaleInfos,
 };
 
 export { establishmentModel };

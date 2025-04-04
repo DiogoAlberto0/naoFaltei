@@ -17,6 +17,7 @@ interface ICreateEstablishmentBody {
   cep: string;
   lat: string;
   lng: string;
+  ratio: number;
 }
 const validEstablishment = {
   name: "Empresa teste",
@@ -25,6 +26,7 @@ const validEstablishment = {
   cep: "71800-000",
   lat: "-23.550520",
   lng: "-46.633308",
+  ratio: 20,
 };
 
 let cookie: string;
@@ -90,8 +92,9 @@ const expectations = async ({
       phone: phoneUtils.clean(body.phone),
       email: emailUtils.normalize(body.email),
       cep: cepUtils.clean(body.cep),
-      lat: body.lat,
-      lng: body.lng,
+      lat: Number(body.lat),
+      lng: Number(body.lng),
+      ratio: body.ratio,
       active: true,
       created_at: expect.any(String),
       updated_at: expect.any(String),
@@ -181,8 +184,8 @@ describe("POST on `/api/v1/establishment/create`", () => {
         },
         expectedStatusCode: 400,
         expectedResponseData: {
-          action: "Informe uma coordenada válida",
-          message: "Latitude inválida",
+          action: "Verifique as coordenadas informadas, latitude e longitude",
+          message: "Coordanadas inválidas",
         },
       });
     });
@@ -197,8 +200,8 @@ describe("POST on `/api/v1/establishment/create`", () => {
         },
         expectedStatusCode: 400,
         expectedResponseData: {
-          action: "Informe uma coordenada válida",
-          message: "Longitude inválida",
+          action: "Verifique as coordenadas informadas, latitude e longitude",
+          message: "Coordanadas inválidas",
         },
       });
     });
