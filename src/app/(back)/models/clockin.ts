@@ -1,4 +1,6 @@
 import { prisma } from "@/prisma/prisma";
+import { dateUtils } from "@/src/utils/date";
+import { workerModel } from "./worker";
 
 const getLastRegistersByEstablishment = async (
   establishmentId: string,
@@ -12,7 +14,7 @@ const getLastRegistersByEstablishment = async (
     },
     select: {
       id: true,
-      date_time: true,
+      clocked_at: true,
       is_entry: true,
       worker: {
         select: {
@@ -24,7 +26,7 @@ const getLastRegistersByEstablishment = async (
     take: pageSize,
     skip: (safePage - 1) * pageSize,
     orderBy: {
-      date_time: "desc",
+      clocked_at: "desc",
     },
   });
 };
@@ -33,36 +35,96 @@ const getLastRegisterToday = async (workerId: string) => {
   return await prisma.clockin.findFirst({
     where: {
       worker: { id: workerId },
-      date_time: {
-        gte: new Date(today.setHours(0, 0, 0, 0)),
-        lt: new Date(today.setHours(23, 59, 59, 999)),
+      clocked_at: {
+        gte: dateUtils.getStartOfDay(today),
+        lt: dateUtils.getEndOfDay(today),
       },
     },
     orderBy: {
-      date_time: "desc",
+      clocked_at: "desc",
+    },
+  });
+};
+
+const registerSummary = async ({
+  workerId,
+  clocked_at,
+  isEntry,
+  lastRegisterClock,
+}: {
+  workerId: string;
+  clocked_at: Date;
+  isEntry: boolean;
+  lastRegisterClock: Date | null;
+}) => {
+  const startOfDay = dateUtils.getStartOfDay(clocked_at);
+
+  const expectedMinutes = await workerModel.getExpectedMinutes(
+    workerId,
+    clocked_at,
+  );
+
+  const workedNow =
+    !isEntry && lastRegisterClock
+      ? dateUtils.calculateMinutesBetween(lastRegisterClock, clocked_at)
+      : 0;
+
+  const restedNow =
+    isEntry && lastRegisterClock
+      ? dateUtils.calculateMinutesBetween(lastRegisterClock, clocked_at)
+      : 0;
+
+  await prisma.workDaySummary.upsert({
+    where: {
+      worker_id_work_date: {
+        worker_id: workerId,
+        work_date: startOfDay,
+      },
+    },
+    create: {
+      work_date: startOfDay,
+      worker_id: workerId,
+      expected_minutes: expectedMinutes,
+      time_balance: -expectedMinutes,
+    },
+    update: {
+      worked_minutes: {
+        increment: workedNow,
+      },
+      rested_minutes: {
+        increment: restedNow,
+      },
+      time_balance: {
+        increment: expectedMinutes == 0 ? 0 : workedNow,
+      },
     },
   });
 };
 const register = async ({
   workerId,
-  dateTime,
-  isEntry,
-  isTardiness,
+  clocked_at,
   lat,
   lng,
 }: {
-  dateTime: Date;
+  clocked_at: Date;
   workerId: string;
-  isEntry: boolean;
-  isTardiness: boolean;
   lat: number;
   lng: number;
 }) => {
+  const lastRegister = await getLastRegisterToday(workerId);
+  const isEntry = !lastRegister || !lastRegister.is_entry;
+
+  await registerSummary({
+    workerId,
+    clocked_at,
+    isEntry,
+    lastRegisterClock: lastRegister?.clocked_at || null,
+  });
+
   await prisma.clockin.create({
     data: {
-      date_time: dateTime,
+      clocked_at: clocked_at,
       is_entry: isEntry,
-      is_tardiness: isTardiness,
       worker: { connect: { id: workerId } },
       registered_by: workerId,
       lat,
