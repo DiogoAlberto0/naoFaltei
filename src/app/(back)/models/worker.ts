@@ -369,6 +369,38 @@ const listByEstablishment = async ({
 
   return workers;
 };
+
+const getExpectedMinutes = async (workerId: string, date: Date) => {
+  const calculateExpectedMinutes = ({
+    start,
+    end,
+    restTime,
+  }: {
+    start: { hour: number; minute: number };
+    end: { hour: number; minute: number };
+    restTime: number;
+  }) => {
+    const startTime = start.hour * 60 + start.minute;
+    const endTime = end.hour * 60 + end.minute;
+    const rest = restTime;
+
+    return endTime - startTime - rest;
+  };
+
+  const scheduleDay = await getScheduleByDay(workerId, date.getDay());
+  if (!scheduleDay) return 0;
+  return calculateExpectedMinutes({
+    start: {
+      hour: scheduleDay.start_hour,
+      minute: scheduleDay.start_minute,
+    },
+    end: {
+      hour: scheduleDay.end_hour,
+      minute: scheduleDay.end_minute,
+    },
+    restTime: scheduleDay.rest_time_in_minutes,
+  });
+};
 const workerModel = {
   create,
   findBy,
@@ -383,5 +415,6 @@ const workerModel = {
   deleteSchedule,
   getSchedule,
   getScheduleByDay,
+  getExpectedMinutes,
 };
 export { workerModel };
