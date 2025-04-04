@@ -10,27 +10,9 @@ import {
 import { coordinateUtils } from "@/src/utils/coordinate";
 import { NextRequest, NextResponse } from "next/server";
 
-const verifyIfIsTardiness = ({
-  dateTime,
-  expectedHour,
-  expectedMinute,
-}: {
-  dateTime: Date;
-  expectedHour: number;
-  expectedMinute: number;
-}) => {
-  const currentHour = dateTime.getHours();
-  const currentMinute = dateTime.getMinutes();
-
-  if (currentHour > expectedHour) return true;
-  if (currentHour === expectedHour && currentMinute > expectedMinute)
-    return true;
-  return false;
-};
-
 export const POST = async (request: NextRequest) => {
   try {
-    const dateTime = new Date();
+    const clockedAt = new Date();
     const session = await auth();
     if (!session || !session.user) throw new UnauthorizedError();
 
@@ -72,23 +54,8 @@ export const POST = async (request: NextRequest) => {
         action: `Se aproxime mais do estabelecimento. Sua distância: ${Math.round(distance)}Km.`,
       });
 
-    const schedule = await workerModel.getScheduleByDay(
-      worker.id,
-      dateTime.getDay(),
-    );
-    const isTardiness = schedule
-      ? verifyIfIsTardiness({
-          dateTime,
-          expectedHour: schedule.start_hour,
-          expectedMinute: schedule.start_minute,
-        })
-      : false;
-    const lastRegister = await clockinModel.getLastRegisterToday(worker.id);
-
     await clockinModel.register({
-      dateTime,
-      isEntry: !lastRegister || !lastRegister.is_entry,
-      isTardiness: lastRegister ? false : isTardiness,
+      clocked_at: clockedAt,
       lat: latNum,
       lng: lngNum,
       workerId: worker.id,

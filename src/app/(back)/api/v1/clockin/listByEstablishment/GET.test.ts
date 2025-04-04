@@ -21,9 +21,7 @@ beforeAll(async () => {
     date.setDate(index);
     await clockinModel.register({
       workerId: scenario1.worker.id,
-      dateTime: date,
-      isEntry: index % 2 == 0,
-      isTardiness: index % 2 == 0,
+      clocked_at: date,
       lat: 0,
       lng: 0,
     });
@@ -110,7 +108,7 @@ const expectations = async ({
       lastRegisters: expect.arrayContaining([
         expect.objectContaining({
           id: expect.any(String),
-          date_time: expect.any(String),
+          clocked_at: expect.any(String),
           is_entry: expect.any(Boolean),
           worker: {
             name: expect.any(String),
