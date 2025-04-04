@@ -107,6 +107,7 @@ model Workers {
   establishment Establishment @relation(fields: [establishment_id], references: [id])
 
   worker_clockin Clockin[]
+  work_day_summarys WorkDaySummary[]
 
   worker_schedule WorkerSchedule[]
   @@map("workers")
@@ -140,10 +141,7 @@ model WorkerSchedule {
 
 model Clockin{
   id String @id @default(cuid())
-  date_time DateTime @default(now())
-  is_medical_certificate Boolean @default(false)
-  is_tardiness Boolean @default(false)
-
+  clocked_at DateTime @default(now())
   is_entry Boolean @default(false)
   lat Float
   lng Float
@@ -154,4 +152,22 @@ model Clockin{
   registered_by String
 
   @@map("clockin")
+}
+
+model WorkDaySummary{
+  id String @id @default(cuid())
+  work_date DateTime @db.Date
+  expected_minutes Int @default(0)
+  worked_minutes Int @default(0)
+  rested_minutes Int @default(0)
+  time_balance Int @default(0)
+  is_medical_leave Boolean @default(false)
+  status String @default("present")
+
+  worker_id String
+  worker Workers @relation(fields: [worker_id], references: [id])
+
+  @@unique([worker_id, work_date])
+
+  @@map("work_day_summary")
 }
