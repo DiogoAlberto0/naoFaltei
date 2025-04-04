@@ -38,6 +38,24 @@ export const createManyWorkers = async (establishmentId: string) => {
       }),
   );
 };
+
+export interface IScenario {
+  author: {
+    id: string;
+    cookies: string;
+  };
+  establishment: {
+    id: string;
+  };
+  manager: {
+    id: string;
+    cookie: string;
+  };
+  worker: {
+    id: string;
+    cookie: string;
+  };
+}
 // cria cenários
 export const createScenario1 = async () => {
   const author = await createAndAuthAuthor();
