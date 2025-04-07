@@ -18,7 +18,7 @@ beforeAll(async () => {
 
   for (let index = 0; index < 10; index++) {
     const date = new Date();
-    date.setDate(index);
+    date.setUTCDate(index);
     await clockinModel.register({
       workerId: scenario1.worker.id,
       clocked_at: date,

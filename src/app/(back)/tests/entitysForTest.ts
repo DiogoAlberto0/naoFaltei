@@ -3,6 +3,7 @@ import { establishmentModel } from "@/src/app/(back)/models/establishment";
 import { workerModel } from "../models/worker";
 import { signinForTest } from "./signinForTest";
 import { userModel } from "../models/user";
+import { clockinModel } from "../models/clockin";
 
 export interface IValidAuthor {
   id: string;
@@ -261,6 +262,72 @@ export const createValidWorker2 = async (establishmentId: string) => {
     false,
     establishmentId,
   );
+};
+
+export function getSundayLastMonth(fromDate = new Date()): Date {
+  const date = new Date(fromDate);
+  date.setUTCDate(date.getUTCDate() - 30); // Vai 30 dias atrás
+
+  const day = date.getUTCDay(); // 0 = Domingo
+
+  // Retrocede para o último domingo
+  date.setUTCDate(date.getUTCDate() - day);
+
+  return date;
+}
+
+export const createWorkerRegisterDay = async (
+  workerId: string,
+  weekDay: number,
+  registersTime: string[],
+) => {
+  const register = async (date: Date) => {
+    await clockinModel.register({
+      workerId: workerId,
+      clocked_at: date,
+      lat: 0,
+      lng: 0,
+    });
+  };
+  const clock = getSundayLastMonth();
+  clock.setUTCDate(clock.getUTCDate() + weekDay);
+
+  for (const time of registersTime) {
+    const [hour, minute] = time.split(":");
+    const clockDate = new Date(clock);
+    clockDate.setUTCHours(Number(hour), Number(minute), 0, 0);
+    await register(clockDate); // <-- aguarda um antes de seguir pro próximo
+  }
+
+  return clock;
+};
+
+export const setValidSchedule = async (workerId: string) => {
+  const weekSchedule = {
+    startHour: 10,
+    startMinute: 30,
+    endHour: 20,
+    endMinute: 0,
+    restTimeInMinutes: 90,
+  };
+  await workerModel.setSchedule({
+    workerId: workerId,
+    schedule: {
+      monday: weekSchedule,
+      tuesday: weekSchedule,
+      wednesday: weekSchedule,
+      thursday: weekSchedule,
+      friday: weekSchedule,
+      saturday: {
+        startHour: 8,
+        startMinute: 0,
+        endHour: 12,
+        endMinute: 0,
+        restTimeInMinutes: 0,
+      },
+      sunday: null,
+    },
+  });
 };
 export const createAndAuthWorker = async (establishmentId: string) => {
   return await createAndAuth(() => createValidWorker(establishmentId));
