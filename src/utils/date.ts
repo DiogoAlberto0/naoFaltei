@@ -14,9 +14,9 @@ const validateAndReturnDate = (dateString: string) => {
 
   // Confere se o resultado bate com a entrada (ex: evita 2025-02-30 virar 2025-03-01)
   if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
   ) {
     throw new InputError({
       message: "A data informada não é válida no calendário",
@@ -45,14 +45,25 @@ const calculateMinutesBetween = (inicialDate: Date, finalDate: Date) => {
 
 const getStartOfDay = (date: Date) => {
   const startOfDay = new Date(date);
-  startOfDay.setHours(0, 0, 0, 0);
+  startOfDay.setUTCHours(0, 0, 0, 0);
   return startOfDay;
 };
 
 const getEndOfDay = (date: Date) => {
   const endOfDay = new Date(date);
-  endOfDay.setHours(23, 59, 59, 999);
+  endOfDay.setUTCHours(23, 59, 59, 999);
   return endOfDay;
+};
+const formatToYMD = (date: Date) => date.toISOString().split("T")[0];
+
+const getAllDatesInRange = (start: Date, end: Date): Date[] => {
+  const dates: Date[] = [];
+  const current = new Date(start);
+  while (current <= end) {
+    dates.push(new Date(current));
+    current.setUTCDate(current.getUTCDate() + 1);
+  }
+  return dates;
 };
 const dateUtils = {
   validateAndReturnDate,
@@ -60,6 +71,8 @@ const dateUtils = {
   calculateMinutesBetween,
   getStartOfDay,
   getEndOfDay,
+  formatToYMD,
+  getAllDatesInRange,
 };
 
 export { dateUtils };
