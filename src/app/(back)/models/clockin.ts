@@ -37,7 +37,7 @@ const getLastRegisterOfDay = async (workerId: string, date: Date) => {
       worker: { id: workerId },
       clocked_at: {
         gte: dateUtils.getStartOfDay(date),
-        lt: dateUtils.getEndOfDay(date),
+        lte: dateUtils.getEndOfDay(date),
       },
     },
     orderBy: {
