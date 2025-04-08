@@ -10,7 +10,7 @@ const validateAndReturnDate = (dateString: string) => {
   }
 
   const [year, month, day] = dateString.split("-").map(Number);
-  const date = new Date(year, month - 1, day);
+  const date = new Date(Date.UTC(year, month - 1, day));
 
   // Confere se o resultado bate com a entrada (ex: evita 2025-02-30 virar 2025-03-01)
   if (
@@ -59,8 +59,9 @@ const formatToYMD = (date: Date) => date.toISOString().split("T")[0];
 const getAllDatesInRange = (start: Date, end: Date): Date[] => {
   const dates: Date[] = [];
   const current = new Date(start);
+
   while (current <= end) {
-    dates.push(new Date(current));
+    dates.push(getStartOfDay(current));
     current.setUTCDate(current.getUTCDate() + 1);
   }
   return dates;

@@ -142,7 +142,7 @@ const getClockisGroupByDate = async (
       worker_id: workerId,
       clocked_at: {
         gte: dateUtils.getStartOfDay(inicialDate),
-        lt: dateUtils.getEndOfDay(finalDate),
+        lte: dateUtils.getEndOfDay(finalDate),
       },
     },
   });
@@ -193,9 +193,10 @@ const getSummaryByDate = async (
   const summaries = await prisma.workDaySummary.findMany({
     where: {
       worker_id: workerId,
+
       work_date: {
         gte: dateUtils.getStartOfDay(inicialDate),
-        lt: dateUtils.getEndOfDay(finalDate),
+        lte: dateUtils.getEndOfDay(finalDate),
       },
     },
   });
@@ -236,7 +237,7 @@ const getTotalSumariesData = async (
       status: "abscent",
       work_date: {
         gte: dateUtils.getStartOfDay(inicialDate),
-        lt: dateUtils.getStartOfDay(finalDate),
+        lte: dateUtils.getStartOfDay(finalDate),
       },
     },
   });
@@ -247,7 +248,7 @@ const getTotalSumariesData = async (
       is_medical_leave: true,
       work_date: {
         gte: dateUtils.getStartOfDay(inicialDate),
-        lt: dateUtils.getStartOfDay(finalDate),
+        lte: dateUtils.getStartOfDay(finalDate),
       },
     },
   });
@@ -261,7 +262,7 @@ const getTotalSumariesData = async (
       worker_id: workerId,
       work_date: {
         gte: dateUtils.getStartOfDay(inicialDate),
-        lt: dateUtils.getStartOfDay(finalDate),
+        lte: dateUtils.getStartOfDay(finalDate),
       },
     },
   });
@@ -295,12 +296,43 @@ const getTimeSheetByWorker = async ({
   }));
 };
 
+const setMedicalLeave = async (
+  workerId: string,
+  inicialDate: Date,
+  finalDate: Date,
+) => {
+  const datesBetween = dateUtils.getAllDatesInRange(inicialDate, finalDate);
+
+  await Promise.all(
+    datesBetween.map(async (date) => {
+      const workDate = dateUtils.getStartOfDay(date);
+      return prisma.workDaySummary.upsert({
+        where: {
+          worker_id_work_date: {
+            worker_id: workerId,
+            work_date: workDate,
+          },
+        },
+        create: {
+          is_medical_leave: true,
+          work_date: workDate,
+          worker_id: workerId,
+        },
+        update: {
+          is_medical_leave: true,
+        },
+      });
+    }),
+  );
+};
+
 const clockinModel = {
   register,
   getLastRegisterOfDay,
   getLastRegistersByEstablishment,
   getTimeSheetByWorker,
   getTotalSumariesData,
+  setMedicalLeave,
 };
 
 export { clockinModel };
