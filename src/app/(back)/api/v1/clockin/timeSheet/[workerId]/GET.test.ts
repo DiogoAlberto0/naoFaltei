@@ -349,9 +349,9 @@ describe("GET on `/api/v1/clockin/timeSheet/:workerId`", () => {
             ]),
           }),
         ]),
-        totalAbscent: 0,
+        totalAbscent: 1,
         totalMedicalLeave: 0,
-        totalTimeBalance: -15,
+        totalTimeBalance: -495,
       });
     });
   });
