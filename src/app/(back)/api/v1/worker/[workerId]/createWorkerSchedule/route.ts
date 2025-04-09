@@ -68,7 +68,6 @@ export const POST = async (
     }
 
     const schedule = result.data.schedule;
-    await workerModel.deleteSchedule(workerId);
     await workerModel.setSchedule({
       workerId,
       schedule: {

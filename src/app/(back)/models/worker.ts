@@ -272,6 +272,7 @@ interface ICreateSchedule {
   schedule: Record<WeekDays, IScheduleProps | null>;
 }
 const setSchedule = async ({ workerId, schedule }: ICreateSchedule) => {
+  await workerModel.deleteSchedule(workerId);
   for (const [day, shift] of Object.entries(schedule) as [
     WeekDays,
     IScheduleProps | null,
