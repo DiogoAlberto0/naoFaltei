@@ -257,11 +257,22 @@ const WeekDayEnumMap: Record<WeekDays, $Enums.WeekDay> = {
   friday: $Enums.WeekDay.FRIDAY,
   saturday: $Enums.WeekDay.SATURDAY,
 };
+
+const WeekDayNumberEnumMap: Record<number, $Enums.WeekDay> = {
+  0: $Enums.WeekDay.SUNDAY,
+  1: $Enums.WeekDay.MONDAY,
+  2: $Enums.WeekDay.TUESDAY,
+  3: $Enums.WeekDay.WEDNESDAY,
+  4: $Enums.WeekDay.THURSDAY,
+  5: $Enums.WeekDay.FRIDAY,
+  6: $Enums.WeekDay.SATURDAY,
+};
 interface ICreateSchedule {
   workerId: string;
   schedule: Record<WeekDays, IScheduleProps | null>;
 }
 const setSchedule = async ({ workerId, schedule }: ICreateSchedule) => {
+  await workerModel.deleteSchedule(workerId);
   for (const [day, shift] of Object.entries(schedule) as [
     WeekDays,
     IScheduleProps | null,
@@ -295,6 +306,9 @@ const deleteSchedule = async (workerId: string) => {
 const getSchedule = async (workerId: string) => {
   const schedules = await prisma.workerSchedule.findMany({
     where: { worker_id: workerId },
+    orderBy: {
+      week_day: "asc",
+    },
   });
 
   const schedulesObj = Object.fromEntries(
@@ -322,6 +336,12 @@ const getSchedule = async (workerId: string) => {
   );
 
   return schedulesObj;
+};
+
+const getScheduleByDay = async (workerId: string, weekDay: number) => {
+  return await prisma.workerSchedule.findFirst({
+    where: { worker_id: workerId, week_day: WeekDayNumberEnumMap[weekDay] },
+  });
 };
 
 const listByEstablishment = async ({
@@ -353,6 +373,90 @@ const listByEstablishment = async ({
 
   return workers;
 };
+
+export const calculateExpectedMinutes = ({
+  start,
+  end,
+  restTime,
+}: {
+  start: { hour: number; minute: number };
+  end: { hour: number; minute: number };
+  restTime: number;
+}) => {
+  const startTime = start.hour * 60 + start.minute;
+  const endTime = end.hour * 60 + end.minute;
+  const rest = restTime;
+
+  return endTime - startTime - rest;
+};
+
+const getExpectedMinuteOfAllWeekDays = async (workerId: string) => {
+  const schedule = await workerModel.getSchedule(workerId);
+  const expectedMinutes = Object.values(schedule).map((value) =>
+    calculateExpectedMinutes({
+      start: {
+        hour: value.startHour,
+        minute: value.startMinute,
+      },
+      end: {
+        hour: value.endHour,
+        minute: value.endMinute,
+      },
+      restTime: value.restTimeInMinutes,
+    }),
+  );
+
+  return expectedMinutes;
+};
+
+const getExpectedMinutesByWeekDay = async (
+  workerId: string,
+  weekDayNumber: number,
+) => {
+  const scheduleDay = await getScheduleByDay(workerId, weekDayNumber);
+  if (!scheduleDay) return 0;
+  return calculateExpectedMinutes({
+    start: {
+      hour: scheduleDay.start_hour,
+      minute: scheduleDay.start_minute,
+    },
+    end: {
+      hour: scheduleDay.end_hour,
+      minute: scheduleDay.end_minute,
+    },
+    restTime: scheduleDay.rest_time_in_minutes,
+  });
+};
+const getExpectedMinutes = async (workerId: string, date: Date) => {
+  const scheduleDay = await getScheduleByDay(workerId, date.getUTCDay());
+  if (!scheduleDay) return 0;
+  return calculateExpectedMinutes({
+    start: {
+      hour: scheduleDay.start_hour,
+      minute: scheduleDay.start_minute,
+    },
+    end: {
+      hour: scheduleDay.end_hour,
+      minute: scheduleDay.end_minute,
+    },
+    restTime: scheduleDay.rest_time_in_minutes,
+  });
+};
+
+const getExpectedDays = async (workerId: string) => {
+  const expectedDays = await prisma.workerSchedule.findMany({
+    where: {
+      worker_id: workerId,
+    },
+    select: {
+      week_day: true,
+    },
+  });
+
+  return expectedDays.map((day) => {
+    return day.week_day.toLowerCase();
+  });
+};
 const workerModel = {
   create,
   findBy,
@@ -366,5 +470,10 @@ const workerModel = {
   setSchedule,
   deleteSchedule,
   getSchedule,
+  getScheduleByDay,
+  getExpectedMinutes,
+  getExpectedDays,
+  getExpectedMinutesByWeekDay,
+  getExpectedMinuteOfAllWeekDays,
 };
 export { workerModel };

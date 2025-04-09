@@ -3,6 +3,7 @@ import { establishmentModel } from "@/src/app/(back)/models/establishment";
 import { workerModel } from "../models/worker";
 import { signinForTest } from "./signinForTest";
 import { userModel } from "../models/user";
+import { clockinModel } from "../models/clockin/clockin";
 
 export interface IValidAuthor {
   id: string;
@@ -38,6 +39,24 @@ export const createManyWorkers = async (establishmentId: string) => {
       }),
   );
 };
+
+export interface IScenario {
+  author: {
+    id: string;
+    cookies: string;
+  };
+  establishment: {
+    id: string;
+  };
+  manager: {
+    id: string;
+    cookie: string;
+  };
+  worker: {
+    id: string;
+    cookie: string;
+  };
+}
 // cria cenários
 export const createScenario1 = async () => {
   const author = await createAndAuthAuthor();
@@ -244,6 +263,72 @@ export const createValidWorker2 = async (establishmentId: string) => {
     establishmentId,
   );
 };
+
+export function getSundayLastMonth(fromDate = new Date()): Date {
+  const date = new Date(fromDate);
+  date.setUTCDate(date.getUTCDate() - 30); // Vai 30 dias atrás
+
+  const day = date.getUTCDay(); // 0 = Domingo
+
+  // Retrocede para o último domingo
+  date.setUTCDate(date.getUTCDate() - day);
+
+  return date;
+}
+
+export const createWorkerRegisterDay = async (
+  workerId: string,
+  weekDay: number,
+  registersTime: string[],
+) => {
+  const register = async (date: Date) => {
+    await clockinModel.register({
+      workerId: workerId,
+      clocked_at: date,
+      lat: 0,
+      lng: 0,
+    });
+  };
+  const clock = getSundayLastMonth();
+  clock.setUTCDate(clock.getUTCDate() + weekDay);
+
+  for (const time of registersTime) {
+    const [hour, minute] = time.split(":");
+    const clockDate = new Date(clock);
+    clockDate.setUTCHours(Number(hour), Number(minute), 0, 0);
+    await register(clockDate); // <-- aguarda um antes de seguir pro próximo
+  }
+
+  return clock;
+};
+
+export const setValidSchedule = async (workerId: string) => {
+  const weekSchedule = {
+    startHour: 10,
+    startMinute: 30,
+    endHour: 20,
+    endMinute: 0,
+    restTimeInMinutes: 90,
+  };
+  await workerModel.setSchedule({
+    workerId: workerId,
+    schedule: {
+      monday: weekSchedule,
+      tuesday: weekSchedule,
+      wednesday: weekSchedule,
+      thursday: weekSchedule,
+      friday: weekSchedule,
+      saturday: {
+        startHour: 8,
+        startMinute: 0,
+        endHour: 12,
+        endMinute: 0,
+        restTimeInMinutes: 0,
+      },
+      sunday: null,
+    },
+  });
+};
 export const createAndAuthWorker = async (establishmentId: string) => {
   return await createAndAuth(() => createValidWorker(establishmentId));
 };
@@ -257,11 +342,12 @@ export const createValidEstablishment = async (creatorId: string) => {
   const establishment = await establishmentModel.create({
     cep: "01001000",
     email: "teste@example.com",
-    lat: "-23.55052",
-    lng: "-46.633308",
+    lat: -23.55052,
+    lng: -46.633308,
     creatorId,
     name: "João da Silva",
     phone: "11987654321",
+    ratio: 20,
   });
 
   return establishment; // 🔥 Certifique-se de retornar o objeto completo
@@ -271,10 +357,11 @@ export const createValidEstablishment2 = async (creatorId: string) => {
   return await establishmentModel.create({
     cep: "20040002", // Sem pontos ou hífen
     email: "contato@empresa.com", // Normalizado em minúsculas
-    lat: "-22.906847", // Latitude válida (Rio de Janeiro como exemplo)
-    lng: "-43.172897", // Longitude válida (Rio de Janeiro como exemplo)
+    lat: -22.906847, // Latitude válida (Rio de Janeiro como exemplo)
+    lng: -43.172897, // Longitude válida (Rio de Janeiro como exemplo)
     creatorId, // UUID válido
     name: "Maria Oliveira", // Nome normalizado
     phone: "21999998888", // Sem espaços, parênteses ou traços
+    ratio: 20,
   });
 };

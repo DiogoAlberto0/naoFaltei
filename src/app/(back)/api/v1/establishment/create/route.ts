@@ -8,13 +8,19 @@ import { auth } from "@/auth";
 
 export const POST = async (request: NextRequest) => {
   try {
-    const { name, phone, email, cep, lat, lng } = await request.json();
-    if (!name || !phone || !email || !cep || !lat || !lng)
+    const { name, phone, email, cep, lat, lng, ratio } = await request.json();
+    if (!name || !phone || !email || !cep || !lat || !lng || !ratio)
       throw new InputError({
         message: "Campos obrigatórios faltando.",
         status_code: 400,
         action:
           "Informe nome, telefone, email, cep, latitude e longitude do estabelecimento",
+      });
+    if (typeof ratio != "number")
+      throw new InputError({
+        message: "Raio para registro de ponto inválido",
+        status_code: 400,
+        action: "Informe o raio em KM como um numero inteiro",
       });
 
     const session = await auth();
@@ -27,6 +33,7 @@ export const POST = async (request: NextRequest) => {
       cep,
       lat,
       lng,
+      ratio,
       creatorId: session.user.id,
     });
     return NextResponse.json(createdEstablishment, { status: 201 });
