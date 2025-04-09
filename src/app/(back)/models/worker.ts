@@ -427,7 +427,7 @@ const getExpectedMinutesByWeekDay = async (
   });
 };
 const getExpectedMinutes = async (workerId: string, date: Date) => {
-  const scheduleDay = await getScheduleByDay(workerId, date.getDay());
+  const scheduleDay = await getScheduleByDay(workerId, date.getUTCDay());
   if (!scheduleDay) return 0;
   return calculateExpectedMinutes({
     start: {
