@@ -1,5 +1,5 @@
 import { resetAllDatabase } from "@/prisma/prisma";
-import { clockinModel } from "@/src/app/(back)/models/clockin";
+import { clockinModel } from "@/src/app/(back)/models/clockin/clockin";
 import {
   createScenario1,
   createScenario2,

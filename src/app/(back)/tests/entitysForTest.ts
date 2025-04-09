@@ -3,7 +3,7 @@ import { establishmentModel } from "@/src/app/(back)/models/establishment";
 import { workerModel } from "../models/worker";
 import { signinForTest } from "./signinForTest";
 import { userModel } from "../models/user";
-import { clockinModel } from "../models/clockin";
+import { clockinModel } from "../models/clockin/clockin";
 
 export interface IValidAuthor {
   id: string;

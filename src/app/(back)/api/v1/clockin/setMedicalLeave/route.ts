@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 //models
-import { clockinModel } from "@/src/app/(back)/models/clockin";
+import { clockinModel } from "@/src/app/(back)/models/clockin/clockin";
 import { establishmentModel } from "@/src/app/(back)/models/establishment";
 import { workerModel } from "@/src/app/(back)/models/worker";
 
