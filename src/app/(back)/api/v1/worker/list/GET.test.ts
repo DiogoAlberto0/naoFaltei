@@ -7,6 +7,7 @@ import {
   createScenario1,
   createScenario2,
 } from "@/src/app/(back)/tests/entitysForTest";
+import { clockinModel } from "@/src/app/(back)/models/clockin/clockin";
 
 let scenario1: {
   author: {
@@ -45,6 +46,7 @@ let scenario2: {
 beforeAll(async () => {
   await resetAllDatabase();
   scenario1 = await createScenario1();
+
   await createManyWorkers(scenario1.establishment.id);
 
   scenario2 = await createScenario2();
@@ -113,7 +115,20 @@ const expectations = async ({
       where: {
         establishment: { id: establishmentId },
       },
-      select: { name: true, email: true, id: true },
+      select: {
+        name: true,
+        email: true,
+        id: true,
+        worker_clockin: {
+          select: {
+            is_entry: true,
+          },
+          orderBy: {
+            clocked_at: "asc",
+          },
+          take: 1,
+        },
+      },
       take: pageSize,
       skip: (page - 1) * pageSize,
       orderBy: { name: "asc" },
@@ -121,6 +136,7 @@ const expectations = async ({
     const workerCounter = await prisma.workers.count({
       where: { establishment: { id: establishmentId } },
     });
+
     expect(data.workers).toStrictEqual(expectedWorkers);
     expect(data.meta).toStrictEqual({
       currentPage: page,
@@ -129,6 +145,7 @@ const expectations = async ({
       totalItems: workerCounter,
     });
   } else expect(data).toStrictEqual(expectedResponseData);
+  return { data };
 };
 describe("GET on `/api/v1/worker/list`", () => {
   describe("Anonymous user", () => {
@@ -283,6 +300,45 @@ describe("GET on `/api/v1/worker/list`", () => {
         page: 2,
         pageSize: 5,
       });
+    });
+
+    it("should be return workers with the last register", async () => {
+      const firstRegisterDate = new Date();
+      firstRegisterDate.setUTCHours(10, 30, 0, 0);
+      await clockinModel.register({
+        workerId: scenario2.worker.id,
+        clocked_at: new Date(),
+        lat: 0,
+        lng: 0,
+      });
+      const { data } = await expectations({
+        cookie: scenario2.author.cookies,
+        establishmentId: scenario2.establishment.id,
+        expectedStatusCode: 200,
+        page: 2,
+        pageSize: 1,
+      });
+
+      expect(data.workers[0].worker_clockin[0].is_entry).toBeTruthy();
+
+      const secondRegisterDate = new Date();
+      secondRegisterDate.setUTCHours(20, 0, 0, 0);
+      await clockinModel.register({
+        workerId: scenario2.worker.id,
+        clocked_at: secondRegisterDate,
+        lat: 0,
+        lng: 0,
+      });
+
+      const { data: data2 } = await expectations({
+        cookie: scenario2.author.cookies,
+        establishmentId: scenario2.establishment.id,
+        expectedStatusCode: 200,
+        page: 2,
+        pageSize: 1,
+      });
+
+      expect(data2.workers[0].worker_clockin[0].is_entry).toBeFalsy();
     });
   });
 });
