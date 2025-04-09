@@ -368,6 +368,15 @@ const listByEstablishment = async ({
       id: true,
       name: true,
       email: true,
+      worker_clockin: {
+        select: {
+          is_entry: true,
+        },
+        orderBy: {
+          clocked_at: "asc",
+        },
+        take: 1,
+      },
     },
   });
 
