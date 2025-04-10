@@ -1,21 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 
 //hero iu components
 import { Input } from "@heroui/input";
-import { addToast } from "@heroui/toast";
 
 //components
 import { Map } from "../Map/Map";
 import { ModalForm } from "../Modal/ModalForm";
 import { AddressInputs, IAddress } from "./AddressInputs";
 
-//utils
-import { phoneUtils } from "@/src/utils/phone";
-import { emailUtils } from "@/src/utils/email";
-import { cepUtils } from "@/src/utils/cep";
-
-//errors
-import { FetchError, InputError } from "@/src/Errors/errors";
+//hook
+import { useCreateEstablishment } from "./useCreateEstablishment";
 
 const INITIAL_ADDRESS: IAddress = {
   address: "",
@@ -32,14 +26,14 @@ const INITIAL_ADDRESS: IAddress = {
 };
 
 interface IAddEstablishmentFormModal {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
+  openButton: (props: { onPress: () => void }) => ReactNode;
 }
 export const AddEstablishmentFormModal = ({
-  isOpen,
-  onOpenChange,
+  openButton,
 }: IAddEstablishmentFormModal) => {
   const [addressState, setAddressState] = useState<IAddress>(INITIAL_ADDRESS);
+
+  const { handleSubmit, isPending } = useCreateEstablishment();
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -53,58 +47,12 @@ export const AddEstablishmentFormModal = ({
     }
   }, []);
 
-  const handleSubmit = async (formData: FormData) => {
-    const name = formData.get("name");
-
-    const phone = formData.get("phone");
-    const email = formData.get("email");
-    const cep = formData.get("cep");
-
-    if (!name || !phone || !email || !cep)
-      throw new InputError({
-        message: "Campos obrigatorios faltando",
-        action: "Informe o nome, telefone, email e cep do novo estabelecimento",
-      });
-
-    phoneUtils.isValidOrThrow(phone.toString());
-    emailUtils.isValidOrThrow(email.toString());
-    cepUtils.isValidOrThrow(cep.toString());
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/establishment/create`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          name,
-          phone,
-          email,
-          cep,
-          lat: addressState.lat,
-          lng: addressState.lng,
-        }),
-      },
-    );
-
-    const data = await response.json();
-
-    if (response.status !== 201)
-      throw new FetchError({
-        message: data.message,
-        status_code: response.status,
-        action: data.action,
-      });
-    addToast({
-      title: `Empresa ${data.name} criada com sucesso`,
-      color: "success",
-    });
-  };
-
   return (
     <ModalForm
-      handleSubmit={handleSubmit}
+      handlleSubmit={handleSubmit}
       submitButtonText="Criar"
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
+      openButton={openButton}
+      isLoading={isPending}
     >
       <Input
         isRequired
