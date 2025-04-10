@@ -107,6 +107,16 @@ export const AddressInputs = ({ address, setAddress }: IAddressInputsProps) => {
         type="number"
         tabIndex={5}
       />
+
+      <Input
+        isRequired
+        label="Distância Máxima para Registro (KM):"
+        labelPlacement="outside"
+        name="ratio"
+        placeholder="Ex: 0.5 - Funcionário poderá registrar o ponto até 500 metros do estabelecimento"
+        type="number"
+        tabIndex={8}
+      />
     </>
   );
 };
