@@ -1,5 +1,19 @@
-export const fetcher = (url: any) =>
-  fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${url}`).then((r) => r.json());
+import { FetchError } from "../Errors/errors";
+
+export const fetcher = async (url: string) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${url}`);
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new FetchError({
+      message: data.message,
+      action: data.action,
+      status_code: res.status,
+    });
+  }
+
+  return data;
+};
 
 export const axios = async <T>({
   route,
