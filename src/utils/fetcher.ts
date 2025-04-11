@@ -1,6 +1,7 @@
-export const fetcher = (url: any) => fetch(url).then((r) => r.json());
+export const fetcher = (url: any) =>
+  fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${url}`).then((r) => r.json());
 
-export const axios = async ({
+export const axios = async <T>({
   route,
   method = "GET",
   body,
@@ -14,7 +15,7 @@ export const axios = async ({
   cookie?: string;
   revalidateHours?: number;
   revalidateTags?: string[];
-}) => {
+}): Promise<{ response: Response; data: T | any }> => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}${route}`,
     {
@@ -29,7 +30,7 @@ export const axios = async ({
     },
   );
 
-  const data = await response.json();
+  const data = (await response.json()) as T | any;
 
   return { response, data };
 };
