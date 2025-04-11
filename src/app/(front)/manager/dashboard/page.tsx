@@ -6,6 +6,7 @@ import { axios } from "@/src/utils/fetcher";
 import { cookies } from "next/headers";
 import { phoneUtils } from "@/src/utils/phone";
 import { cepUtils } from "@/src/utils/cep";
+import { FetchError } from "@/src/Errors/errors";
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function ManagerDashboard(props: {
@@ -23,25 +24,32 @@ export default async function ManagerDashboard(props: {
     );
   else {
     const cookie = await cookies();
-    const { data } = await axios({
+    const { data: establishmentData, response } = await axios({
       route: `/api/v1/establishment/${establishmentId}/details`,
       cookie: cookie.toString(),
       revalidateTags: [`establishmentId=${establishmentId}`],
     });
 
-    console.log(data);
+    console.log(establishmentData);
+    if (response.status != 200)
+      throw new FetchError({
+        message: establishmentData.message,
+        action: establishmentData.action,
+        status_code: response.status,
+      });
+
     return (
       <div className="w-full h-full max-h-full overflow-auto p-5 md:p-10 flex flex-col lg:flex-row gap-4">
         {/* Coluna da esquerda */}
         <div className="flex-1 flex flex-col gap-4 min-w-[300px]">
           <EstablishmentInfoCard
             id={establishmentId}
-            name={data.name}
-            phone={phoneUtils.format(data.phone)}
-            email={data.email}
-            cep={cepUtils.format(data.cep)}
+            name={establishmentData.name}
+            phone={phoneUtils.format(establishmentData.phone)}
+            email={establishmentData.email}
+            cep={cepUtils.format(establishmentData.cep)}
           />
-          {/* <WorkersTable establishmentId={establishmentId} /> */}
+          <WorkersTable establishmentId={establishmentId} />
         </div>
 
         {/* Coluna da direita */}
