@@ -17,7 +17,7 @@ export const GET = async (request: NextRequest) => {
     const worker = await workerModel.findUniqueBy({ id: session.user.id });
     const author = await userModel.findBy({ id: session.user.id });
 
-    if (!worker || !author) throw new UnauthorizedError();
+    if (!worker && !author) throw new UnauthorizedError();
     return NextResponse.json({ session }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
