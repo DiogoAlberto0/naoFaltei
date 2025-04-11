@@ -1,14 +1,29 @@
+//next
+import { cookies } from "next/headers";
+
+//components
 import { EstablishmentInfoCard } from "@/src/app/(front)/components/EstablishmentInfoCard/EstablishmentInfoCard";
 import { WorkersTable } from "@/src/app/(front)/components/WorkersTable/WorkersTable";
 import { LocationCard } from "@/src/app/(front)/components/LocationCard/LocationCard";
 import { LastRegistersByEstablishment } from "./LastRegistersByEstablishment";
+
+//fetcher
 import { axios } from "@/src/utils/fetcher";
-import { cookies } from "next/headers";
+
+//utils
 import { phoneUtils } from "@/src/utils/phone";
 import { cepUtils } from "@/src/utils/cep";
-import { FetchError } from "@/src/Errors/errors";
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
+interface IEstablishment {
+  name: string;
+  phone: string;
+  email: string;
+  cep: string;
+  lat: number;
+  lng: number;
+  ratio: number;
+}
 export default async function ManagerDashboard(props: {
   searchParams: SearchParams;
 }) {
@@ -24,19 +39,11 @@ export default async function ManagerDashboard(props: {
     );
   else {
     const cookie = await cookies();
-    const { data: establishmentData, response } = await axios({
+    const { data: establishmentData } = await axios<IEstablishment>({
       route: `/api/v1/establishment/${establishmentId}/details`,
       cookie: cookie.toString(),
       revalidateTags: [`establishmentId=${establishmentId}`],
     });
-
-    console.log(establishmentData);
-    if (response.status != 200)
-      throw new FetchError({
-        message: establishmentData.message,
-        action: establishmentData.action,
-        status_code: response.status,
-      });
 
     return (
       <div className="w-full h-full max-h-full overflow-auto p-5 md:p-10 flex flex-col lg:flex-row gap-4">
@@ -54,15 +61,21 @@ export default async function ManagerDashboard(props: {
 
         {/* Coluna da direita */}
         <div className="flex-1 flex flex-col gap-4 min-w-[300px]">
-          {/* <LastRegistersByEstablishment
-              title="Últimos registros"
-              maxRegisters={7}
-            />
-            <LocationCard
-              className="w-full flex-1 min-h-[300px]"
-              establishmentId={establishmentId}
-              markerPosition={{ lat: -15.12345, lng: -45.54321 }}
-            /> */}
+          <LastRegistersByEstablishment
+            establishmentId={establishmentId}
+            title="Últimos registros"
+            maxRegisters={7}
+          />
+
+          <LocationCard
+            className="w-full flex-1 min-h-[300px]"
+            establishmentId={establishmentId}
+            markerPosition={{
+              lat: establishmentData.lat,
+              lng: establishmentData.lng,
+            }}
+            ratio={establishmentData.ratio}
+          />
         </div>
       </div>
     );

@@ -13,12 +13,14 @@ interface ILocationCardProps extends CardProps {
     lat: number;
     lng: number;
   };
+  ratio: number;
 }
 export const LocationCard = ({
   isEditable = true,
   className,
   markerPosition,
   establishmentId,
+  ratio,
   ...otherProps
 }: ILocationCardProps) => {
   return (
@@ -41,6 +43,7 @@ export const LocationCard = ({
           <UpdateLocaleModal
             establishmentId={establishmentId}
             inicialCoords={markerPosition}
+            ratio={ratio}
           />
         )}
       </CardFooter>
