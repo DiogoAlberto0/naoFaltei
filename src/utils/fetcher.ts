@@ -15,36 +15,50 @@ export const fetcher = async (url: string) => {
   return data;
 };
 
-export const axios = async <T>({
-  route,
-  method = "GET",
-  body,
-  cookie,
-  revalidateHours = 24,
-  revalidateTags,
-}: {
+export const axios = async <T>(options: {
   route: string;
   method?: "POST" | "GET" | "PUT" | "DELETE";
   body?: any;
   cookie?: string;
   revalidateHours?: number;
   revalidateTags?: string[];
-}): Promise<{ response: Response; data: T | any }> => {
+}): Promise<{ response: Response; data: T }> => {
+  const {
+    route,
+    method = "GET",
+    body,
+    cookie,
+    revalidateHours = 24,
+    revalidateTags,
+  } = options;
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}${route}`,
     {
       method,
-      body: JSON.stringify(body),
-      headers: cookie ? { cookie } : {},
+      body: body ? JSON.stringify(body) : undefined,
+      headers: {
+        "Content-Type": "application/json",
+        ...(cookie ? { cookie } : {}),
+      },
       cache: revalidateHours > 0 ? "force-cache" : "no-store",
       next: {
-        revalidate: 1000 * 60 * 60 * revalidateHours,
+        revalidate: 60 * 60 * revalidateHours,
         tags: revalidateTags,
       },
     },
   );
 
-  const data = (await response.json()) as T | any;
+  if (!response.ok) {
+    // Erro explícito com mensagem vinda da API
+    const errorData = await response.json();
+    throw new FetchError({
+      message: errorData.message,
+      action: errorData.action,
+      status_code: response.status,
+    });
+  }
 
+  const data = (await response.json()) as T;
   return { response, data };
 };
