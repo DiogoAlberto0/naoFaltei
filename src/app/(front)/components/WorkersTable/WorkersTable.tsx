@@ -22,6 +22,7 @@ import { ActionsToolTips } from "./WorkerActions";
 
 //fetcher
 import { fetcher } from "@/src/utils/fetcher";
+import { ComponentError } from "../ComponentError";
 
 interface IWorker {
   id: string;
@@ -51,13 +52,14 @@ const Legend = () => {
     </div>
   );
 };
+
 export const WorkersTable = ({
   establishmentId,
   isWorkerEditable = true,
 }: IWorkersTableProps) => {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useSWR<{
+  const { data, isLoading, error } = useSWR<{
     workers: IWorker[];
     meta: IMeta;
   }>(
@@ -66,7 +68,8 @@ export const WorkersTable = ({
   );
 
   const loadingState = isLoading ? "loading" : "idle";
-  console.log(data);
+  if (error)
+    return <ComponentError message={error.message} action={error.action} />;
   return (
     <Table
       isStriped
@@ -94,12 +97,6 @@ export const WorkersTable = ({
           </div>
         </div>
       }
-      classNames={{
-        base: "h-full",
-        wrapper: "flex-1",
-        table: "h-full",
-        tbody: "",
-      }}
     >
       <TableHeader>
         <TableColumn>Funcionário</TableColumn>
