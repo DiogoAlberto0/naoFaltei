@@ -39,46 +39,41 @@ const ClockInputs = ({ onRemoveInput }: { onRemoveInput: () => void }) => {
   );
 };
 export const RegisterClockModal = () => {
-  const { isOpen, onOpenChange, onOpen } = useDisclosure();
-
   const [counter, setCounter] = useState(1);
   const [inputsIds, setInputsIds] = useState<number[]>([0]);
 
   return (
-    <>
-      <Button color="primary" onPress={onOpen}>
-        Registrar Entradas/Saídas
-      </Button>
-      <ModalForm
-        title="Registrar entradas e saídas do funcionário"
-        submitButtonText="Registrar"
-        handleSubmit={async (formData) => {
-          console.log(formData.get("DateTime"));
-        }}
-        onOpenChange={onOpenChange}
-        isOpen={isOpen}
-        className=""
-      >
-        {inputsIds.map((id) => (
-          <ClockInputs
-            key={id}
-            onRemoveInput={() => {
-              setInputsIds((prev) => prev.filter((inputId) => inputId !== id));
-            }}
-          />
-        ))}
+    <ModalForm
+      title="Registrar entradas e saídas do funcionário"
+      submitButtonText="Registrar"
+      handleSubmit={async (formData) => {
+        console.log(formData.get("DateTime"));
+      }}
+      openButton={({ onPress }) => (
+        <Button color="primary" onPress={onPress}>
+          Registrar Entradas/Saídas
+        </Button>
+      )}
+    >
+      {inputsIds.map((id) => (
+        <ClockInputs
+          key={id}
+          onRemoveInput={() => {
+            setInputsIds((prev) => prev.filter((inputId) => inputId !== id));
+          }}
+        />
+      ))}
 
-        <div className=" w-full flex justify-center items-center mt-4">
-          <AddIconButton
-            color="success"
-            variant="flat"
-            onPress={() => {
-              setCounter((prevCounter) => prevCounter + 1);
-              setInputsIds((prev) => [...prev, counter]);
-            }}
-          />
-        </div>
-      </ModalForm>
-    </>
+      <div className=" w-full flex justify-center items-center mt-4">
+        <AddIconButton
+          color="success"
+          variant="flat"
+          onPress={() => {
+            setCounter((prevCounter) => prevCounter + 1);
+            setInputsIds((prev) => [...prev, counter]);
+          }}
+        />
+      </div>
+    </ModalForm>
   );
 };

@@ -17,7 +17,7 @@ export const CreateWorkerModal = ({
   return (
     <ModalForm
       title="Criar novo funcionário"
-      handlleSubmit={createWorker}
+      handleSubmit={createWorker}
       submitButtonText="Criar"
       openButton={({ onPress }) => <AddIconButton onPress={onPress} />}
     >

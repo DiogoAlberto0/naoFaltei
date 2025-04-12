@@ -33,7 +33,7 @@ export const AddEstablishmentFormModal = ({
 }: IAddEstablishmentFormModal) => {
   const [addressState, setAddressState] = useState<IAddress>(INITIAL_ADDRESS);
 
-  const { handleSubmit, isPending } = useCreateEstablishment();
+  const { handleSubmit } = useCreateEstablishment();
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -49,10 +49,9 @@ export const AddEstablishmentFormModal = ({
 
   return (
     <ModalForm
-      handlleSubmit={handleSubmit}
+      handleSubmit={handleSubmit}
       submitButtonText="Criar"
       openButton={openButton}
-      isLoading={isPending}
     >
       <Input
         isRequired

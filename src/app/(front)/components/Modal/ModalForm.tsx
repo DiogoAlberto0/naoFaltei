@@ -1,4 +1,6 @@
+import { FetchError, InputError } from "@/src/Errors/errors";
 import {
+  addToast,
   Button,
   Form,
   Modal,
@@ -9,10 +11,10 @@ import {
   ModalProps,
   useDisclosure,
 } from "@heroui/react";
-import { FormEvent, ReactNode } from "react";
+import { FormEvent, ReactNode, useState } from "react";
 
 export interface IModalFormProps extends ModalProps {
-  handlleSubmit: (formData: FormData) => Promise<boolean>;
+  handleSubmit: (formData: FormData) => Promise<void>;
   submitButtonText: string;
   isLoading?: boolean;
   openButton: (props: { onPress: () => void }) => ReactNode;
@@ -21,26 +23,37 @@ export interface IModalFormProps extends ModalProps {
 export const ModalForm = ({
   title,
   submitButtonText,
-  isLoading = false,
   children,
-  handlleSubmit,
+  handleSubmit,
   openButton,
   ...otherProps
 }: IModalFormProps) => {
+  const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
+  const onSumit = async (e: FormEvent<HTMLFormElement>) => {
     try {
-      const success = await handlleSubmit(formData);
-      if (success) form.reset(); // só acontece se não der erro
-    } catch (error) {
+      e.preventDefault();
+      setIsLoading(true);
+
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      await handleSubmit(formData);
+      form.reset(); // só acontece se não der erro
+    } catch (error: any) {
       // opcional: log, toast, etc.
-      console.error("Erro ao enviar formulário:", error);
+      if (error instanceof FetchError || error instanceof InputError) {
+        addToast({
+          color: "danger",
+          title: error.message,
+          description: error.action,
+        });
+      } else {
+        console.error("Erro ao enviar formulário:", error);
+        throw error;
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -56,7 +69,7 @@ export const ModalForm = ({
           e.preventDefault();
         }}
       >
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={onSumit}>
           <ModalContent>
             {(onClose) => (
               <>

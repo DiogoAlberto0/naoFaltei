@@ -71,7 +71,7 @@ export const UpdateWorkerModal = ({ workerId }: { workerId: string }) => {
   return (
     <ModalForm
       title="Criar novo funcionário"
-      handlleSubmit={updateWorker}
+      handleSubmit={updateWorker}
       submitButtonText="Criar"
       openButton={({ onPress }) => <EditToolTip onPress={onPress} />}
     >
