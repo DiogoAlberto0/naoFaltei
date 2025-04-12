@@ -6,7 +6,7 @@ import { ModalForm } from "../Modal/ModalForm";
 import { EditButton } from "../Buttons/EditButton";
 
 //hook
-import { useUpdateEstablishment } from "./useUpdateEstablishment";
+import { updateEstablishmentHandler } from "./updateEstablishmentHandler";
 interface IUpdateEstablishmentModal {
   id: string;
   name: string;
@@ -20,14 +20,13 @@ export const UpdateEstablishmentModal = ({
   name,
   phone,
   email,
+  cep,
 }: IUpdateEstablishmentModal) => {
-  const { handleSubmit, isLoading } = useUpdateEstablishment();
   return (
     <ModalForm
-      handlleSubmit={handleSubmit}
+      handleSubmit={updateEstablishmentHandler}
       submitButtonText="Salvar"
       openButton={({ onPress }) => <EditButton onPress={onPress} />}
-      isLoading={isLoading}
     >
       <Input name="id" type="hidden" value={id} />
       <Input
@@ -53,6 +52,14 @@ export const UpdateEstablishmentModal = ({
         label="Email:"
         labelPlacement="outside"
         defaultValue={email}
+      />
+      <Input
+        name="cep"
+        type="cep"
+        required
+        label="Cep:"
+        labelPlacement="outside"
+        defaultValue={cep}
       />
     </ModalForm>
   );
