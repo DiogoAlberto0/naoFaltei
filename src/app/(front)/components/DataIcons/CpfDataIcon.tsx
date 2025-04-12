@@ -1,6 +1,7 @@
 import { DetailedHTMLProps, HTMLAttributes } from "react";
 
 import { IdentityIcon } from "@/assets/icons/IdentityIcon";
+import { cpfUtils } from "@/src/utils/cpf";
 
 interface ICpfDataIconProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -17,7 +18,7 @@ export const CpfDataIcon = ({
       {...otherProps}
     >
       <IdentityIcon className="h-5 w-5 text-primary-500 font-bold" />
-      <p className="text-small text-default-500">{cpf}</p>
+      <p className="text-small text-default-500">{cpfUtils.format(cpf)}</p>
     </div>
   );
 };

@@ -3,25 +3,43 @@ import { RegistersTable } from "@/src/app/(front)/components/RegistersTable/Regi
 import { WorkerInfoCard } from "@/src/app/(front)/components/WorkerInfoCard/WorkerInfoCard";
 import { WorkSchedule } from "@/src/app/(front)/components/WorkSchedule/WorkSchedule";
 import { RegisterClockModal } from "./RegisterClockModal";
+import { axios } from "@/src/utils/fetcher";
+import { cookies } from "next/headers";
 
 interface IWorkerPageProps {
   params: Promise<{ workerId: string }>;
 }
 
-const WorkerPage = async (
-  {
-    //params
-  }: IWorkerPageProps,
-) => {
-  //const { workerId } = await params;
+export interface IWorker {
+  id: string;
+  name: string;
+  login: string;
+  cpf: string;
+  phone: string;
+  email: string;
+  is_manager: boolean;
+  is_admin: boolean;
+  is_active: true;
+  establishment_id: string;
+}
+const WorkerPage = async ({ params }: IWorkerPageProps) => {
+  const { workerId } = await params;
+
+  const cookie = await cookies();
+  const { data } = await axios<IWorker>({
+    route: `/api/v1/worker/${workerId}/details`,
+    cookie: cookie.toString(),
+  });
+
   return (
     <div className="w-full h-full max-h-full overflow-auto p-4 sm:p-6 md:p-8 flex flex-col md:flex-row gap-4">
       <div className="flex-1 flex flex-col gap-4">
-        <WorkerInfoCard />
-        <WorkSchedule />
-        <RegisterClockModal />
+        <WorkerInfoCard worker={data} />
+        {/* <WorkSchedule />
+        <RegisterClockModal /> */}
       </div>
       <div className="flex-1 flex flex-col gap-4">
+        {/* 
         <CalendarInput
           title="Definir data:"
           onSubmitRedirect="/manager/worker/1"
@@ -30,7 +48,8 @@ const WorkerPage = async (
           title="20/03/2025 - 20/04/2025"
           maxRegisters={12}
           overflowAuto={false}
-        />
+        /> 
+        */}
       </div>
     </div>
   );
