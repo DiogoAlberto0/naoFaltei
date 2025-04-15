@@ -1,4 +1,9 @@
+import { FormEvent, ReactNode, useState } from "react";
+
+// errors
 import { FetchError, InputError } from "@/src/Errors/errors";
+
+// hero ui
 import {
   addToast,
   Button,
@@ -11,13 +16,13 @@ import {
   ModalProps,
   useDisclosure,
 } from "@heroui/react";
-import { FormEvent, ReactNode, useState } from "react";
 
 export interface IModalFormProps extends ModalProps {
   handleSubmit: (formData: FormData) => Promise<void>;
   submitButtonText: string;
   isLoading?: boolean;
   openButton: (props: { onPress: () => void }) => ReactNode;
+  onUpdate?: () => void;
 }
 
 export const ModalForm = ({
@@ -26,10 +31,11 @@ export const ModalForm = ({
   children,
   handleSubmit,
   openButton,
+  onUpdate,
   ...otherProps
 }: IModalFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
   const onSumit = async (e: FormEvent<HTMLFormElement>) => {
     try {
@@ -39,7 +45,9 @@ export const ModalForm = ({
       const form = e.currentTarget;
       const formData = new FormData(form);
       await handleSubmit(formData);
-      form.reset(); // só acontece se não der erro
+      if (onUpdate) onUpdate();
+      form.reset(); // só acontece se não der erro`
+      onClose();
     } catch (error: any) {
       // opcional: log, toast, etc.
       if (error instanceof FetchError || error instanceof InputError) {
