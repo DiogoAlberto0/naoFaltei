@@ -5,53 +5,40 @@ import { Table, TableBody, TableColumn, TableHeader } from "@heroui/table";
 
 // custom components
 import { TopContentRegistersTable } from "@/src/app/(front)/components/RegistersTable/TopContent";
-import { renderRegitersTableRow } from "@/src/app/(front)/components/RegistersTable/Row";
+import { Spinner } from "@heroui/react";
+import { ComponentError } from "../ComponentError";
+import { useTimeSheet } from "./useTimeSheet";
+import { renderTableRows } from "./TableRows";
+import { useState } from "react";
 
 export const RegistersTable = ({
-  title,
-  maxRegisters,
-  detailed = true,
   overflowAuto = true,
+  workerId,
 }: {
-  title: string;
   maxRegisters: number;
   detailed?: boolean;
   overflowAuto?: boolean;
+  workerId: string;
 }) => {
-  const registers = [];
+  const { title, error, data, isLoading } = useTimeSheet(workerId);
 
-  for (let index = 0; index < maxRegisters; index++) {
-    registers.push(index);
-  }
+  const timeSheet = data?.timeSheet || [];
+  const maxPerPage = 5;
+  const [page, setPage] = useState(1);
 
-  const tableRows = registers.map((id) => {
-    const clockinDate = new Date();
-    const clockOutDate = new Date();
-    clockOutDate.setHours(clockinDate.getHours() + 1);
-    return renderRegitersTableRow({
-      id: id.toString(),
-      clockIn: {
-        hour: clockinDate.getHours(),
-        minute: clockinDate.getMinutes(),
-      },
-      clockOut: {
-        hour: clockOutDate.getHours(),
-        minute: clockOutDate.getMinutes(),
-      },
-      date: new Date(),
-    });
-  });
+  if (error)
+    return <ComponentError message={error.message} action={error.action} />;
   return (
     <Table
       isStriped
       topContent={
         <TopContentRegistersTable
           title={title}
-          detailed={detailed}
-          absenceDays={1}
-          hoursBank={2}
-          medicalCertificateDays={3}
-          tardinessDays={4}
+          detailed={!!data}
+          timeSheet={timeSheet}
+          absenceDays={data?.totalAbscent}
+          hoursBank={data?.totalTimeBalance}
+          medicalCertificateDays={data?.totalMedicalLeave}
         />
       }
       classNames={
@@ -71,9 +58,9 @@ export const RegistersTable = ({
             showControls
             showShadow
             color="secondary"
-            page={1}
-            total={10}
-            onChange={(page) => console.log(page)}
+            page={page}
+            total={Math.ceil(timeSheet.length / maxPerPage) || 1}
+            onChange={(page) => setPage(page)}
           />
         </div>
       }
@@ -83,7 +70,19 @@ export const RegistersTable = ({
         <TableColumn>Entrada</TableColumn>
         <TableColumn>Saída</TableColumn>
       </TableHeader>
-      <TableBody>{tableRows}</TableBody>
+      <TableBody
+        emptyContent={"Não há registros nesse intervalo de datas"}
+        items={timeSheet}
+        isLoading={isLoading}
+        loadingContent={<Spinner />}
+      >
+        {renderTableRows(
+          timeSheet.slice(
+            (page - 1) * maxPerPage,
+            (page - 1) * maxPerPage + maxPerPage,
+          ),
+        )}
+      </TableBody>
     </Table>
   );
 };

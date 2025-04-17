@@ -46,17 +46,15 @@ const WorkerPage = async ({ params }: IWorkerPageProps) => {
         <RegisterClockModal workerId={workerId} />
       </div>
       <div className="flex-1 flex flex-col gap-4">
-        {/* 
         <CalendarInput
           title="Definir data:"
-          onSubmitRedirect="/manager/worker/1"
+          onSubmitRedirect={`/manager/worker/${workerId}`}
         />
         <RegistersTable
-          title="20/03/2025 - 20/04/2025"
+          workerId={workerId}
           maxRegisters={12}
           overflowAuto={false}
-        /> 
-        */}
+        />
       </div>
     </div>
   );

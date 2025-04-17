@@ -70,6 +70,19 @@ const getAllDatesInRange = (start: Date, end: Date): Date[] => {
 const formatTime = (hour: number, minute: number) => {
   return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
 };
+
+const transformMinutesInTime = (
+  minutes: number,
+  { variant = "clock" }: { variant?: "clock" | "letter" } = {},
+) => {
+  const absBank = Math.abs(minutes);
+  const hours = Math.floor(absBank / 60);
+  const minute = absBank % 60;
+
+  if (variant == "clock") return `${hours}:${minute}`;
+  if (variant == "letter") return `${hours}h ${minute}m`;
+};
+
 const dateUtils = {
   validateAndReturnDate,
   calculateFullDaysBetween,
@@ -79,6 +92,7 @@ const dateUtils = {
   formatToYMD,
   getAllDatesInRange,
   formatTime,
+  transformMinutesInTime,
 };
 
 export { dateUtils };
