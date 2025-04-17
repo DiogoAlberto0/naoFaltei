@@ -62,8 +62,16 @@ export const GET = async (request: NextRequest) => {
       pageSize,
     );
 
+    const counter = await clockinModel.countBy({ establishmentId });
+
     return NextResponse.json({
       lastRegisters,
+      meta: {
+        currentPage: page,
+        pageSize,
+        totalPages: Math.ceil(counter / pageSize),
+        totalItems: counter,
+      },
     });
   } catch (error: any) {
     return NextResponse.json(

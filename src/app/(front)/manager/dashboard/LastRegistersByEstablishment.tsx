@@ -1,4 +1,7 @@
 "use client";
+//next
+import { useState } from "react";
+import useSWR from "swr";
 // heroui components
 import { Pagination } from "@heroui/pagination";
 import {
@@ -9,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/table";
+import { Spinner } from "@heroui/react";
 
 // custom components
 import {
@@ -16,7 +20,32 @@ import {
   TypeRegisterChipLegend,
 } from "@/src/app/(front)/components/Chips/TypeRegisterChip";
 import { DateText } from "@/src/app/(front)/components/Date/DateText";
+import { ComponentError } from "../../components/ComponentError";
 
+//fetcher
+import { fetcher } from "@/src/utils/fetcher";
+
+interface IRegister {
+  id: string;
+  clocked_at: string;
+  is_entry: boolean;
+  worker: {
+    name: string;
+    email: string;
+  };
+}
+
+interface IMetaInfos {
+  currentPage: number;
+  pageSize: number;
+  totalPages: number;
+  totalItems: number;
+}
+
+interface IListClockinResponse {
+  lastRegisters: IRegister[];
+  meta: IMetaInfos;
+}
 export const renderRegitersTableRow = ({
   id,
   name,
@@ -58,46 +87,44 @@ export const renderRegitersTableRow = ({
   );
 };
 
+const renderRegistersTableRows = ({
+  registers,
+}: {
+  registers: IRegister[];
+}) => {
+  return registers.map(
+    ({ id, worker: { name }, is_entry: clockIn, clocked_at }) => {
+      const date = new Date(clocked_at);
+      return renderRegitersTableRow({
+        id,
+        name,
+        clockIn,
+        date: date,
+        hour: date.getHours(),
+        minute: date.getMinutes(),
+      });
+    },
+  );
+};
+
 export const LastRegistersByEstablishment = ({
   title,
+  establishmentId,
   maxRegisters,
 }: {
   title: string;
   maxRegisters: number;
   detailed?: boolean;
+  establishmentId: string;
 }) => {
-  const registers = [];
-
-  for (let index = 0; index < maxRegisters; index++) {
-    registers.push(index);
-  }
-
-  const names = [
-    "Lucas Andrade Costa",
-    "Mariana Silva Ferreira",
-    "Ricardo Oliveira Santos",
-    "Beatriz Rocha Almeida",
-    "Fernando Martins Correia",
-    "Juliana Mendes Souza",
-    "Gabriel Lima Fonseca",
-    "Lucas Andrade Costa",
-    "Mariana Silva Ferreira",
-    "Ricardo Oliveira Santos",
-    "Beatriz Rocha Almeida",
-    "Fernando Martins Correia",
-    "Juliana Mendes Souza",
-    "Gabriel Lima Fonseca",
-  ];
-  const tableRows = registers.map((id, index) =>
-    renderRegitersTableRow({
-      id: id.toString(),
-      name: names[index],
-      clockIn: id % 2 == 0,
-      date: new Date(),
-      hour: new Date().getHours(),
-      minute: new Date().getMinutes(),
-    }),
+  const [page, setPage] = useState(1);
+  const { data, error, isLoading } = useSWR<IListClockinResponse>(
+    `/api/v1/clockin/listByEstablishment?establishmentId=${establishmentId}&pageSize=${maxRegisters}&page=${page}`,
+    fetcher,
   );
+
+  if (error)
+    return <ComponentError message={error.message} action={error.action} />;
   return (
     <Table
       topContent={
@@ -115,13 +142,14 @@ export const LastRegistersByEstablishment = ({
               showControls
               showShadow
               color="secondary"
-              page={1}
-              total={10}
-              onChange={(page) => console.log(page)}
+              page={page}
+              total={data?.meta.totalPages || 1}
+              onChange={(page) => setPage(page)}
             />
           </div>
         </div>
       }
+      isStriped
     >
       <TableHeader>
         <TableColumn>Funcionário</TableColumn>
@@ -129,7 +157,14 @@ export const LastRegistersByEstablishment = ({
         <TableColumn>Data</TableColumn>
         <TableColumn>Hora</TableColumn>
       </TableHeader>
-      <TableBody className="bg-blue-500">{tableRows}</TableBody>
+      <TableBody
+        className="bg-blue-500"
+        loadingContent={<Spinner />}
+        loadingState={isLoading ? "loading" : "idle"}
+        emptyContent="Ainda não há registros..."
+      >
+        {renderRegistersTableRows({ registers: data?.lastRegisters || [] })}
+      </TableBody>
     </Table>
   );
 };

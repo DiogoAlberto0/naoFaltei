@@ -8,8 +8,7 @@ import { DeleteIcon } from "@/assets/icons/DeleteIcon";
 import { EyeIcon } from "@/assets/icons/EyeIcon";
 
 //custom components
-import { WorkerModal } from "./WorkerModal";
-
+import { UpdateWorkerModal } from "./UpdateWorkerModal";
 export const ActionsToolTips = ({
   workerId,
   isWorkerEditable,
@@ -34,7 +33,7 @@ export const ActionsToolTips = ({
       </Tooltip>
       {isWorkerEditable && (
         <>
-          <WorkerModal workerId={workerId} type="update" />
+          <UpdateWorkerModal workerId={workerId} />
           <Tooltip color="danger" content="Delete user">
             <span className="text-lg text-danger cursor-pointer active:opacity-50">
               <DeleteIcon />

@@ -15,6 +15,8 @@ const validateAndExtractParams = (searchParams: URLSearchParams) => {
   const inicialDateString = searchParams.get("inicialDate");
   const finalDateString = searchParams.get("finalDate");
 
+  console.log(inicialDateString);
+  console.log(finalDateString);
   if (!inicialDateString || !finalDateString)
     throw new InputError({
       message: "Periodo não informado.",

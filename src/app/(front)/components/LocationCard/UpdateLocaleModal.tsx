@@ -1,12 +1,12 @@
-import { addToast, Button, Input } from "@heroui/react";
-import { useDisclosure } from "@heroui/modal";
+import { useState } from "react";
+//hero ui
+import { Button, Input } from "@heroui/react";
 
 //coponents
 import { ModalForm } from "../Modal/ModalForm";
 import { Map } from "../Map/Map";
-import { FetchError, InputError } from "@/src/Errors/errors";
-import { useState } from "react";
 import { EditIcon } from "@/assets/icons/EditIcon";
+import { updateLocaleHandler } from "./updateLocaleHandler";
 
 interface ICoords {
   lat: number;
@@ -15,73 +15,33 @@ interface ICoords {
 interface IUpdateLocaleModalProps {
   establishmentId: string;
   inicialCoords: ICoords;
+  ratio: number;
 }
 
-const handleSubmit = async (
-  formData: FormData,
-  establishmentId: string,
-  coords: ICoords,
-) => {
-  const lat = formData.get("lat");
-  const lng = formData.get("lng");
-
-  if (!lat || !lng)
-    throw new InputError({
-      message: "Coordenadas inválidas",
-      action: "Favor selecionar o local do estabelecimento no mapa",
-    });
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/establishment/${establishmentId}/update`,
-    {
-      method: "PUT",
-      body: JSON.stringify({
-        coords: {
-          lat: coords.lat.toString(),
-          lng: coords.lng.toString(),
-        },
-      }),
-    },
-  );
-  const data = await response.json();
-
-  if (response.status != 200)
-    throw new FetchError({
-      message: data.message,
-      action: data.action,
-      status_code: response.status,
-    });
-
-  addToast({
-    color: "success",
-    title: "Localização alterada com sucesso",
-  });
-};
 export const UpdateLocaleModal = ({
   establishmentId,
   inicialCoords,
+  ratio,
 }: IUpdateLocaleModalProps) => {
   const [coords, setCoords] = useState<ICoords>({
     lat: inicialCoords.lat,
     lng: inicialCoords.lng,
   });
 
-  const { isOpen, onOpenChange, onOpen } = useDisclosure();
-
   return (
     <>
-      <Button
-        endContent={<EditIcon className="h-5 w-5 stroke-primary-500" />}
-        color="primary"
-        onPress={onOpen}
-      >
-        Editar
-      </Button>
       <ModalForm
-        handleSubmit={(e) => handleSubmit(e, establishmentId, coords)}
+        handleSubmit={updateLocaleHandler}
         submitButtonText="Salvar"
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        openButton={({ onPress }) => (
+          <Button
+            endContent={<EditIcon className="h-5 w-5 stroke-primary-500" />}
+            color="primary"
+            onPress={onPress}
+          >
+            Editar
+          </Button>
+        )}
         title="Mudar a localização do estabelecimento"
       >
         <Map
@@ -94,9 +54,24 @@ export const UpdateLocaleModal = ({
             setCoords({ lat: Lat, lng: Lng });
           }}
         />
-
+        <Input
+          name="establishmentId"
+          type="hidden"
+          value={`${establishmentId}`}
+          required
+        />
         <Input name="lat" type="hidden" value={`${coords.lat}`} required />
         <Input name="lng" type="hidden" value={`${coords.lng}`} required />
+        <Input
+          name="ratio"
+          type="number"
+          label="Raio em KM para registro:"
+          labelPlacement="outside"
+          isRequired
+          placeholder="Defina um raio em KM que o funcionário possa registrar seu ponto"
+          defaultValue={ratio.toString()}
+          required
+        />
       </ModalForm>
     </>
   );

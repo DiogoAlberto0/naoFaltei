@@ -1,5 +1,11 @@
 "use client";
+//fetcher
+import useSWR from "swr";
+import { fetcher } from "@/src/utils/fetcher";
+
+// heroui
 import {
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -7,58 +13,98 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/react";
+// components
+import { ComponentError } from "../ComponentError";
+import { SetScheduleModal } from "./SetScheduleModal";
 
-const TableTitle = () => {
-  return (
-    <div>
-      <h1 className="text-xl font-semibold">Escala de trabalho:</h1>
-    </div>
-  );
+// utils
+import { dateUtils } from "@/src/utils/date";
+
+export interface IDaySchedule {
+  startHour: number;
+  startMinute: number;
+  endHour: number;
+  endMinute: number;
+  restTimeInMinutes: number;
+  isDayOff: boolean;
+}
+export interface ISchedule {
+  sunday: IDaySchedule;
+  monday: IDaySchedule;
+  tuesday: IDaySchedule;
+  wednesday: IDaySchedule;
+  thursday: IDaySchedule;
+  friday: IDaySchedule;
+  saturday: IDaySchedule;
+}
+
+const days = {
+  sunday: "Dom.",
+  monday: "Seg.",
+  tuesday: "Ter.",
+  wednesday: "Qua.",
+  thursday: "Qui.",
+  friday: "Sex.",
+  saturday: "Sab.",
 };
-export const WorkSchedule = () => {
+
+export const WorkSchedule = ({ workerId }: { workerId: string }) => {
+  const { data, error, isLoading, mutate } = useSWR<ISchedule>(
+    `/api/v1/worker/${workerId}/getSchedule`,
+    fetcher,
+  );
+
+  const schedule = data
+    ? (Object.entries(data) as [keyof ISchedule, IDaySchedule][])
+    : [];
+
+  if (error)
+    return <ComponentError message={"Falha ao carregar escala de trabalho"} />;
+
   return (
-    <Table topContent={<TableTitle />}>
+    <Table
+      topContent={
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-semibold">Escala de trabalho:</h1>
+          <SetScheduleModal
+            workerId={workerId}
+            prevSchedule={data}
+            updateSchedule={() => mutate()}
+          />
+        </div>
+      }
+      aria-label="Tabela informando a escala de trabalho do funcionário"
+    >
       <TableHeader aria-label="Example static collection table">
         <TableColumn>Dia</TableColumn>
         <TableColumn>Entrada</TableColumn>
         <TableColumn>Saída</TableColumn>
+        <TableColumn>Descanso (min.)</TableColumn>
       </TableHeader>
-      <TableBody>
-        <TableRow key={0}>
-          <TableCell>Seg.</TableCell>
-          <TableCell>10:30</TableCell>
-          <TableCell>20:00</TableCell>
-        </TableRow>
-        <TableRow key={1}>
-          <TableCell>Ter.</TableCell>
-          <TableCell>10:30</TableCell>
-          <TableCell>20:00</TableCell>
-        </TableRow>
-        <TableRow key={2}>
-          <TableCell>Qua.</TableCell>
-          <TableCell>10:30</TableCell>
-          <TableCell>20:00</TableCell>
-        </TableRow>
-        <TableRow key={3}>
-          <TableCell>Qui.</TableCell>
-          <TableCell>10:30</TableCell>
-          <TableCell>20:00</TableCell>
-        </TableRow>
-        <TableRow key={4}>
-          <TableCell>Sex.</TableCell>
-          <TableCell>10:30</TableCell>
-          <TableCell>20:00</TableCell>
-        </TableRow>
-        <TableRow key={5}>
-          <TableCell>Sab.</TableCell>
-          <TableCell>08:00</TableCell>
-          <TableCell>12:00</TableCell>
-        </TableRow>
-        <TableRow key={6}>
-          <TableCell>Dom.</TableCell>
-          <TableCell>Folga</TableCell>
-          <TableCell>Folga</TableCell>
-        </TableRow>
+      <TableBody
+        isLoading={isLoading}
+        items={schedule}
+        loadingContent={<Spinner label="Loading..." />}
+        emptyContent="Escala de trabalho ainda não foi definida"
+      >
+        {schedule.map(([key, value]) => (
+          <TableRow key={key}>
+            <TableCell>{days[key]}</TableCell>
+            <TableCell>
+              {value.isDayOff
+                ? "--:--"
+                : dateUtils.formatTime(value.startHour, value.startMinute)}
+            </TableCell>
+            <TableCell>
+              {value.isDayOff
+                ? "--:--"
+                : dateUtils.formatTime(value.endHour, value.endMinute)}
+            </TableCell>
+            <TableCell>
+              {value.isDayOff ? "--" : value.restTimeInMinutes}
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );

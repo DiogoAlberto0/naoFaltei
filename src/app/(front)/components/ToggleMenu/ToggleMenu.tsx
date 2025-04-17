@@ -1,14 +1,12 @@
 "use client";
+
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-
-// hero ui components
-
-// icons
 import { ArrowIcon } from "@/assets/icons/ArrowIcon";
 
 interface IToggleMenuProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}
+
 export const ToggleMenu = ({ children }: IToggleMenuProps) => {
   const [isOpenToggle, setIsOpenToggle] = useState(false);
 
@@ -22,32 +20,41 @@ export const ToggleMenu = ({ children }: IToggleMenuProps) => {
   return (
     <div
       className={`
-        border-small border-default-200 dark:border-default-100 max-sm:rounded-t-medium sm:rounded-r-medium
-        bg-content4 bg-opacity-50 hover:bg-opacity-100 max-sm:bg-opacity-100
-        absolute z-20 bottom-0
-        max-sm:w-full
+        absolute z-30 bottom-0 sm:left-0 
+        max-sm:w-full sm:h-full sm:flex-row
         flex flex-col-reverse
-        sm:h-full sm:flex-row
-        transition-all duration-500 ease-in-out 
-        ${isOpenToggle ? `h-full sm:w-[260px] sm:bg-opacity-100` : "h-12 sm:w-10"}
-        `}
+        rounded-t-xl sm:rounded-r-xl
+        border border-default-200 dark:border-default-100
+        bg-opacity-60 backdrop-blur-md shadow-xl
+        transition-all duration-500 ease-in-out
+        ${isOpenToggle ? "h-[90%] sm:w-[260px]" : "h-12 sm:w-12"}
+      `}
     >
-      <div className="h-full w-full">{isOpenToggle && children}</div>
+      {/* Conteúdo do menu (visível apenas quando aberto) */}
+      <div className="h-full w-full overflow-auto px-2 py-4">
+        {isOpenToggle && children}
+      </div>
+
+      {/* Botão toggle */}
       <button
-        onClick={() => setIsOpenToggle(!isOpenToggle)}
-        className=" flex justify-center items-center w-full h-12 sm:h-full sm:w-12"
+        onClick={() => setIsOpenToggle((prev) => !prev)}
+        className={`
+          flex justify-center items-center
+          w-full h-12 sm:w-12 sm:h-full
+          border-t sm:border-t-0 sm:border-r border-default-200 dark:border-default-100
+          bg-background hover:bg-content3
+          transition-colors
+        `}
       >
-        {isOpenToggle ? (
-          <>
-            <ArrowIcon direction="down" className="sm:hidden" />
-            <ArrowIcon direction="left" className="max-sm:hidden" />
-          </>
-        ) : (
-          <>
-            <ArrowIcon direction="top" className="sm:hidden" />
-            <ArrowIcon direction="right" className="max-sm:hidden" />
-          </>
-        )}
+        <span
+          className={`transition-transform duration-300 ease-in-out ${
+            isOpenToggle
+              ? "rotate-180 sm:rotate-[-90deg] max-sm:rotate-180"
+              : "rotate-0 sm:rotate-90 max-sm:rotate-0"
+          }`}
+        >
+          <ArrowIcon direction="top" />
+        </span>
       </button>
     </div>
   );

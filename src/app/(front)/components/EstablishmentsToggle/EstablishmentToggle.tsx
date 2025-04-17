@@ -1,63 +1,28 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { useSearchParams } from "next/navigation";
 
 // hero ui components
-import { Listbox, ListboxItem, useDisclosure } from "@heroui/react";
+import { Button } from "@heroui/react";
 
 // components
 import { AddEstablishmentFormModal } from "./AddEstablishmentFormModal";
 import { ToggleMenu } from "../ToggleMenu/ToggleMenu";
 import { AddIcon } from "@/assets/icons/AddIcon";
+import { ToggleItem } from "./EstablishmentToggleItem";
 
 interface IEstablishmentProps {
   id: string;
   name: string;
 }
 
-interface IListboxItemProps {
-  establishmentProps: IEstablishmentProps;
-  router: AppRouterInstance;
-  showDivider?: boolean;
-}
-const renderItem = ({
-  establishmentProps: { id, name },
-  router,
-  showDivider = false,
-}: IListboxItemProps) => {
-  return (
-    <ListboxItem
-      showDivider={showDivider}
-      onPress={() => {
-        router.replace(`/manager/dashboard?establishmentId=${id}`, {
-          scroll: false,
-        });
-      }}
-      key={id}
-    >
-      {name}
-    </ListboxItem>
-  );
-};
 export const EstablishmentToggle = () => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
   const [establishments, setEstablishments] = useState<IEstablishmentProps[]>(
     [],
   );
 
-  const [selectedKeys, setSelectedKeys] = useState(new Set(["text"]));
-
-  const router = useRouter();
-
-  const items = establishments.map((establishment, index) =>
-    renderItem({
-      establishmentProps: establishment,
-      router,
-      showDivider: index == establishments.length - 1,
-    }),
-  );
+  const searchParams = useSearchParams();
+  const establishmentId = searchParams.get("establishmentId"); // retorna "123"
 
   useEffect(() => {
     const fetchEstablishments = async () => {
@@ -74,29 +39,30 @@ export const EstablishmentToggle = () => {
   }, []);
   return (
     <ToggleMenu>
-      <Listbox
-        className={`overflow-auto w-full h-full px-1 py-2 `}
-        aria-label="Listbox menu with icons"
-        variant="solid"
-        color="primary"
-        selectedKeys={selectedKeys}
-        selectionMode="single"
-        onSelectionChange={(keys) =>
-          setSelectedKeys(new Set(keys as Set<string>))
-        }
-      >
-        <>{items}</>
-        <ListboxItem
-          onPress={onOpen}
-          key="delete"
-          className="text-success"
-          color="success"
-          startContent={<AddIcon className="h-5 w-5" />}
-        >
-          Adicionar Estabelecimento
-        </ListboxItem>
-      </Listbox>
-      <AddEstablishmentFormModal isOpen={isOpen} onOpenChange={onOpenChange} />
+      <div className=" h-full flex flex-col overflow-auto gap-1">
+        {establishments.map(({ id, name }) => (
+          <ToggleItem
+            key={id}
+            href={`/manager/dashboard?establishmentId=${id}`}
+            isActive={establishmentId == id}
+          >
+            {name}
+          </ToggleItem>
+        ))}
+        <AddEstablishmentFormModal
+          openButton={({ onPress }) => (
+            <Button
+              onPress={onPress}
+              variant="bordered"
+              color="success"
+              className="w-full min-h-10"
+              startContent={<AddIcon />}
+            >
+              Adicionar
+            </Button>
+          )}
+        />
+      </div>
     </ToggleMenu>
   );
 };

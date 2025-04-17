@@ -1,17 +1,35 @@
-import { auth } from "@/auth";
-import { EstablishmentToggle } from "@/src/app/(front)/components/EstablishmentsToggle/EstablishmentToggle";
+// next
+import { cookies } from "next/headers";
 
+//components
+import { EstablishmentToggle } from "@/src/app/(front)/components/EstablishmentsToggle/EstablishmentToggle";
 import { NavBar } from "@/src/app/(front)/components/Navbar/Navbar";
 import { Unauthorized } from "@/src/app/(front)/components/Unauthorized";
 
+// fetcher
+import { axios } from "@/src/utils/fetcher";
+
+interface ISession {
+  session: {
+    user: {
+      name: string;
+      id: string;
+    };
+    expires: string;
+  };
+}
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
+  const cookie = await cookies();
+  const { data } = await axios<ISession>({
+    route: "/api/v1/worker/getSession",
+    cookie: cookie.toString(),
+  });
 
-  if (!session || !session.user) return <Unauthorized />;
+  if (!data?.session || !data.session.user) return <Unauthorized />;
 
   return (
     <div className="h-dvh w-dvw max-h-dvh flex flex-col overflow-hidden relative">
