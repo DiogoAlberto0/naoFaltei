@@ -173,11 +173,11 @@ const managerRegister = async ({
     lat: number;
     lng: number;
   };
-  registers: { clockedAt: Date }[];
+  registers: { clockedAt: Date; isEntry: boolean }[];
 }) => {
-  const data = registers.map((r, index) => ({
+  const data = registers.map((r) => ({
     registered_by: managerId,
-    is_entry: index % 2 === 0,
+    is_entry: r.isEntry,
     clocked_at: r.clockedAt,
     worker_id: workerId,
     lat,
@@ -197,37 +197,50 @@ const managerRegister = async ({
   for (const key in registerGroupByDate) {
     const date = new Date(key);
 
-    const lastRegisters = await clockinModel.getClockinsByDate(workerId, date);
-
-    if (lastRegisters) {
-      const newData = registerGroupByDate[key]
-        .concat(lastRegisters)
-        .sort((a, b) => a.clocked_at.getTime() - b.clocked_at.getTime())
-        .map((reg, index) => ({
-          ...reg,
-          is_entry: index % 2 === 0,
-        }));
-
-      await prisma.clockin.deleteMany({
-        where: {
-          clocked_at: {
-            gte: dateUtils.getStartOfDay(date),
-            lte: dateUtils.getEndOfDay(date),
-          },
+    await prisma.clockin.deleteMany({
+      where: {
+        worker_id: workerId,
+        clocked_at: {
+          gte: dateUtils.getStartOfDay(date),
+          lte: dateUtils.getEndOfDay(date),
         },
-      });
-      await prisma.clockin.createMany({
-        data: newData,
-        skipDuplicates: true,
-      });
-    } else {
-      await prisma.clockin.createMany({
-        data: registerGroupByDate[key].sort(
-          (a, b) => a.clocked_at.getTime() - b.clocked_at.getTime(),
-        ),
-        skipDuplicates: true,
+      },
+    });
+
+    if (
+      registerGroupByDate[key][registerGroupByDate[key].length - 1].is_entry
+    ) {
+      const clockedAt = new Date(date);
+      clockedAt.setUTCHours(23, 59, 59, 999);
+      registerGroupByDate[key].push({
+        registered_by: managerId,
+        is_entry: false,
+        clocked_at: clockedAt,
+        worker_id: workerId,
+        lat,
+        lng,
       });
     }
+
+    if (registerGroupByDate[key][0].is_entry == false) {
+      const clockedAt = new Date(date);
+      clockedAt.setUTCHours(0, 0, 0, 0);
+      registerGroupByDate[key].push({
+        registered_by: managerId,
+        is_entry: true,
+        clocked_at: clockedAt,
+        worker_id: workerId,
+        lat,
+        lng,
+      });
+    }
+
+    await prisma.clockin.createMany({
+      data: registerGroupByDate[key].sort(
+        (a, b) => a.clocked_at.getTime() - b.clocked_at.getTime(),
+      ),
+      skipDuplicates: true,
+    });
 
     await recalculateSummary(workerId, date);
   }

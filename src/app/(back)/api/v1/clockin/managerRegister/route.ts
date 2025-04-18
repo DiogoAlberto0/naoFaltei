@@ -26,25 +26,40 @@ export const POST = async (request: NextRequest) => {
         message: "Os registros devem ser um array",
       });
 
-    const registersNormalized = registers.map(({ clockedAt }, index) => {
-      const haveTime = clockedAt.split("T").length == 2;
+    const registersNormalized = registers.map(
+      ({ clockedAt, isEntry }, index) => {
+        const haveTime = clockedAt.split("T").length == 2;
 
-      if (!haveTime)
-        throw new InputError({
-          message: `O registro ${index + 1} deve possuir um horário`,
-          action: `Verifique o registro: ${index + 1}`,
-        });
-      const date = new Date(clockedAt);
-      if (!clockedAt || isNaN(date.getTime()))
-        throw new InputError({
-          message: `Data inválida para o registro: ${index + 1}`,
-          action: `Verifique o registro: ${index + 1}`,
-        });
+        if (typeof isEntry != "boolean")
+          throw new InputError({
+            message: `O registro ${index + 1} deve um parametro informando se é uma entrada ou uma saída`,
+            action: `Verifique o registro: ${index + 1}`,
+          });
 
-      return {
-        clockedAt: date,
-      };
-    });
+        if (index >= 1 && isEntry === registers[index - 1])
+          throw new InputError({
+            message: `Não pode haver duas entradas ou saídas seguidas`,
+            action: `Verifique o registro: ${index + 1}`,
+          });
+
+        if (!haveTime)
+          throw new InputError({
+            message: `O registro ${index + 1} deve possuir um horário`,
+            action: `Verifique o registro: ${index + 1}`,
+          });
+        const date = new Date(clockedAt);
+        if (!clockedAt || isNaN(date.getTime()))
+          throw new InputError({
+            message: `Data inválida para o registro: ${index + 1}`,
+            action: `Verifique o registro: ${index + 1}`,
+          });
+
+        return {
+          clockedAt: date,
+          isEntry,
+        };
+      },
+    );
     const worker = await workerModel.findUniqueBy({ id: workerId });
     if (!workerId || !worker)
       throw new NotFoundError({
