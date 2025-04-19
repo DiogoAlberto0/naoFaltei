@@ -46,6 +46,7 @@ export const registerClockinHandler = async (formData: FormData) => {
     })),
   );
 
+  console.log(finalRegisters);
   const { data } = await axios<{ message: string }>({
     route: "/api/v1/clockin/managerRegister",
     method: "POST",
