@@ -17,8 +17,21 @@ const WorkerPage = async (
   return (
     <div className="w-full h-full max-h-full overflow-auto p-4 sm:p-6 md:p-8 flex flex-col md:flex-row gap-4">
       <div className="flex-1 flex flex-col gap-4">
-        <WorkerInfoCard />
-        <WorkSchedule />
+        <WorkerInfoCard
+          worker={{
+            cpf: "123.456.789-00",
+            email: "joao.silva@email.com",
+            establishment_id: "est-001",
+            id: "worker-001",
+            is_active: true,
+            is_admin: false,
+            is_manager: true,
+            login: "joaosilva",
+            name: "João Silva",
+            phone: "(11) 91234-5678",
+          }}
+        />
+        <WorkSchedule workerId="123" />
         <RegisterClockModal />
       </div>
       <div className="flex-1 flex flex-col gap-4">
@@ -26,11 +39,7 @@ const WorkerPage = async (
           title="Definir data:"
           onSubmitRedirect="/manager/worker/1"
         />
-        <RegistersTable
-          title="20/03/2025 - 20/04/2025"
-          maxRegisters={12}
-          overflowAuto={false}
-        />
+        <RegistersTable workerId="123" maxRegisters={12} overflowAuto={false} />
       </div>
     </div>
   );

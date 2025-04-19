@@ -16,7 +16,7 @@ const TimeSheetPage = () => {
         <Button color="primary">Buscar</Button>
       </div>
       <RegistersTable
-        title="Mês: Jan. Ano: 2024"
+        workerId="123"
         detailed
         maxRegisters={10}
         overflowAuto={false}

@@ -34,6 +34,7 @@ export default async function ManagerDashboard() {
           establishmentId={establishmentId}
           markerPosition={{ lat: -15.12345, lng: -45.54321 }}
           isEditable={false}
+          ratio={1}
         />
       </div>
     </div>

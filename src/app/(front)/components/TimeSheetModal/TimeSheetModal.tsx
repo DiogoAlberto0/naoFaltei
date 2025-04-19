@@ -7,7 +7,6 @@ import {
   TableRow,
   TableCell,
 } from "@heroui/table";
-import { useDisclosure } from "@heroui/react";
 
 //components
 import { ModalFullSize } from "../Modal/ModalFullSize";
