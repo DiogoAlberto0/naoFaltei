@@ -3,6 +3,8 @@ import { Input } from "@heroui/input";
 //utils
 import { cpfUtils } from "@/src/utils/cpf";
 import { phoneUtils } from "@/src/utils/phone";
+import { Switch } from "@heroui/switch";
+import { useState } from "react";
 
 interface IWorkerInputsProps {
   establishmentId: string;
@@ -13,6 +15,7 @@ interface IWorkerInputsProps {
   cpf?: string;
   login?: string;
   isUpdate?: boolean;
+  isManager?: boolean;
 }
 export const WorkerInputs = ({
   establishmentId,
@@ -23,7 +26,10 @@ export const WorkerInputs = ({
   cpf,
   login,
   isUpdate,
+  isManager,
 }: IWorkerInputsProps) => {
+  const [isManagerState, setIsManagerState] = useState(isManager || false);
+
   return (
     <>
       <Input name="id" type="hidden" value={workerId} />
@@ -108,6 +114,18 @@ export const WorkerInputs = ({
         name="confirmPassword"
         errorMessage="Favor confirmar a senha do funcionário"
       />
+
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-foreground">Gerente:</label>
+        <Input
+          type="hidden"
+          name="isManager"
+          value={isManagerState.toString()}
+        />
+        <Switch isSelected={isManagerState} onValueChange={setIsManagerState}>
+          Marcar se o funcionário for gerente
+        </Switch>
+      </div>
     </>
   );
 };

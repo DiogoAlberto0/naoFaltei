@@ -10,6 +10,7 @@ import { frontPasswordUtils } from "@/src/utils/password.front";
 
 //fetcher
 import { axios } from "@/src/utils/fetcher";
+import { revalidateWorker } from "./revalidateData";
 
 //hero ui
 import { addToast } from "@heroui/toast";
@@ -89,7 +90,7 @@ export const createWorker = async (formData: FormData) => {
 };
 
 export const updateWorker = async (formData: FormData) => {
-  const workerId = formData.get("id");
+  const workerId = formData.get("id")?.toString();
   const establishmentId = formData.get("establishmentId");
   const name = formData.get("name");
   const phone = formData.get("phone");
@@ -99,6 +100,13 @@ export const updateWorker = async (formData: FormData) => {
   const password = formData.get("password");
   const confirmPassword = formData.get("confirmPassword");
 
+  const isManager = formData.get("isManager");
+
+  if (!workerId)
+    throw new InputError({
+      message: "Falha ao buscar funcionário para atualização",
+      action: "Recarregue a página",
+    });
   if (!name || !login || !cpf || !phone || !email)
     throw new InputError({
       message: "Campos obrigatórios faltando",
@@ -129,9 +137,11 @@ export const updateWorker = async (formData: FormData) => {
       phone,
       password,
       establishmentId,
+      is_manager: isManager == "true",
     },
   });
 
+  revalidateWorker(workerId);
   addToast({
     color: "success",
     title: `Funcionário ${data.name} alterado com sucesso`,
