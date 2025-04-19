@@ -124,7 +124,7 @@ const expectations = async ({
             is_entry: true,
           },
           orderBy: {
-            clocked_at: "asc",
+            clocked_at: "desc",
           },
           take: 1,
         },
@@ -307,7 +307,7 @@ describe("GET on `/api/v1/worker/list`", () => {
       firstRegisterDate.setUTCHours(10, 30, 0, 0);
       await clockinModel.register({
         workerId: scenario2.worker.id,
-        clocked_at: new Date(),
+        clocked_at: firstRegisterDate,
         lat: 0,
         lng: 0,
       });
@@ -337,6 +337,13 @@ describe("GET on `/api/v1/worker/list`", () => {
         page: 2,
         pageSize: 1,
       });
+
+      const registers = await clockinModel.getClockinsByDate(
+        scenario2.worker.id,
+        secondRegisterDate,
+      );
+
+      expect(registers.length).toStrictEqual(2);
 
       expect(data2.workers[0].worker_clockin[0].is_entry).toBeFalsy();
     });

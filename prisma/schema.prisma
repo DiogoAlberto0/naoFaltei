@@ -150,6 +150,7 @@ model Clockin{
   worker Workers @relation(fields: [worker_id], references: [id])
 
   registered_by String
+  is_auto_generated Boolean @default(false)
 
   @@map("clockin")
 }

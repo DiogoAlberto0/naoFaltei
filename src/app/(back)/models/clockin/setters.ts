@@ -11,6 +11,7 @@ import { clockinModel } from "./clockin";
 
 //errors
 import { InputError } from "@/src/Errors/errors";
+import { randomUUID } from "crypto";
 
 const register = async ({
   workerId,
@@ -29,13 +30,6 @@ const register = async ({
   );
   const isEntry = !lastRegister || !lastRegister.is_entry;
 
-  await registerSummary({
-    workerId,
-    clocked_at,
-    isEntry,
-    lastRegisterClock: lastRegister?.clocked_at || null,
-  });
-
   await prisma.clockin.create({
     data: {
       clocked_at: clocked_at,
@@ -44,8 +38,10 @@ const register = async ({
       registered_by: workerId,
       lat,
       lng,
+      is_auto_generated: false,
     },
   });
+  await recalculateSummary(workerId, clocked_at);
 };
 
 const registerSummary = async ({
@@ -182,22 +178,130 @@ const managerRegister = async ({
     worker_id: workerId,
     lat,
     lng,
+    is_auto_generated: false,
   }));
 
   const registerGroupByDate = groupBy(data, (r) =>
     dateUtils.formatToYMD(r.clocked_at),
   );
 
-  if (Object.keys(registerGroupByDate).length > 10)
-    throw new InputError({
-      message: "O máximo de registros para alteração são 10 dias",
-      action: "Reduza o número de dias para registro",
+  await Promise.all(
+    Object.entries(registerGroupByDate).map(async ([key, registers]) => {
+      const date = new Date(key);
+
+      const lastRegisters = await clockinModel.getClockinsByDate(
+        workerId,
+        date,
+      );
+
+      const newRegisters = validateAndSortNewClockins([
+        ...lastRegisters,
+        ...registers,
+      ]);
+
+      await deleteManyClockins(workerId, date);
+
+      await createManyClockins(newRegisters);
+    }),
+  );
+
+  await Promise.all(
+    Object.keys(registerGroupByDate).map(async (key) => {
+      const date = new Date(key);
+      await recalculateSummary(workerId, date);
+    }),
+  );
+
+  return { count: registers.length };
+};
+
+interface IClockin {
+  registered_by: string;
+  is_entry: boolean;
+  clocked_at: Date;
+  worker_id: string;
+  lat: number;
+  lng: number;
+  is_auto_generated: boolean;
+}
+const validateAndSortNewClockins = (clockins: IClockin[]) => {
+  const sortedClockins = clockins.sort(
+    (r1, r2) => r1.clocked_at.getTime() - r2.clocked_at.getTime(),
+  );
+
+  sortedClockins.forEach((register, index) => {
+    if (index > 0 && clockins[index - 1].is_entry == register.is_entry)
+      throw new InputError({
+        message: "Os registros devem ser alternados entre entradas e saídas",
+        action:
+          "Verifique os novos registros e se o funcionário já possui registros nessas datas",
+      });
+  });
+  return sortedClockins;
+};
+
+const createManyClockins = async (clockins: IClockin[]) => {
+  await prisma.clockin.createMany({
+    data: clockins,
+    skipDuplicates: true,
+  });
+};
+
+const deleteManyClockins = async (workerId: string, date: Date) => {
+  await prisma.clockin.deleteMany({
+    where: {
+      worker_id: workerId,
+      clocked_at: {
+        gte: dateUtils.getStartOfDay(date),
+        lte: dateUtils.getEndOfDay(date),
+      },
+    },
+  });
+};
+
+const getClockinsByScheduleRange = async ({
+  workerId,
+  date,
+  startTime,
+  endTime,
+}: {
+  workerId: string;
+  date: Date;
+  startTime: {
+    hour: number;
+    minute: number;
+  };
+  endTime: {
+    hour: number;
+    minute: number;
+  };
+}) => {
+  const baseDate = new Date(date);
+  const gte = new Date(baseDate);
+  gte.setUTCHours(startTime.hour, startTime.minute);
+
+  const lte = new Date(baseDate);
+  lte.setUTCHours(startTime.hour, startTime.minute);
+  lte.setUTCDate(lte.getUTCDate() + 1);
+  lte.setUTCHours(startTime.hour, startTime.minute - 1, 59, 999);
+
+  let clockins: IClockin[] = [];
+
+  if (endTime.hour < startTime.hour) {
+    clockins = await prisma.clockin.findMany({
+      where: {
+        worker_id: workerId,
+        clocked_at: {
+          gte,
+          lte,
+        },
+      },
+      orderBy: {
+        clocked_at: "asc",
+      },
     });
-
-  for (const key in registerGroupByDate) {
-    const date = new Date(key);
-
-    await prisma.clockin.deleteMany({
+  } else {
+    clockins = await prisma.clockin.findMany({
       where: {
         worker_id: workerId,
         clocked_at: {
@@ -205,74 +309,66 @@ const managerRegister = async ({
           lte: dateUtils.getEndOfDay(date),
         },
       },
+      orderBy: {
+        clocked_at: "asc",
+      },
     });
-
-    if (
-      registerGroupByDate[key][registerGroupByDate[key].length - 1].is_entry
-    ) {
-      const clockedAt = new Date(date);
-      clockedAt.setUTCHours(23, 59, 59, 999);
-      registerGroupByDate[key].push({
-        registered_by: managerId,
-        is_entry: false,
-        clocked_at: clockedAt,
-        worker_id: workerId,
-        lat,
-        lng,
-      });
-    }
-
-    if (registerGroupByDate[key][0].is_entry == false) {
-      const clockedAt = new Date(date);
-      clockedAt.setUTCHours(0, 0, 0, 0);
-      registerGroupByDate[key].push({
-        registered_by: managerId,
-        is_entry: true,
-        clocked_at: clockedAt,
-        worker_id: workerId,
-        lat,
-        lng,
-      });
-    }
-
-    await prisma.clockin.createMany({
-      data: registerGroupByDate[key].sort(
-        (a, b) => a.clocked_at.getTime() - b.clocked_at.getTime(),
-      ),
-      skipDuplicates: true,
-    });
-
-    await recalculateSummary(workerId, date);
   }
 
-  return { count: registers.length };
-};
+  if (clockins.length % 2 != 0) {
+    if (!clockins[0].is_entry)
+      clockins.unshift({
+        is_entry: true,
+        clocked_at: gte,
+        lat: 0,
+        lng: 0,
+        registered_by: randomUUID(),
+        worker_id: workerId,
+        is_auto_generated: true,
+      });
+    if (clockins[clockins.length - 1].is_entry)
+      clockins.push({
+        is_entry: false,
+        clocked_at: lte,
+        lat: 0,
+        lng: 0,
+        registered_by: randomUUID(),
+        worker_id: workerId,
+        is_auto_generated: true,
+      });
+  }
 
+  return clockins;
+};
 const recalculateSummary = async (workerId: string, date: Date) => {
   const expectedMinutes = await workerModel.getExpectedMinutes(workerId, date);
-  let workedMinutes = 0;
-  let restedMinutes = 0;
-  const registersOfDay = await clockinModel.getClockinsByDate(workerId, date);
+  const workerSchduleDay = await workerModel.getScheduleByDay(
+    workerId,
+    date.getUTCDay(),
+  );
 
-  registersOfDay.forEach((r, index) => {
-    if (r.is_entry) {
-      restedMinutes +=
-        index == 0
-          ? 0
-          : dateUtils.calculateMinutesBetween(
-              r.clocked_at,
-              registersOfDay[index - 1].clocked_at,
-            );
-    } else {
-      workedMinutes +=
-        index == 0
-          ? 0
-          : dateUtils.calculateMinutesBetween(
-              r.clocked_at,
-              registersOfDay[index - 1].clocked_at,
-            );
-    }
-  });
+  let clockins: IClockin[];
+
+  if (workerSchduleDay) {
+    const { start_hour, start_minute, end_hour, end_minute } = workerSchduleDay;
+    clockins = await getClockinsByScheduleRange({
+      workerId,
+      date,
+      startTime: {
+        hour: start_hour,
+        minute: start_minute,
+      },
+      endTime: {
+        hour: end_hour,
+        minute: end_minute,
+      },
+    });
+  } else {
+    clockins = await clockinModel.getClockinsByDate(workerId, date);
+  }
+
+  const { restedMinutes, workedMinutes } =
+    calculateWorkedAndRestedMinutes(clockins);
 
   await prisma.workDaySummary.upsert({
     where: {
@@ -292,11 +388,40 @@ const recalculateSummary = async (workerId: string, date: Date) => {
     },
     update: {
       expected_minutes: expectedMinutes,
+      status: "present",
       worked_minutes: workedMinutes,
       rested_minutes: restedMinutes,
       time_balance: workedMinutes - expectedMinutes,
     },
   });
+};
+
+const calculateWorkedAndRestedMinutes = (clockins: IClockin[]) => {
+  let workedMinutes = 0;
+  let restedMinutes = 0;
+
+  clockins.forEach((r, index) => {
+    if (r.is_entry) {
+      if (clockins[index + 1] && clockins[index + 1].is_auto_generated) return;
+      restedMinutes +=
+        index == 0
+          ? 0
+          : dateUtils.calculateMinutesBetween(
+              r.clocked_at,
+              clockins[index - 1].clocked_at,
+            );
+    } else {
+      workedMinutes +=
+        index == 0
+          ? 0
+          : dateUtils.calculateMinutesBetween(
+              r.clocked_at,
+              clockins[index - 1].clocked_at,
+            );
+    }
+  });
+
+  return { workedMinutes, restedMinutes };
 };
 
 export const clockinSetters = {

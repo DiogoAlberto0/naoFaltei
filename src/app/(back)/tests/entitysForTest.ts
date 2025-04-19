@@ -329,6 +329,34 @@ export const setValidSchedule = async (workerId: string) => {
     },
   });
 };
+
+export const setValidSchedule2 = async (workerId: string) => {
+  const weekSchedule = {
+    startHour: 17,
+    startMinute: 0,
+    endHour: 2,
+    endMinute: 0,
+    restTimeInMinutes: 60,
+  };
+  await workerModel.setSchedule({
+    workerId: workerId,
+    schedule: {
+      monday: weekSchedule,
+      tuesday: weekSchedule,
+      wednesday: weekSchedule,
+      thursday: weekSchedule,
+      friday: weekSchedule,
+      saturday: {
+        startHour: 8,
+        startMinute: 0,
+        endHour: 12,
+        endMinute: 0,
+        restTimeInMinutes: 0,
+      },
+      sunday: null,
+    },
+  });
+};
 export const createAndAuthWorker = async (establishmentId: string) => {
   return await createAndAuth(() => createValidWorker(establishmentId));
 };
