@@ -33,7 +33,7 @@ export const ActionsToolTips = ({
       </Tooltip>
       {isWorkerEditable && (
         <>
-          <UpdateWorkerModal workerId={workerId} />
+          <UpdateWorkerModal workerId={workerId} isButton={false} />
           <Tooltip color="danger" content="Delete user">
             <span className="text-lg text-danger cursor-pointer active:opacity-50">
               <DeleteIcon />
