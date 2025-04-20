@@ -213,6 +213,20 @@ const countBy = async ({ establishmentId }: { establishmentId?: string }) => {
   });
 };
 
+const getLastTwoRegisters = async (workerId: string) => {
+  const lastTwoRegisters = await prisma.clockin.findMany({
+    where: {
+      worker_id: workerId,
+    },
+    orderBy: {
+      clocked_at: "desc",
+    },
+    take: 2,
+  });
+
+  return lastTwoRegisters;
+};
+
 export const clockinGetters = {
   getLastRegistersByEstablishment,
   getLastRegisterOfDay,
@@ -222,4 +236,5 @@ export const clockinGetters = {
   getTimeSheetByWorker,
   getClockinsByDate,
   countBy,
+  getLastTwoRegisters,
 };
