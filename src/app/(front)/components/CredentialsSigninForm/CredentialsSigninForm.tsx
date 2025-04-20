@@ -35,7 +35,7 @@ export function CredentialsSigninForm({
     if (invalidCredentialsError) {
       addToast({
         title: "Credenciais inválidas",
-        description: "Verifique se o email e senha informados estão corretos",
+        description: "Verifique se o login e senha informados estão corretos",
         color: "danger",
         timeout: 10000,
       });
@@ -46,12 +46,12 @@ export function CredentialsSigninForm({
       <Form onSubmit={handleSubmit} className="gap-3">
         <Input
           isRequired
-          errorMessage="Informe um email válido."
-          label="Email"
+          errorMessage="Informe um login válido."
+          label="Login"
           labelPlacement="outside"
-          name="email"
-          placeholder="Digite seu email"
-          type="email"
+          name="login"
+          placeholder="Digite seu login"
+          type="login"
         />
         <PasswordInput name="password" />
 
