@@ -7,6 +7,7 @@ import { RegisterClockModal } from "./RegisterClockModal";
 
 // getter
 import { getWorker } from "./getWorker";
+import { RegisterMedicalLeaveModal } from "./RegisterMedicalLeave";
 
 interface IWorkerPageProps {
   params: Promise<{ workerId: string }>;
@@ -23,6 +24,7 @@ const WorkerPage = async ({ params }: IWorkerPageProps) => {
         <WorkSchedule workerId={workerId} />
 
         <RegisterClockModal workerId={workerId} />
+        <RegisterMedicalLeaveModal workerId={workerId} />
       </div>
       <div className="flex-1 flex flex-col gap-4">
         <CalendarInput
