@@ -13,6 +13,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/src/Errors/errors";
+import { dateUtils } from "@/src/utils/date";
 
 export const POST = async (request: NextRequest) => {
   try {
@@ -21,61 +22,80 @@ export const POST = async (request: NextRequest) => {
 
     const { workerId, registers } = await request.json();
 
-    if (!Array.isArray(registers))
-      throw new InputError({
-        message: "Os registros devem ser um array",
-      });
-
-    const registersNormalized = registers.map(({ clockedAt }, index) => {
-      const haveTime = clockedAt.split("T").length == 2;
-
-      if (!haveTime)
-        throw new InputError({
-          message: `O registro ${index + 1} deve possuir um horário`,
-          action: `Verifique o registro: ${index + 1}`,
-        });
-      const date = new Date(clockedAt);
-      if (!clockedAt || isNaN(date.getTime()))
-        throw new InputError({
-          message: `Data inválida para o registro: ${index + 1}`,
-          action: `Verifique o registro: ${index + 1}`,
-        });
-
-      return {
-        clockedAt: date,
-      };
-    });
     const worker = await workerModel.findUniqueBy({ id: workerId });
-    if (!workerId || !worker)
+    if (!worker)
       throw new NotFoundError({
         message: "Funcionário não encontrado",
-        action: "Verifique o ID informado",
+        action: "Verifique o id do funcionário",
       });
 
-    const isManagerFormEstablishment =
+    const isManagerFromDB =
       await establishmentModel.verifyIfManagerIsFromEstablishment({
-        establishmentId: worker.establishment_id,
         managerId: session.user.id,
+        establishmentId: worker.establishment_id,
       });
 
-    if (!isManagerFormEstablishment) throw new ForbiddenError();
+    if (!isManagerFromDB) throw new ForbiddenError();
 
-    const establishmentCoords = await establishmentModel.getLocaleInfos({
+    const establishmentLocaleInfos = await establishmentModel.getLocaleInfos({
       establishmentId: worker.establishment_id,
     });
 
-    if (!establishmentCoords)
+    if (!establishmentLocaleInfos)
       throw new NotFoundError({
-        message: "Dados de localização do estabelecimento não encontrado",
+        message:
+          "Falha ao buscar as informações de localização do estabelecimento",
         action:
-          "Verifique se os dados de localização do estabelecimento estâo cadastrados",
+          "Verifique se o estabelecimento possui dados de localização cadastrados",
       });
+
+    //Validando se os registros seguem a segunite estrutura:
+    // Maximo 30 registros
+    // registers: {
+    //   clockedAt: IsoStringDate,
+    //   isEntry: boolean
+    // }[]
+    if (!Array.isArray(registers))
+      throw new InputError({
+        message: "Os registros devem ser um array",
+        action: "Verifique a propriedade `registers` no corpo da requisição",
+      });
+
+    if (registers.length <= 0)
+      throw new InputError({
+        message: "Nenhum registro foi informado",
+        action: "Informe pelo menos 1 registro",
+      });
+
+    if (registers.length > 30)
+      throw new InputError({
+        message: "O máximo de registros por operação são 30",
+        action: "Reduza o numero de registros",
+      });
+    const normalizedRegisters = registers.map((value: any, index) => {
+      if (!dateUtils.isISODate(value.clockedAt))
+        throw new InputError({
+          message: "As datas do registro devem estar em formato ISO",
+          action: `Verifique se o registro ${index + 1} está no formato ISO`,
+        });
+      const clockedAt = new Date(value.clockedAt);
+      const isEntry = value.isEntry;
+      if (typeof isEntry !== "boolean")
+        throw new InputError({
+          message: "A propriedade `isEntry` deve ser um valor booleano",
+          action: `Verifique a propriedad "isEntry" do registro ${index + 1}`,
+        });
+      return { clockedAt, isEntry };
+    });
 
     const { count } = await clockinModel.managerRegister({
       managerId: session.user.id,
-      workerId,
-      establishmentCoords,
-      registers: registersNormalized,
+      workerId: workerId,
+      establishmentCoords: {
+        lat: establishmentLocaleInfos.lat,
+        lng: establishmentLocaleInfos.lng,
+      },
+      registers: normalizedRegisters,
     });
 
     return NextResponse.json(

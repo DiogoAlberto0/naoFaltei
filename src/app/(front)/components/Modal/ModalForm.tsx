@@ -1,4 +1,9 @@
+import { FormEvent, ReactNode, useState } from "react";
+
+// errors
 import { FetchError, InputError } from "@/src/Errors/errors";
+
+// hero ui
 import {
   addToast,
   Button,
@@ -9,60 +14,90 @@ import {
   ModalFooter,
   ModalHeader,
   ModalProps,
+  useDisclosure,
 } from "@heroui/react";
-import { FormEvent } from "react";
 
 export interface IModalFormProps extends ModalProps {
   handleSubmit: (formData: FormData) => Promise<void>;
   submitButtonText: string;
+  isLoading?: boolean;
+  openButton: (props: { onPress: () => void }) => ReactNode;
+  onUpdate?: () => void;
 }
+
 export const ModalForm = ({
-  handleSubmit,
   title,
   submitButtonText,
   children,
+  handleSubmit,
+  openButton,
+  onUpdate,
   ...otherProps
 }: IModalFormProps) => {
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const [isLoading, setIsLoading] = useState(false);
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
+  const onSumit = async (e: FormEvent<HTMLFormElement>) => {
     try {
-      await handleSubmit(formData);
+      e.preventDefault();
+      setIsLoading(true);
 
-      form.reset();
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      await handleSubmit(formData);
+      if (onUpdate) onUpdate();
+      form.reset(); // só acontece se não der erro`
+      onClose();
     } catch (error: any) {
-      if (error instanceof InputError || error instanceof FetchError) {
+      // opcional: log, toast, etc.
+      if (error instanceof FetchError || error instanceof InputError) {
         addToast({
           color: "danger",
           title: error.message,
           description: error.action,
         });
-      } else throw error;
+      } else {
+        console.error("Erro ao enviar formulário:", error);
+        throw error;
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
-    <Modal size="4xl" scrollBehavior="outside" {...otherProps}>
-      <Form onSubmit={onSubmit}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
-              <ModalBody>{children}</ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cancelar
-                </Button>
-                <Button color="primary" type="submit">
-                  {submitButtonText}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Form>
-    </Modal>
+    <>
+      {openButton({ onPress: onOpen })}
+      <Modal
+        size="4xl"
+        scrollBehavior="outside"
+        {...otherProps}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <Form onSubmit={onSumit}>
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader className="flex flex-col gap-1">
+                  {title}
+                </ModalHeader>
+                <ModalBody>{children}</ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onPress={onClose}>
+                    Cancelar
+                  </Button>
+                  <Button color="primary" type="submit" isLoading={isLoading}>
+                    {submitButtonText}
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Form>
+      </Modal>
+    </>
   );
 };

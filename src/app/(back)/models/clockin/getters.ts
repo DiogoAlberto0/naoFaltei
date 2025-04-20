@@ -203,6 +203,16 @@ const getClockinsByDate = async (workerId: string, date: Date) => {
   });
 };
 
+const countBy = async ({ establishmentId }: { establishmentId?: string }) => {
+  return await prisma.clockin.count({
+    where: {
+      worker: {
+        establishment_id: establishmentId,
+      },
+    },
+  });
+};
+
 export const clockinGetters = {
   getLastRegistersByEstablishment,
   getLastRegisterOfDay,
@@ -211,4 +221,5 @@ export const clockinGetters = {
   getTotalSumariesData,
   getTimeSheetByWorker,
   getClockinsByDate,
+  countBy,
 };

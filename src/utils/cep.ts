@@ -16,6 +16,14 @@ const isValidOrThrow = (cep: string) => {
     });
 };
 
-const cepUtils = { clean, isValid, isValidOrThrow };
+const format = (cep: string) => {
+  isValidOrThrow(cep);
+  const onlyNumbers = cep.replace(/\D/g, "");
+
+  // Aplica a máscara de CEP: 00000-000
+  return onlyNumbers.replace(/^(\d{5})(\d{3})$/, "$1-$2");
+};
+
+const cepUtils = { clean, isValid, isValidOrThrow, format };
 
 export { cepUtils };

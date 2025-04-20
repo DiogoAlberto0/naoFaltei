@@ -38,7 +38,7 @@ const calculateFullDaysBetween = (inicialDate: Date, finalDate: Date) => {
 const calculateMinutesBetween = (inicialDate: Date, finalDate: Date) => {
   const msPerMin = 1000 * 60;
 
-  return Math.floor(
+  return Math.round(
     Math.abs((finalDate.getTime() - inicialDate.getTime()) / msPerMin),
   );
 };
@@ -66,6 +66,28 @@ const getAllDatesInRange = (start: Date, end: Date): Date[] => {
   }
   return dates;
 };
+
+const formatTime = (hour: number, minute: number) => {
+  return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+};
+
+const transformMinutesInTime = (
+  minutes: number,
+  { variant = "clock" }: { variant?: "clock" | "letter" } = {},
+) => {
+  const absBank = Math.abs(minutes);
+  const hours = Math.floor(absBank / 60);
+  const minute = absBank % 60;
+
+  if (variant == "clock") return `${hours}:${minute}`;
+  if (variant == "letter") return `${hours}h ${minute}m`;
+};
+
+const isISODate = (str: string) => {
+  const date = new Date(str);
+  const isIso = !isNaN(date.getTime()) && date.toISOString() === str;
+  return isIso;
+};
 const dateUtils = {
   validateAndReturnDate,
   calculateFullDaysBetween,
@@ -74,6 +96,9 @@ const dateUtils = {
   getEndOfDay,
   formatToYMD,
   getAllDatesInRange,
+  formatTime,
+  transformMinutesInTime,
+  isISODate,
 };
 
 export { dateUtils };

@@ -5,7 +5,7 @@ import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 
 export const credentialsSigninAction = async (formData: FormData) => {
-  formData.set("redirectTo", "/dashboard");
+  formData.set("redirectTo", "/worker");
   try {
     await signIn("credentials", formData);
   } catch (error) {

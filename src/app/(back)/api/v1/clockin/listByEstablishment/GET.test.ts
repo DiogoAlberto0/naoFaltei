@@ -116,6 +116,12 @@ const expectations = async ({
           },
         }),
       ]),
+      meta: {
+        currentPage: page,
+        pageSize: pageSize,
+        totalItems: 10,
+        totalPages: 10 / Number(pageSize),
+      },
     });
   } else expect(data).toStrictEqual(expectedResponseData);
 };

@@ -373,7 +373,7 @@ const listByEstablishment = async ({
           is_entry: true,
         },
         orderBy: {
-          clocked_at: "asc",
+          clocked_at: "desc",
         },
         take: 1,
       },
@@ -393,10 +393,12 @@ export const calculateExpectedMinutes = ({
   restTime: number;
 }) => {
   const startTime = start.hour * 60 + start.minute;
-  const endTime = end.hour * 60 + end.minute;
-  const rest = restTime;
+  let endTime = end.hour * 60 + end.minute;
+  if (endTime < startTime) {
+    endTime += 1440;
+  }
 
-  return endTime - startTime - rest;
+  return endTime - startTime - restTime;
 };
 
 const getExpectedMinuteOfAllWeekDays = async (workerId: string) => {

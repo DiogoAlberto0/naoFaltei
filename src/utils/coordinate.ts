@@ -46,16 +46,9 @@ const getDistanceBetween = (
   lat2: number,
   lng2: number,
 ): number => {
-  if (
-    !isValidLat(lat1) ||
-    !isValidLng(lng1) ||
-    !isValidLat(lat2) ||
-    !isValidLng(lng2)
-  )
-    throw new InputError({
-      message: "Coordenadas inválidas",
-      action: "Verifique as coordenadas informadas",
-    });
+  isValidOrThrow({ lat: lat1, lng: lng1 });
+  isValidOrThrow({ lat: lat2, lng: lng2 });
+
   const lat1Number = Number(lat1);
   const lng1Number = Number(lng1);
 
@@ -93,12 +86,21 @@ const isOnRatio = (
   else return { isOnRatio: false, distance };
 };
 
+const isValidOrThrow = ({ lat, lng }: { lat: number; lng: number }) => {
+  if (!isValidLat(lat) || !isValidLng(lng))
+    throw new InputError({
+      message: "Coordenadas inválidas",
+      action: "Verifique as coordenadas informadas",
+    });
+};
+
 const coordinateUtils = {
   isValidLat,
   isValidLng,
   getDistanceBetween,
   isOnRatio,
   validateAndParse,
+  isValidOrThrow,
 };
 
 export { coordinateUtils };

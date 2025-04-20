@@ -8,34 +8,38 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  useDisclosure,
 } from "@heroui/react";
 
 export const ModalFullSize = ({
   title,
   children,
-  isOpen,
-  onOpenChange,
+  openButton,
 }: {
   title: string;
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
+  openButton: (props: { onPress: () => void }) => ReactNode;
   children: ReactNode;
 }) => {
+  const { isOpen, onOpenChange, onOpen } = useDisclosure();
+
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="full">
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
-            <ModalBody className="overflow-auto">{children}</ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
-                Close
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+    <>
+      {openButton({ onPress: onOpen })}
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="full">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
+              <ModalBody className="overflow-auto">{children}</ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
