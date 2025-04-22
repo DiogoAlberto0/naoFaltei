@@ -1,8 +1,13 @@
 // custom components
 import { RegisterMap } from "./components/RegisterMap";
 import { DateInfosHeader } from "./components/DateInfosHeader";
+import { auth } from "@/auth";
+import { Unauthorized } from "../../components/Unauthorized";
 
-const WorkerPage = () => {
+const WorkerPage = async () => {
+  const session = await auth();
+
+  if (!session || !session.user) return <Unauthorized />;
   return (
     <main className="min-h-full max-h-full overflow-auto w-full relative flex flex-col">
       <DateInfosHeader className="absolute z-10 left-0 top-0" />
