@@ -1,42 +1,19 @@
 "use client";
 // next
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 // heroui
 import { I18nProvider } from "@react-aria/i18n";
-import { today, getLocalTimeZone, CalendarDate } from "@internationalized/date";
-import {
-  addToast,
-  Card,
-  CardBody,
-  CardHeader,
-  DateRangePicker,
-  RangeValue,
-} from "@heroui/react";
+import { Card, CardBody, CardHeader, DateRangePicker } from "@heroui/react";
+import { today, getLocalTimeZone } from "@internationalized/date";
 
 //icons
 import { SearchIconButton } from "../../Buttons/SearchIconButton";
 
-const searchTimeSheet = (
-  value: RangeValue<CalendarDate> | null,
-  {
-    router,
-    onSubmitRedirect,
-  }: { router: AppRouterInstance; onSubmitRedirect: string },
-) => {
-  if (!value)
-    return addToast({
-      title: "Datas Inválidas",
-      description:
-        "Selecione duas datas válidas para busca da filha de ponto do funcionário",
-      color: "danger",
-    });
-  router.replace(
-    `${onSubmitRedirect}/?inicialDate=${value.start}&endDate=${value.end}`,
-  );
-};
+//hook
+import { useCalendarInput } from "./useCalendarInput";
+
+//utils
+import { dateUtils } from "@/src/utils/date";
 
 interface ICalendarInputProps {
   className?: string;
@@ -49,12 +26,8 @@ export const CalendarInput = ({
   className,
   onSubmitRedirect,
 }: ICalendarInputProps) => {
-  const [value, setValue] = useState<RangeValue<CalendarDate> | null>({
-    start: today(getLocalTimeZone()).set({ day: 0 }),
-    end: today(getLocalTimeZone()).set({ day: 0 }).add({ months: 1 }),
-  });
-
-  const router = useRouter();
+  const { dates, setDates, searchTimeSheet } =
+    useCalendarInput(onSubmitRedirect);
 
   return (
     <Card className={`min-h-min ${className}`}>
@@ -66,17 +39,31 @@ export const CalendarInput = ({
             ponto.
           </h2>
         </div>
-        <SearchIconButton
-          onPress={() => searchTimeSheet(value, { router, onSubmitRedirect })}
-        />
+        <SearchIconButton onPress={searchTimeSheet} />
       </CardHeader>
       <CardBody>
         <I18nProvider locale="pt-br">
           <div className="w-full">
             <DateRangePicker
               label="Data inicial e data final: "
-              value={value}
-              onChange={setValue}
+              labelPlacement="outside"
+              maxValue={today(getLocalTimeZone())}
+              errorMessage={(value) => {
+                if (value.validationDetails.rangeOverflow)
+                  return "A data não pode ser maior que a data atual";
+                if (value.isInvalid) return value.validationErrors;
+              }}
+              value={dates}
+              onChange={setDates}
+              validate={(value) => {
+                if (
+                  dateUtils.calculateFullDaysBetween(
+                    new Date(value.start.toString()),
+                    new Date(value.end.toString()),
+                  ) >= 60
+                )
+                  return "O Período máximo para consulta é de 60 dias";
+              }}
             />
           </div>
         </I18nProvider>

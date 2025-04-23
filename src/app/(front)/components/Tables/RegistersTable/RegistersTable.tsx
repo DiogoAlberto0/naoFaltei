@@ -1,21 +1,24 @@
 "use client";
+import { useState } from "react";
 // heroui components
 import { Pagination } from "@heroui/pagination";
 import { Table, TableBody, TableColumn, TableHeader } from "@heroui/table";
+import { Spinner } from "@heroui/react";
 
 // custom components
 import { TopContentRegistersTable } from "@/src/app/(front)/components/Tables/RegistersTable/TopContent";
-import { Spinner } from "@heroui/react";
 import { ComponentError } from "../../ComponentError";
-import { useTimeSheet } from "./useTimeSheet";
 import { renderTableRows } from "./TableRows";
-import { useState } from "react";
+
+//hooks
+import { useTimeSheet } from "./useTimeSheet";
 
 export const RegistersTable = ({
   overflowAuto = true,
+  maxRegisters = 5,
   workerId,
 }: {
-  maxRegisters: number;
+  maxRegisters?: number;
   detailed?: boolean;
   overflowAuto?: boolean;
   workerId: string;
@@ -23,11 +26,12 @@ export const RegistersTable = ({
   const { title, error, data, isLoading } = useTimeSheet(workerId);
 
   const timeSheet = data?.timeSheet || [];
-  const maxPerPage = 5;
+  const maxPerPage = maxRegisters;
   const [page, setPage] = useState(1);
 
   if (error)
     return <ComponentError message={error.message} action={error.action} />;
+
   return (
     <Table
       isStriped
