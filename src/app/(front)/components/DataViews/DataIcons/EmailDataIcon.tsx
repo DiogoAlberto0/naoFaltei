@@ -12,12 +12,12 @@ export const EmailDataIcon = ({
   ...otherProps
 }: IEmailDataIconProps) => {
   return (
-    <div
-      className={`flex justify-center items-center gap-1 w-fit ${className}`}
-      {...otherProps}
-    >
-      <EmailIcon className="h-5 w-5 stroke-primary-500" />
-      <p className="text-small text-default-500">{email}</p>
+    <div className={`flex items-center gap-2 ${className}`} {...otherProps}>
+      <EmailIcon className="w-4 h-4 text-zinc-500" />
+      <span className="font-medium text-zinc-600 dark:text-zinc-300">
+        Email:
+      </span>
+      <span className="text-zinc-800 dark:text-zinc-100">{email}</span>
     </div>
   );
 };
