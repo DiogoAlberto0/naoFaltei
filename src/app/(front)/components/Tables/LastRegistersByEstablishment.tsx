@@ -20,7 +20,7 @@ import {
   TypeRegisterChipLegend,
 } from "@/src/app/(front)/components/DataViews/Chips/TypeRegisterChip";
 import { DateText } from "@/src/app/(front)/components/DataViews/Date/DateText";
-import { ComponentError } from "../../../components/ComponentError";
+import { ComponentError } from "../ComponentError";
 
 //fetcher
 import { fetcher } from "@/src/utils/fetcher";

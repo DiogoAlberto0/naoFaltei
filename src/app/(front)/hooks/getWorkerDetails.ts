@@ -14,7 +14,7 @@ export interface IWorker {
   establishment_id: string;
 }
 
-export const getWorker = async (workerId: string) => {
+export const getWorkerDetails = async (workerId: string) => {
   const cookie = await cookies();
 
   const { data: worker } = await axios<IWorker>({

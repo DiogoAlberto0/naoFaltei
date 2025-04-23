@@ -7,7 +7,7 @@ import { RegisterClockModal } from "../../../../components/Modal/RegisterClockin
 import { RegisterMedicalLeaveModal } from "@/src/app/(front)/components/Modal/RegisterMedicalLeaveModal/RegisterMedicalLeave";
 
 // getter
-import { getWorker } from "./getWorker";
+import { getWorkerDetails } from "@/src/app/(front)/hooks/getWorkerDetails";
 
 interface IWorkerPageProps {
   params: Promise<{ workerId: string }>;
@@ -16,7 +16,7 @@ interface IWorkerPageProps {
 const WorkerPage = async ({ params }: IWorkerPageProps) => {
   const { workerId } = await params;
 
-  const { worker } = await getWorker(workerId);
+  const { worker } = await getWorkerDetails(workerId);
   return (
     <div className="w-full h-full max-h-full overflow-auto p-4 sm:p-6 md:p-8 flex flex-col md:flex-row gap-4">
       <div className="flex-1 flex flex-col gap-4">

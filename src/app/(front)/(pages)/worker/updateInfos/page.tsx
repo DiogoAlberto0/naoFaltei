@@ -1,40 +1,18 @@
-import { axios } from "@/src/utils/fetcher";
+import { auth } from "@/auth"; // se quiser puxar os dados reais
+
+//components
 import { UpdateInfosForm } from "./UpdateInfosForm";
 import { UserInfoCard } from "./UserInfoCard"; // novo componente
-import { auth } from "@/auth"; // se quiser puxar os dados reais
-import { cookies } from "next/headers";
 
-interface IWorker {
-  id: string;
-  name: string;
-  login: string;
-  cpf: string;
-  phone: string;
-  email: string;
-  is_manager: boolean;
-  is_admin: boolean;
-  is_active: true;
-  establishment_id: string;
-}
-
-export const getWorker = async (workerId: string) => {
-  const cookie = await cookies();
-
-  const { data: worker } = await axios<IWorker>({
-    route: `/api/v1/worker/${workerId}/details`,
-    cookie: cookie.toString(),
-    revalidateTags: [`workerId:${workerId}`],
-  });
-
-  return { worker };
-};
+//hooks
+import { getWorkerDetails } from "../../../hooks/getWorkerDetails";
 
 const UpdateInfosPage = async () => {
   const session = await auth();
 
   if (!session || !session.user) return null;
 
-  const { worker } = await getWorker(session.user.id);
+  const { worker } = await getWorkerDetails(session.user.id);
 
   return (
     <main className="h-full w-full max-w-screen-sm mx-auto flex flex-col gap-6 p-6 sm:p-8">
