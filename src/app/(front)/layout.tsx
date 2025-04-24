@@ -4,7 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { ToastProvider } from "@heroui/toast";
 import { SessionProvider } from "next-auth/react";
 
-import Head from "next/head";
+import GoogleAdsense from "./components/GoogleAdsense";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,16 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br" suppressHydrationWarning>
-      <head suppressHydrationWarning>
 
-        <Head>
-          <meta
-            name="google-adsense-account"
-            content={process.env.NEXT_PUBLIC_ADSENSE_LINK}
-          />
-        </Head>
-
-      </head>
       <body className={``}>
         <SessionProvider>
           <ThemeProvider attribute="class" defaultTheme="dark">
@@ -36,6 +27,7 @@ export default function RootLayout({
           </ThemeProvider>
         </SessionProvider>
       </body>
+      <GoogleAdsense pId={`${process.env.NEXT_PUBLIC_ADSENSE_LINK}`} />
     </html>
   );
 }
