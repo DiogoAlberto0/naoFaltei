@@ -87,24 +87,40 @@ export const WorkSchedule = ({ workerId }: { workerId: string }) => {
         loadingContent={<Spinner label="Loading..." />}
         emptyContent="Escala de trabalho ainda não foi definida"
       >
-        {schedule.map(([key, value]) => (
-          <TableRow key={key}>
-            <TableCell>{days[key]}</TableCell>
-            <TableCell>
-              {value.isDayOff
-                ? "--:--"
-                : dateUtils.formatTime(value.startHour, value.startMinute)}
-            </TableCell>
-            <TableCell>
-              {value.isDayOff
-                ? "--:--"
-                : dateUtils.formatTime(value.endHour, value.endMinute)}
-            </TableCell>
-            <TableCell>
-              {value.isDayOff ? "--" : value.restTimeInMinutes}
-            </TableCell>
-          </TableRow>
-        ))}
+        {schedule.map(([key, value]) => {
+          // Horário UTC convertido para local, pois o backend retorna UTC
+
+          const { hour: startHour, minute: startMinute } =
+            dateUtils.convertTimeFromUTCtoLocale({
+              hour: value.startHour,
+              minute: value.startMinute,
+            });
+
+          const { hour: endHour, minute: endMinute } =
+            dateUtils.convertTimeFromUTCtoLocale({
+              hour: value.endHour,
+              minute: value.endMinute,
+            });
+
+          return (
+            <TableRow key={key}>
+              <TableCell>{days[key]}</TableCell>
+              <TableCell>
+                {value.isDayOff
+                  ? "--:--"
+                  : dateUtils.formatTime(startHour, startMinute)}
+              </TableCell>
+              <TableCell>
+                {value.isDayOff
+                  ? "--:--"
+                  : dateUtils.formatTime(endHour, endMinute)}
+              </TableCell>
+              <TableCell>
+                {value.isDayOff ? "--" : value.restTimeInMinutes}
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );
