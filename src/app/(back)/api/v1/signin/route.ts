@@ -1,5 +1,5 @@
 import { signIn } from "@/auth";
-import { InputError, UnauthorizedError } from "@/src/Errors/errors";
+import { InputError } from "@/src/Errors/errors";
 import { userModel } from "@/src/app/(back)/models/user";
 import { workerModel } from "@/src/app/(back)/models/worker";
 import { passwordUtils } from "@/src/utils/password";
@@ -23,19 +23,13 @@ export const POST = async (request: NextRequest) => {
 
     const foundUser = worker || user;
 
-    if (!foundUser)
-      throw new InputError({
-        message: "Usuário ou senha incorretos",
-        action: "Verifique os campos informados.",
-      });
+    if (!foundUser) throw new Error();
 
-    if (!foundUser.hash) throw new UnauthorizedError();
+    if (!foundUser.hash) throw new Error();
 
     if (!passwordUtils.comparePassAndHash(password, foundUser.hash))
-      throw new InputError({
-        message: "Usuário ou senha incorretos",
-        action: "Verifique os campos informados.",
-      });
+      throw new Error();
+
     const formData = new FormData();
     formData.append("login", login);
     formData.append("password", password);
@@ -50,8 +44,9 @@ export const POST = async (request: NextRequest) => {
 
     return NextResponse.json(
       {
-        message: error.message || "Internal server error",
-        action: error.action || "Contate o suporte",
+        message:
+          "Credenciais inválidas. Verifique seu e-mail e senha e tente novamente.",
+        action: "Se o erro persistir contate o suporte.",
       },
       {
         status: error.status_code || 500,

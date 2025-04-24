@@ -1,21 +1,17 @@
-import { GoogleSigninButton } from "@/src/app/(front)/components/Buttons/GoogleSigninButton";
-
 import Image from "next/image";
 
+// assets
 import workersBackground from "@/assets/workersBackground.jpg";
-import { ThemeSwitcher } from "@/src/app/(front)/components/ThemeSwitcher";
+
+// hero ui
 import { Divider } from "@heroui/react";
+
+// components
+import { GoogleSigninButton } from "@/src/app/(front)/components/Buttons/GoogleSigninButton";
+import { ThemeSwitcher } from "@/src/app/(front)/components/ThemeSwitcher";
 import { CredentialsSigninForm } from "@/src/app/(front)/components/CredentialsSigninForm/CredentialsSigninForm";
 
-type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
-
-const SigninForm = ({
-  error,
-  className,
-}: {
-  className?: string;
-  error: string | string[] | undefined;
-}) => {
+const SigninForm = ({ className }: { className?: string }) => {
   return (
     <div className={className}>
       <h1 className="text-2xl font-bold">Faça login</h1>
@@ -42,26 +38,17 @@ const SigninForm = ({
             Entre por aqui!
           </h3>
         </div>
-        <CredentialsSigninForm invalidCredentialsError={error != undefined} />
+        <CredentialsSigninForm />
       </div>
     </div>
   );
 };
 
-export default async function SigninPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const { error } = await searchParams;
-
+export default async function SigninPage() {
   return (
     <div className="h-dvh flex relative">
       <div className="w-3/5 flex justify-center items-center max-sm:absolute max-sm:w-full max-sm:h-full">
-        <SigninForm
-          className="max-sm:bg-content1 p-5 opacity-95"
-          error={error}
-        />
+        <SigninForm className="max-sm:bg-content1 p-5 opacity-95" />
       </div>
 
       <div className="w-2/5 max-sm:w-full">
