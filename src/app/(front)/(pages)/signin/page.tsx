@@ -56,7 +56,7 @@ export default async function SigninPage({
   const { error } = await searchParams;
 
   return (
-    <div className="h-screen flex relative">
+    <div className="h-dvh flex relative">
       <div className="w-3/5 flex justify-center items-center max-sm:absolute max-sm:w-full max-sm:h-full">
         <SigninForm
           className="max-sm:bg-content1 p-5 opacity-95"

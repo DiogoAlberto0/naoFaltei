@@ -22,8 +22,8 @@ export const ClockInputs = ({
   const [isFirstEntry, setIsFirstEntry] = useState(true);
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 bg-content2 rounded-lg p-4 even:bg-content4">
-      <div className="flex-1 space-y-4">
+    <div className="flex flex-col items-center sm:flex-row gap-4 bg-content2 rounded-lg p-4 even:bg-content4">
+      <div className="flex-1 space-y-4 w-full">
         <I18nProvider locale="pt-br">
           <DatePicker
             isRequired
@@ -46,7 +46,7 @@ export const ClockInputs = ({
           value={String(isFirstEntry)}
         />
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2">
           {timeInputs.map((id, idx) => (
             <Input
               key={id}

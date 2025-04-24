@@ -56,7 +56,10 @@ export default async function ManagerDashboard(props: {
             email={establishmentData.email}
             cep={cepUtils.format(establishmentData.cep)}
           />
-          <WorkersTable establishmentId={establishmentId} />
+          <WorkersTable
+            establishmentId={establishmentId}
+            baseRoute="/manager/worker"
+          />
         </div>
 
         {/* Coluna da direita */}

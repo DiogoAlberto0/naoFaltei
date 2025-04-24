@@ -81,7 +81,7 @@ export const renderRegitersTableRow = ({
         <DateText date={date} className="sm:hidden md:flex lg:hidden" />
       </TableCell>
       <TableCell>
-        {hour}:{minute}
+        {hour.toString().padStart(2, "0")}:{minute.toString().padStart(2, "0")}
       </TableCell>
     </TableRow>
   );

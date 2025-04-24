@@ -15,7 +15,7 @@ const UpdateInfosPage = async () => {
   const { worker } = await getWorkerDetails(session.user.id);
 
   return (
-    <main className="h-full w-full max-w-screen-sm mx-auto flex flex-col gap-6 p-6 sm:p-8">
+    <main className="h-full w-full overflow-auto mx-auto flex flex-col gap-6 p-6 sm:p-8">
       <header className="text-center">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
           Atualize seus dados
