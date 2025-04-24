@@ -9,19 +9,22 @@ import { EyeIcon } from "@/assets/icons/EyeIcon";
 
 //custom components
 import { UpdateWorkerModal } from "./UpdateWorkerModal";
+
 export const ActionsToolTips = ({
   workerId,
   isWorkerEditable,
+  baseRoute,
 }: {
   workerId: string;
   isWorkerEditable: boolean;
+  baseRoute: string;
 }) => {
   const router = useRouter();
   return (
     <div className="relative flex flex-col sm:flex-row items-center justify-center gap-2 ">
       <Tooltip content="Details">
         <span
-          onClick={() => router.push(`/manager/worker/${workerId}`)}
+          onClick={() => router.push(`${baseRoute}/${workerId}`)}
           className="text-lg text-default-400 cursor-pointer active:opacity-50"
         >
           <EyeIcon />

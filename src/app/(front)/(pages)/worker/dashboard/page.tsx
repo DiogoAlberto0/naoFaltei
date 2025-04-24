@@ -31,6 +31,7 @@ export default async function ManagerDashboard() {
         <WorkersTable
           establishmentId={worker.establishment_id}
           isWorkerEditable={false}
+          baseRoute="/worker/worker"
         />
       </div>
 
