@@ -88,6 +88,38 @@ const isISODate = (str: string) => {
   const isIso = !isNaN(date.getTime()) && date.toISOString() === str;
   return isIso;
 };
+
+const convertTimeFromUTCtoLocale = ({
+  hour,
+  minute,
+}: {
+  hour: number;
+  minute: number;
+}) => {
+  const date = new Date();
+  date.setUTCHours(hour, minute);
+
+  return {
+    hour: date.getHours(),
+    minute: date.getMinutes(),
+  };
+};
+
+const convertTimeFromLocaletoUTC = ({
+  hour,
+  minute,
+}: {
+  hour: number;
+  minute: number;
+}) => {
+  const date = new Date();
+  date.setUTCHours(hour, minute);
+
+  return {
+    hour: date.getHours(),
+    minute: date.getMinutes(),
+  };
+};
 const dateUtils = {
   validateAndReturnDate,
   calculateFullDaysBetween,
@@ -99,6 +131,8 @@ const dateUtils = {
   formatTime,
   transformMinutesInTime,
   isISODate,
+  convertTimeFromUTCtoLocale,
+  convertTimeFromLocaletoUTC,
 };
 
 export { dateUtils };

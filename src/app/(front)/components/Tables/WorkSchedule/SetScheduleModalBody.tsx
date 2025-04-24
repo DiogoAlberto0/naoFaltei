@@ -100,6 +100,27 @@ export const SetScheduleModalBody = ({
       {daysOfWeek.map(({ name, key }) => {
         const schedule = prevSchedule?.[key as keyof ISchedule];
 
+        const getDefaultStartTime = () => {
+          if (schedule) {
+            const { hour: startHour, minute: startMinute } =
+              dateUtils.convertTimeFromUTCtoLocale({
+                hour: schedule.startHour,
+                minute: schedule.startMinute,
+              });
+            return dateUtils.formatTime(startHour, startMinute);
+          }
+        };
+
+        const getDefaultEndTime = () => {
+          if (schedule) {
+            const { hour: endHour, minute: endMinute } =
+              dateUtils.convertTimeFromUTCtoLocale({
+                hour: schedule.endHour,
+                minute: schedule.endMinute,
+              });
+            return dateUtils.formatTime(endHour, endMinute);
+          }
+        };
         return (
           <WeekDayInputs
             key={key}
@@ -109,16 +130,8 @@ export const SetScheduleModalBody = ({
             onSwitchChange={toggleDayOff}
             isDisabled={daysOff[key]}
             isRequired={!daysOff[key]}
-            defaultStartTime={
-              schedule
-                ? dateUtils.formatTime(schedule.startHour, schedule.startMinute)
-                : undefined
-            }
-            defaultEndTime={
-              schedule
-                ? dateUtils.formatTime(schedule.endHour, schedule.endMinute)
-                : undefined
-            }
+            defaultStartTime={getDefaultStartTime()}
+            defaultEndTime={getDefaultEndTime()}
             defaultBreakTime={schedule?.restTimeInMinutes ?? 0}
           />
         );

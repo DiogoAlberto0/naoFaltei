@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 //heroui
 import { Chip } from "@heroui/chip";
 // custom components
@@ -5,6 +6,8 @@ import { TimeSheetModal } from "../../Modal/TimeSheetModal/TimeSheetModal";
 
 // hooks
 import { IDaySummary } from "./useTimeSheet";
+
+//utils
 import { dateUtils } from "@/src/utils/date";
 
 const BankHourChip = ({ hoursBank }: { hoursBank: number }) => {
@@ -55,6 +58,14 @@ export const TopContentRegistersTable = ({
   hoursBank?: number;
   absenceDays?: number;
 }) => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
+
   return (
     <div className="w-full flex flex-col gap-1">
       <div className=" w-full flex justify-between items-center">

@@ -36,7 +36,7 @@ export const axios = async <T>(options: {
     `${process.env.NEXT_PUBLIC_BACKEND_URL}${route}`,
     {
       method,
-      body: body ? JSON.stringify(body) : undefined,
+      body: body ? JSON.stringify(body) : JSON.stringify(body),
       headers: {
         "Content-Type": "application/json",
         ...(cookie ? { cookie } : {}),

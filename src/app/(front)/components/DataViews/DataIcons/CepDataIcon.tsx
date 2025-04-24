@@ -1,6 +1,7 @@
 import { DetailedHTMLProps, HTMLAttributes } from "react";
 
 import { AddressIcon } from "@/assets/icons/AddressIcon";
+import { cepUtils } from "@/src/utils/cep";
 
 interface ICepDataIconProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -12,12 +13,12 @@ export const CepDataIcon = ({
   ...otherProps
 }: ICepDataIconProps) => {
   return (
-    <div
-      className={`flex justify-center items-center gap-1 w-fit ${className}`}
-      {...otherProps}
-    >
-      <AddressIcon className="h-5 w-5 fill-primary-500" />
-      <p className="text-small text-default-500">{cep}</p>
+    <div className={`flex items-center gap-2 ${className}`} {...otherProps}>
+      <AddressIcon className="w-4 h-4 fill-zinc-500" />
+      <span className="font-medium text-zinc-600 dark:text-zinc-300">CEP:</span>
+      <span className="text-zinc-800 dark:text-zinc-100">
+        {cepUtils.format(cep)}
+      </span>
     </div>
   );
 };

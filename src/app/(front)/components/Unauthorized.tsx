@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 export const Unauthorized = () => {
   return (
-    <main className="h-screen w-screen flex justify-center items-center bg-gradient-to-r from-red-500 to-yellow-500 p-10">
+    <main className="h-dvh w-screen flex justify-center items-center bg-gradient-to-r from-red-500 to-yellow-500 p-10">
       <Card className="w-full max-w-md p-6 bg-white shadow-lg rounded-lg">
         <CardHeader className="pb-4 pt-2 px-4 text-center">
           <h1 className="text-3xl font-semibold text-gray-700">

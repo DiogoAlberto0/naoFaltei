@@ -6,6 +6,7 @@ import { InputError } from "@/src/Errors/errors";
 
 // heroui
 import { addToast } from "@heroui/toast";
+import { dateUtils } from "@/src/utils/date";
 
 export const setScheduleHandler = async (formData: FormData) => {
   const workerId = formData.get("workerId");
@@ -24,14 +25,29 @@ export const setScheduleHandler = async (formData: FormData) => {
         message: "Campos obrigatórios faltando",
         action: "Verifique se todos os campos forma informados",
       });
-    const [startHour, startMinute] = startTime.split(":");
 
-    const [endHour, endMinute] = endTime.split(":");
+    // Horário local convertido para UTC, pois o backend espera UTC
+    const [startLocaleHour, startLocaleMinute] = startTime
+      .split(":")
+      .map(Number);
+    const { hour: startHour, minute: startMinute } =
+      dateUtils.convertTimeFromLocaletoUTC({
+        hour: startLocaleHour,
+        minute: startLocaleMinute,
+      });
+
+    // Horário local convertido para UTC, pois o backend espera UTC
+    const [endLocaleHour, endLocaleMinute] = endTime.split(":").map(Number);
+    const { hour: endHour, minute: endMinute } =
+      dateUtils.convertTimeFromLocaletoUTC({
+        hour: endLocaleHour,
+        minute: endLocaleMinute,
+      });
     return {
-      startHour: Number(startHour),
-      startMinute: Number(startMinute),
-      endHour: Number(endHour),
-      endMinute: Number(endMinute),
+      startHour: startHour,
+      startMinute: startMinute,
+      endHour: endHour,
+      endMinute: endMinute,
       restTimeInMinutes: Number(breakTime),
     };
   };

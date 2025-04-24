@@ -1,8 +1,13 @@
+"use client";
 import { DetailedHTMLProps, HTMLAttributes } from "react";
+
 // custom components
 import { DateText } from "@/src/app/(front)/components/DataViews/Date/DateText";
 import { WorkerLastRegisters } from "./WorkerLastRegisters";
 import { HourText } from "@/src/app/(front)/components/DataViews/Date/HourText";
+
+//hooks
+import { useCurrentTime } from "./useCurrentTime";
 
 interface IDateInfosHeader
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}
@@ -10,7 +15,7 @@ export const DateInfosHeader = ({
   className,
   ...otherProps
 }: IDateInfosHeader) => {
-  const date = new Date();
+  const { now, hour, minute, second } = useCurrentTime();
 
   const greetings = (date: Date, name: string) => {
     const hours = date.getHours();
@@ -29,13 +34,14 @@ export const DateInfosHeader = ({
     `}
       {...otherProps}
     >
-      <h1 className="text-base">{greetings(date, "Diogo")}</h1>
+      <h1 className="text-base">{greetings(now, "Diogo")}</h1>
       <HourText
         className="text-2xl font-bold"
-        hour={date.getHours()}
-        minute={date.getMinutes()}
+        hour={hour}
+        minute={minute}
+        seconds={second}
       />
-      <DateText isFullDate={true} date={date} />
+      <DateText isFullDate={true} date={now} />
       <WorkerLastRegisters />
     </div>
   );

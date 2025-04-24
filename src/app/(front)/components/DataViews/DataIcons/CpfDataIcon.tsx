@@ -13,12 +13,12 @@ export const CpfDataIcon = ({
   ...otherProps
 }: ICpfDataIconProps) => {
   return (
-    <div
-      className={`flex justify-center items-center gap-1 w-fit ${className}`}
-      {...otherProps}
-    >
-      <IdentityIcon className="h-5 w-5 text-primary-500 font-bold" />
-      <p className="text-small text-default-500">{cpfUtils.format(cpf)}</p>
+    <div className={`flex items-center gap-2 ${className}`} {...otherProps}>
+      <IdentityIcon className="w-4 h-4 stroke-zinc-500" />
+      <span className="font-medium text-zinc-600 dark:text-zinc-300">CPF:</span>
+      <span className="text-zinc-800 dark:text-zinc-100">
+        {cpfUtils.format(cpf)}
+      </span>
     </div>
   );
 };

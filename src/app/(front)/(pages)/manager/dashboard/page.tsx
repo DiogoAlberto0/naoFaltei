@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { EstablishmentInfoCard } from "@/src/app/(front)/components/Cards/EstablishmentInfoCard/EstablishmentInfoCard";
 import { WorkersTable } from "@/src/app/(front)/components/Tables/WorkersTable/WorkersTable";
 import { LocationCard } from "@/src/app/(front)/components/Cards/LocationCard/LocationCard";
-import { LastRegistersByEstablishment } from "./LastRegistersByEstablishment";
+import { LastRegistersByEstablishment } from "../../../components/Tables/LastRegistersByEstablishment";
 
 //fetcher
 import { axios } from "@/src/utils/fetcher";
@@ -56,7 +56,10 @@ export default async function ManagerDashboard(props: {
             email={establishmentData.email}
             cep={cepUtils.format(establishmentData.cep)}
           />
-          <WorkersTable establishmentId={establishmentId} />
+          <WorkersTable
+            establishmentId={establishmentId}
+            baseRoute="/manager/worker"
+          />
         </div>
 
         {/* Coluna da direita */}

@@ -1,26 +1,41 @@
-"use client";
-import { RegistersTable } from "@/src/app/(front)/components/Tables/RegistersTable/RegistersTable";
-import { Button, DatePicker } from "@heroui/react";
+import { auth } from "@/auth";
 
-const TimeSheetPage = () => {
+// components
+import { RegistersTable } from "@/src/app/(front)/components/Tables/RegistersTable/RegistersTable";
+import { CalendarInput } from "../../../components/Inputs/CalendarInput/CalendarInput";
+import { Unauthorized } from "../../../components/Unauthorized";
+
+const TimeSheetPage = async () => {
+  const session = await auth();
+
+  if (!session || !session.user) return <Unauthorized />;
+
   return (
-    <main className="h-full w-full flex flex-col justify-between gap-2 max-h-full max-w-full overflow-auto p-2">
-      <h1 className="w-full text-center text-2xl">Folha de ponto</h1>
-      <div className="flex flex-col gap-2">
-        <DatePicker
-          label="Selecione um mês de busca: "
-          labelPlacement="outside"
-          showMonthAndYearPickers
-          className="w-full"
+    <main className="h-full w-full overflow-auto mx-auto flex flex-col gap-6 px-2 py-4 sm:px-4 md:px-6 lg:px-8">
+      <header className="text-center px-2">
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
+          Folha de Ponto
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Consulte os registros e o resumo mensal de ponto
+        </p>
+      </header>
+
+      <section className="w-full">
+        <CalendarInput
+          title="Selecione um intervalo de datas"
+          onSubmitRedirect="/worker/timeSheet"
         />
-        <Button color="primary">Buscar</Button>
-      </div>
-      <RegistersTable
-        workerId="123"
-        detailed
-        maxRegisters={10}
-        overflowAuto={false}
-      />
+      </section>
+
+      <section className="w-full">
+        <RegistersTable
+          workerId={session.user.id}
+          detailed
+          maxRegisters={10}
+          overflowAuto={true}
+        />
+      </section>
     </main>
   );
 };

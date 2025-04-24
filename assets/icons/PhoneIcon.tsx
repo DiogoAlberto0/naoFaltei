@@ -1,11 +1,17 @@
 import { SVGProps } from "react";
 
-export const PhoneIcon = (props: SVGProps<SVGSVGElement>) => {
+interface PhoneIconProps extends SVGProps<SVGSVGElement> {
+  size?: number;
+}
+export const PhoneIcon = ({ size = 20, ...props }: PhoneIconProps) => {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      height={size}
+      width={size}
+      stroke="currentColor"
       {...props}
     >
       <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>

@@ -54,6 +54,7 @@ describe("POST on /api/v1/signin", () => {
       credentials: "include",
     });
 
+    console.log(response);
     if (isSuccefulCase) {
       expect(response.headers.get("set-cookie")).not.toBeUndefined();
       expect(response.headers.get("set-cookie")).not.toBeNull();
@@ -61,8 +62,9 @@ describe("POST on /api/v1/signin", () => {
     } else {
       const data = await response.json();
       expect(data).toEqual({
-        message: "Usuário ou senha incorretos",
-        action: "Verifique os campos informados.",
+        message:
+          "Credenciais inválidas. Verifique seu e-mail e senha e tente novamente.",
+        action: "Se o erro persistir contate o suporte.",
       });
     }
   };

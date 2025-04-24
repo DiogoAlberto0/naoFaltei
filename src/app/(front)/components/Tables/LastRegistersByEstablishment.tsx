@@ -20,7 +20,7 @@ import {
   TypeRegisterChipLegend,
 } from "@/src/app/(front)/components/DataViews/Chips/TypeRegisterChip";
 import { DateText } from "@/src/app/(front)/components/DataViews/Date/DateText";
-import { ComponentError } from "../../../components/ComponentError";
+import { ComponentError } from "../ComponentError";
 
 //fetcher
 import { fetcher } from "@/src/utils/fetcher";
@@ -81,7 +81,7 @@ export const renderRegitersTableRow = ({
         <DateText date={date} className="sm:hidden md:flex lg:hidden" />
       </TableCell>
       <TableCell>
-        {hour}:{minute}
+        {hour.toString().padStart(2, "0")}:{minute.toString().padStart(2, "0")}
       </TableCell>
     </TableRow>
   );

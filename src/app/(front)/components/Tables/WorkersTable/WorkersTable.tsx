@@ -41,6 +41,7 @@ interface IMeta {
 export interface IWorkersTableProps {
   establishmentId: string;
   isWorkerEditable?: boolean;
+  baseRoute: string;
 }
 
 const Legend = () => {
@@ -56,6 +57,7 @@ const Legend = () => {
 export const WorkersTable = ({
   establishmentId,
   isWorkerEditable = true,
+  baseRoute,
 }: IWorkersTableProps) => {
   const [page, setPage] = useState(1);
 
@@ -130,6 +132,7 @@ export const WorkersTable = ({
                 <ActionsToolTips
                   workerId={id}
                   isWorkerEditable={isWorkerEditable}
+                  baseRoute={baseRoute}
                 />
               </TableCell>
             </TableRow>

@@ -12,12 +12,12 @@ export const UserNameDataIcon = ({
   ...otherProps
 }: IUserNameDataIconProps) => {
   return (
-    <div
-      className={`flex justify-center items-center gap-1 w-fit ${className}`}
-      {...otherProps}
-    >
-      <UserIcon className="h-5 w-5 text-primary-500" />
-      <p className="text-small text-default-500">{username}</p>
+    <div className={`flex items-center gap-2 ${className}`} {...otherProps}>
+      <UserIcon className="w-4 h-4 text-zinc-500" />
+      <span className="font-medium text-zinc-600 dark:text-zinc-300">
+        Login:
+      </span>
+      <span className="text-zinc-800 dark:text-zinc-100">{username}</span>
     </div>
   );
 };

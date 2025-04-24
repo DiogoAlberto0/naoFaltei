@@ -13,12 +13,14 @@ export const PhoneDataIcon = ({
   ...otherProps
 }: IPhoneDataIconProps) => {
   return (
-    <div
-      className={`flex justify-center items-center gap-1 w-fit ${className}`}
-      {...otherProps}
-    >
-      <PhoneIcon className="h-5 w-5 fill-primary" />
-      <p className="text-small text-default-500">{phoneUtils.format(phone)}</p>
+    <div className={`flex items-center gap-2 ${className}`} {...otherProps}>
+      <PhoneIcon className="w-4 h-4 fill-zinc-500" />
+      <span className="font-medium text-zinc-600 dark:text-zinc-300">
+        Telefone:
+      </span>
+      <span className="text-zinc-800 dark:text-zinc-100">
+        {phoneUtils.format(phone)}
+      </span>
     </div>
   );
 };

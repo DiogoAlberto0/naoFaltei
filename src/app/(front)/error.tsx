@@ -16,7 +16,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-dvh bg-gray-100">
       <Card className="p-6 max-w-md text-center">
         <h1 className="text-2xl font-bold text-red-500">{error.message}</h1>
         <p className="mt-4 text-gray-700">{error.action}</p>
