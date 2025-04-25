@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="512" height="512"><svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="512" height="512" rx="100" fill="#3B79A7"></rect>
+<rect x="111" y="56" width="290" height="400" rx="40" fill="#D9D9D9"></rect>
+<rect x="156" y="328" width="200" height="15" rx="7.5" fill="#3B79A7"></rect>
+<circle cx="256" cy="408" r="30" fill="#3B79A7"></circle>
+<circle cx="256" cy="194" r="92.5" fill="white" stroke="#3B79A7" stroke-width="15"></circle>
+<circle cx="256.269" cy="194.269" r="12.269" fill="#3B79A7"></circle>
+<rect x="202" y="158.959" width="13" height="60" rx="6.5" transform="rotate(-50 202 158.959)" fill="#3B79A7"></rect>
+<rect x="288.895" y="159" width="13" height="45" rx="6.5" transform="rotate(50 288.895 159)" fill="#3B79A7"></rect>
+<rect x="249" y="117" width="13" height="20" rx="6.5" fill="#3B79A7"></rect>
+<rect x="249" y="250" width="13" height="20" rx="6.5" fill="#3B79A7"></rect>
+<rect x="182" y="200" width="13" height="20" rx="6.5" transform="rotate(-90 182 200)" fill="#3B79A7"></rect>
+<path d="M440.365 117.252C444.389 114.905 452.889 112.377 462.387 115.345C468.283 117.187 473.042 121.719 476.064 125.092C479.145 128.53 481.684 132.22 483.263 134.876L483.565 135.393L484.071 136.269L484.391 137.228C484.989 139.023 485.564 141.606 485.735 144.435C485.901 147.171 485.752 151.103 484.042 154.951C483.578 155.995 482.976 156.861 482.824 157.082C482.535 157.505 482.206 157.956 481.876 158.395C481.209 159.283 480.333 160.398 479.307 161.68C477.242 164.257 474.381 167.735 470.937 171.871C464.038 180.155 454.669 191.231 444.356 203.347C423.724 227.586 399.234 256.08 382.976 274.923L382.372 275.622L381.651 276.198C376.269 280.504 364.741 284.056 352.115 277.169L350.52 276.299L349.332 274.922L305.332 223.922L303.927 222.293L303.316 220.23C302.327 216.892 301.547 211.776 302.304 206.446C303.04 201.266 305.45 194.773 311.746 190.471C316.811 186.069 327.091 181.788 339.421 186.339L340.048 186.577L342.229 187.431L343.804 189.163L361.202 208.302L437.828 119.362L438.92 118.095L440.365 117.252Z" fill="white" stroke="#3B79A7" stroke-width="20"></path>
+</svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>

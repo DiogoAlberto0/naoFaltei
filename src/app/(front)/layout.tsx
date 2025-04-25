@@ -4,7 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { ToastProvider } from "@heroui/toast";
 import { SessionProvider } from "next-auth/react";
 
-import GoogleAdsense from "./components/GoogleAdsense";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,6 +18,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br" suppressHydrationWarning>
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3749871067204923"
+        crossOrigin="anonymous"
+        strategy="beforeInteractive"
+      />
 
       <body className={``}>
         <SessionProvider>
@@ -27,7 +33,6 @@ export default function RootLayout({
           </ThemeProvider>
         </SessionProvider>
       </body>
-      <GoogleAdsense pId={`${process.env.NEXT_PUBLIC_ADSENSE_LINK}`} />
     </html>
   );
 }
