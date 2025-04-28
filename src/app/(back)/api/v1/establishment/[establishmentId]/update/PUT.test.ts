@@ -251,228 +251,242 @@ describe("PUT on /api/v1/establishment/update/:ID", () => {
       });
     });
 
-    describe("UPDATE PHONE TESTS", () => {
-      it("should be possible to update phone of an valid establishment", async () => {
-        await expectations({
-          body: {
-            id: validEstablishment1Id,
-            phone: "61900000000",
-          },
-          cookie: author1Cookies,
-        });
+    it("should be possible to update if provided email is already in use by the same establishment", async () => {
+      const usedEmail = (
+        await establishmentModel.findBy({ id: validEstablishment1Id })
+      )?.email;
+      await expectations({
+        body: {
+          id: validEstablishment1Id,
+          email: usedEmail,
+        },
+        cookie: author1Cookies,
+        expectedStatusCode: 200,
       });
+    });
+  });
 
-      it("should be possible to update phone with ponctuation of an valid establishment", async () => {
-        const newPhone = "(61)90000-0000";
-
-        await expectations({
-          body: {
-            id: validEstablishment1Id,
-            phone: newPhone,
-          },
-          cookie: author1Cookies,
-          expectedResponseData: {
-            phone: phoneUtils.clean(newPhone),
-          },
-        });
-      });
-
-      it("should not be possible to update if invalid phone is provided", async () => {
-        await expectations({
-          body: {
-            id: validEstablishment1Id,
-            phone: "619888888",
-          },
-          cookie: author1Cookies,
-          expectedStatusCode: 400,
-          expectedResponseData: {
-            message: "Telefone inválido",
-            action:
-              "Informe um telefone válido seguindo a seguinte estrutura: (XX)XXXXX-XXXX",
-          },
-        });
-      });
-
-      it("should not be possible to update if provided phone is already in use by another establishment", async () => {
-        const usedPhone = (
-          await establishmentModel.findBy({ id: validEstablishment1Id })
-        )?.phone;
-        await expectations({
-          body: {
-            id: validEstablishment2Id,
-            phone: usedPhone,
-          },
-          cookie: author2Cookies,
-          expectedStatusCode: 409,
-          expectedResponseData: {
-            message:
-              "O telefone fornecido já está em uso por outro estabelecimento.",
-            action: "Informe outro telefone.",
-          },
-        });
+  describe("UPDATE PHONE TESTS", () => {
+    it("should be possible to update phone of an valid establishment", async () => {
+      await expectations({
+        body: {
+          id: validEstablishment1Id,
+          phone: "61900000000",
+        },
+        cookie: author1Cookies,
       });
     });
 
-    describe("UPDATE CEP TESTS", () => {
-      it("should be possible to update cep, if valid cep is provided", async () => {
-        await expectations({
-          body: {
-            id: validEstablishment2Id,
-            cep: "71805709",
-          },
-          cookie: author2Cookies,
-        });
-      });
+    it("should be possible to update phone with ponctuation of an valid establishment", async () => {
+      const newPhone = "(61)90000-0000";
 
-      it("should be possible to update cep, if valid cep with ponctuation is provided", async () => {
-        const newCep = "71805-709";
-        await expectations({
-          body: {
-            id: validEstablishment2Id,
-            cep: newCep,
-          },
-          cookie: author2Cookies,
-          expectedResponseData: {
-            cep: cepUtils.clean(newCep),
-          },
-        });
-      });
-
-      it("should not be possible to update cep, if invalid cep is provided", async () => {
-        const newCep = "7180570";
-        await expectations({
-          body: {
-            id: validEstablishment2Id,
-            cep: newCep,
-          },
-          cookie: author2Cookies,
-          expectedStatusCode: 400,
-          expectedResponseData: {
-            message: "CEP inválido",
-            action:
-              "Informe um CEP válido seguindo a seguinte estrutura: XXXXX-XXX",
-          },
-        });
+      await expectations({
+        body: {
+          id: validEstablishment1Id,
+          phone: newPhone,
+        },
+        cookie: author1Cookies,
+        expectedResponseData: {
+          phone: phoneUtils.clean(newPhone),
+        },
       });
     });
 
-    describe("UPDATE COORDS TESTS", () => {
-      it("should be possible to update coordinates if valid latitude an longitude number is provided", async () => {
-        const newLatitude = -23.55052;
-        const newLongitude = -46.633308;
+    it("should not be possible to update if invalid phone is provided", async () => {
+      await expectations({
+        body: {
+          id: validEstablishment1Id,
+          phone: "619888888",
+        },
+        cookie: author1Cookies,
+        expectedStatusCode: 400,
+        expectedResponseData: {
+          message: "Telefone inválido",
+          action:
+            "Informe um telefone válido seguindo a seguinte estrutura: (XX)XXXXX-XXXX",
+        },
+      });
+    });
+
+    it("should not be possible to update if provided phone is already in use by another establishment", async () => {
+      const usedPhone = (
+        await establishmentModel.findBy({ id: validEstablishment1Id })
+      )?.phone;
+      await expectations({
+        body: {
+          id: validEstablishment2Id,
+          phone: usedPhone,
+        },
+        cookie: author2Cookies,
+        expectedStatusCode: 409,
+        expectedResponseData: {
+          message:
+            "O telefone fornecido já está em uso por outro estabelecimento.",
+          action: "Informe outro telefone.",
+        },
+      });
+    });
+  });
+
+  describe("UPDATE CEP TESTS", () => {
+    it("should be possible to update cep, if valid cep is provided", async () => {
+      await expectations({
+        body: {
+          id: validEstablishment2Id,
+          cep: "71805709",
+        },
+        cookie: author2Cookies,
+      });
+    });
+
+    it("should be possible to update cep, if valid cep with ponctuation is provided", async () => {
+      const newCep = "71805-709";
+      await expectations({
+        body: {
+          id: validEstablishment2Id,
+          cep: newCep,
+        },
+        cookie: author2Cookies,
+        expectedResponseData: {
+          cep: cepUtils.clean(newCep),
+        },
+      });
+    });
+
+    it("should not be possible to update cep, if invalid cep is provided", async () => {
+      const newCep = "7180570";
+      await expectations({
+        body: {
+          id: validEstablishment2Id,
+          cep: newCep,
+        },
+        cookie: author2Cookies,
+        expectedStatusCode: 400,
+        expectedResponseData: {
+          message: "CEP inválido",
+          action:
+            "Informe um CEP válido seguindo a seguinte estrutura: XXXXX-XXX",
+        },
+      });
+    });
+  });
+
+  describe("UPDATE COORDS TESTS", () => {
+    it("should be possible to update coordinates if valid latitude an longitude number is provided", async () => {
+      const newLatitude = -23.55052;
+      const newLongitude = -46.633308;
+      await expectations({
+        body: {
+          id: validEstablishment2Id,
+          coords: {
+            lat: newLatitude,
+            lng: newLongitude,
+          },
+        },
+        cookie: author2Cookies,
+      });
+    });
+
+    it("should be possible to update coordinates if valid latitude an longitude is provided", async () => {
+      const newLatitude = "-23.550520";
+      const newLongitude = "-46.633308";
+      await expectations({
+        body: {
+          id: validEstablishment2Id,
+          coords: {
+            lat: newLatitude,
+            lng: newLongitude,
+          },
+        },
+        cookie: author2Cookies,
+      });
+    });
+
+    it("should not be possible to update coordinates if invalid latitude is provided", async () => {
+      const newLatitude = "100.123456";
+      const newLongitude = "-46.633308";
+      await expectations({
+        body: {
+          id: validEstablishment2Id,
+          coords: {
+            lat: newLatitude,
+            lng: newLongitude,
+          },
+        },
+        cookie: author2Cookies,
+        expectedStatusCode: 400,
+        expectedResponseData: {
+          message: "Coordanadas inválidas",
+          action: "Verifique as coordenadas informadas, latitude e longitude",
+        },
+      });
+    });
+
+    it("should not be possible to update coordinates if invalid longitude is provided", async () => {
+      const newLatitude = "-23.550520";
+      const newLongitude = "200.123456";
+      await expectations({
+        body: {
+          id: validEstablishment2Id,
+          coords: {
+            lat: newLatitude,
+            lng: newLongitude,
+          },
+        },
+        cookie: author2Cookies,
+        expectedStatusCode: 400,
+        expectedResponseData: {
+          message: "Coordanadas inválidas",
+          action: "Verifique as coordenadas informadas, latitude e longitude",
+        },
+      });
+    });
+
+    it("should not be possible to update coordinates if only latitude is provided", async () => {
+      const newLatitude = "-23.550520";
+      await expectations({
+        body: {
+          id: validEstablishment2Id,
+          coords: {
+            lat: newLatitude,
+          },
+        },
+        cookie: author2Cookies,
+        expectedStatusCode: 400,
+        expectedResponseData: {
+          message: "Coordanadas inválidas",
+          action: "Verifique as coordenadas informadas, latitude e longitude",
+        },
+      });
+    });
+
+    it("should not be possible to update coordinates if only longitude is provided", async () => {
+      const newLongitude = "-46.633308";
+
+      await expectations({
+        body: {
+          id: validEstablishment2Id,
+          coords: {
+            lng: newLongitude,
+          },
+        },
+        cookie: author2Cookies,
+        expectedStatusCode: 400,
+        expectedResponseData: {
+          message: "Coordanadas inválidas",
+          action: "Verifique as coordenadas informadas, latitude e longitude",
+        },
+      });
+    });
+    describe("UPDATE ratio TESTS", () => {
+      it("should be possible to update ratio of an valid establishment", async () => {
         await expectations({
           body: {
-            id: validEstablishment2Id,
-            coords: {
-              lat: newLatitude,
-              lng: newLongitude,
-            },
+            id: validEstablishment1Id,
+            ratio: 50,
           },
-          cookie: author2Cookies,
-        });
-      });
-
-      it("should be possible to update coordinates if valid latitude an longitude is provided", async () => {
-        const newLatitude = "-23.550520";
-        const newLongitude = "-46.633308";
-        await expectations({
-          body: {
-            id: validEstablishment2Id,
-            coords: {
-              lat: newLatitude,
-              lng: newLongitude,
-            },
-          },
-          cookie: author2Cookies,
-        });
-      });
-
-      it("should not be possible to update coordinates if invalid latitude is provided", async () => {
-        const newLatitude = "100.123456";
-        const newLongitude = "-46.633308";
-        await expectations({
-          body: {
-            id: validEstablishment2Id,
-            coords: {
-              lat: newLatitude,
-              lng: newLongitude,
-            },
-          },
-          cookie: author2Cookies,
-          expectedStatusCode: 400,
-          expectedResponseData: {
-            message: "Coordanadas inválidas",
-            action: "Verifique as coordenadas informadas, latitude e longitude",
-          },
-        });
-      });
-
-      it("should not be possible to update coordinates if invalid longitude is provided", async () => {
-        const newLatitude = "-23.550520";
-        const newLongitude = "200.123456";
-        await expectations({
-          body: {
-            id: validEstablishment2Id,
-            coords: {
-              lat: newLatitude,
-              lng: newLongitude,
-            },
-          },
-          cookie: author2Cookies,
-          expectedStatusCode: 400,
-          expectedResponseData: {
-            message: "Coordanadas inválidas",
-            action: "Verifique as coordenadas informadas, latitude e longitude",
-          },
-        });
-      });
-
-      it("should not be possible to update coordinates if only latitude is provided", async () => {
-        const newLatitude = "-23.550520";
-        await expectations({
-          body: {
-            id: validEstablishment2Id,
-            coords: {
-              lat: newLatitude,
-            },
-          },
-          cookie: author2Cookies,
-          expectedStatusCode: 400,
-          expectedResponseData: {
-            message: "Coordanadas inválidas",
-            action: "Verifique as coordenadas informadas, latitude e longitude",
-          },
-        });
-      });
-
-      it("should not be possible to update coordinates if only longitude is provided", async () => {
-        const newLongitude = "-46.633308";
-
-        await expectations({
-          body: {
-            id: validEstablishment2Id,
-            coords: {
-              lng: newLongitude,
-            },
-          },
-          cookie: author2Cookies,
-          expectedStatusCode: 400,
-          expectedResponseData: {
-            message: "Coordanadas inválidas",
-            action: "Verifique as coordenadas informadas, latitude e longitude",
-          },
-        });
-      });
-      describe("UPDATE ratio TESTS", () => {
-        it("should be possible to update ratio of an valid establishment", async () => {
-          await expectations({
-            body: {
-              id: validEstablishment1Id,
-              ratio: 50,
-            },
-            cookie: author1Cookies,
-            expectedStatusCode: 200,
-          });
+          cookie: author1Cookies,
+          expectedStatusCode: 200,
         });
       });
     });
