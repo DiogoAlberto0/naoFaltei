@@ -199,16 +199,7 @@ const update = async ({
     },
   });
 
-  return {
-    name: worker.name,
-    id: worker.id,
-    email: worker.email,
-    cpf: worker.cpf,
-    phone: worker.phone,
-    login: worker.login,
-    is_manager: worker.is_manager,
-    establishment_id: worker.establishment_id,
-  };
+  return worker;
 };
 
 const setManager = async (workerId: string) => {

@@ -5,7 +5,6 @@ import {
   createScenario2,
 } from "@/src/app/(back)/tests/entitysForTest";
 import { describe, it, expect, beforeAll } from "vitest";
-import { omit } from "lodash";
 
 let worker1Id: string;
 let worker1Cookie: string;
@@ -83,7 +82,21 @@ const expectations = async ({
   if (response.status === 200) {
     const workerFromDB = await workerModel.findUniqueBy({ id: workerId });
 
-    expect(data).toStrictEqual(omit(workerFromDB, "hash"));
+    if (!workerFromDB) throw new Error("Nenhum funcionario encontrado");
+
+    expect(data).toStrictEqual({
+      cpf: workerFromDB.cpf,
+      created_at: workerFromDB?.created_at.toISOString(),
+      email: workerFromDB.email,
+      establishment_id: workerFromDB.establishment_id,
+      id: workerFromDB.id,
+      is_active: workerFromDB.is_active,
+      is_admin: workerFromDB.is_admin,
+      is_manager: workerFromDB.is_manager,
+      login: workerFromDB.login,
+      name: workerFromDB.name,
+      phone: workerFromDB.phone,
+    });
   } else if (response.status === 401) {
     expect(data).toStrictEqual({
       action: "Faça login no site",

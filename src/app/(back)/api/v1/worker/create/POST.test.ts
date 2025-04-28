@@ -136,6 +136,7 @@ const expectations = async ({
       is_admin: false,
       is_active: true,
       establishment_id: newUser.establishmentId,
+      created_at: expect.any(Date),
     });
 
     expect(counterAfterCreate).toStrictEqual(counterBeforeCreate + 1);
