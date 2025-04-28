@@ -36,12 +36,14 @@ interface IUpdateEstablishmentParams {
 }
 
 interface IValidateStablishmentParams {
+  id?: string;
   email?: string;
   phone?: string;
   cep?: string;
 }
 
 const validateParams = async ({
+  id,
   phone,
   email,
   cep,
@@ -69,13 +71,13 @@ const validateParams = async ({
       action: "Informe um CEP válido seguindo a seguinte estrutura: XXXXX-XXX",
     });
 
-  if (email && (await countByEmail(email)) > 0)
+  if (email && (await countByEmail(email, id)) > 0)
     throw new ConflictError({
       message: "O email fornecido ja está em uso por outro estabelecimento.",
       action: "Informe outro email.",
     });
 
-  if (phone && (await countByPhone(phone)) > 0)
+  if (phone && (await countByPhone(phone, id)) > 0)
     throw new ConflictError({
       message: "O telefone fornecido já está em uso por outro estabelecimento.",
       action: "Informe outro telefone.",
@@ -126,17 +128,30 @@ const create = async (stablishment: ICreateStablishment) => {
   return newEstablishment;
 };
 
-const countByPhone = async (phone: string) => {
+const countByPhone = async (phone: string, excludeId?: string) => {
   const cleanedPhone = phoneUtils.clean(phone);
+
+  const where = excludeId
+    ? {
+        AND: [{ phone: cleanedPhone }, { id: { not: excludeId } }],
+      }
+    : { phone: cleanedPhone };
+
   return await prisma.establishment.count({
-    where: { phone: cleanedPhone },
+    where,
   });
 };
 
-const countByEmail = async (email: string) => {
+const countByEmail = async (email: string, excludeId?: string) => {
   const normalizedEmail = emailUtils.normalize(email);
+
+  const where = excludeId
+    ? {
+        AND: [{ email: normalizedEmail }, { id: { not: excludeId } }],
+      }
+    : { email: normalizedEmail };
   return await prisma.establishment.count({
-    where: { email: normalizedEmail },
+    where,
   });
 };
 
@@ -155,6 +170,7 @@ const update = async ({
   ratio,
 }: IUpdateEstablishmentParams) => {
   await validateParams({
+    id,
     email,
     phone,
     cep,
