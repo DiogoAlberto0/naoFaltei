@@ -15,8 +15,6 @@ const validateAndExtractParams = (searchParams: URLSearchParams) => {
   const inicialDateString = searchParams.get("inicialDate");
   const finalDateString = searchParams.get("finalDate");
 
-  console.log(inicialDateString);
-  console.log(finalDateString);
   if (!inicialDateString || !finalDateString)
     throw new InputError({
       message: "Periodo não informado.",
@@ -25,6 +23,12 @@ const validateAndExtractParams = (searchParams: URLSearchParams) => {
 
   const inicialDate = dateUtils.validateAndReturnDate(inicialDateString);
   const finalDate = dateUtils.validateAndReturnDate(finalDateString);
+
+  if (finalDate.getTime() > new Date().getTime())
+    throw new InputError({
+      message: "A data final não pode ser após a data atual",
+      action: "Informe uma data final anterior a data atual",
+    });
 
   if (dateUtils.calculateFullDaysBetween(inicialDate, finalDate) > 60)
     throw new InputError({

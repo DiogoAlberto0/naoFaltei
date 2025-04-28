@@ -218,6 +218,28 @@ describe("GET on `/api/v1/clockin/timeSheet/:workerId`", () => {
       });
     });
 
+    it("should be return error if tring to get timesheet from date before creation date", async () => {
+      const baseDate = new Date();
+
+      const inicialDate = dateUtils.formatToYMD(baseDate);
+
+      baseDate.setUTCMonth(baseDate.getUTCMonth() + 1);
+      const finalDate = dateUtils.formatToYMD(baseDate);
+
+      const { data } = await expectations({
+        workerId: scenario1.worker.id,
+        cookie: scenario1.author.cookies,
+        expectedStatusCode: 400,
+        inicialDate,
+        finalDate,
+      });
+
+      expect(data).toStrictEqual({
+        action: "Informe uma data final anterior a data atual",
+        message: "A data final não pode ser após a data atual",
+      });
+    });
+
     it("should be return timeSheet from worker from your establishment", async () => {
       const date = await createWorkerRegisterDay(scenario1.worker.id, 1, [
         "10:30",
