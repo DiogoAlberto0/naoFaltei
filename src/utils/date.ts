@@ -113,11 +113,11 @@ const convertTimeFromLocaletoUTC = ({
   minute: number;
 }) => {
   const date = new Date();
-  date.setUTCHours(hour, minute);
+  date.setHours(hour, minute);
 
   return {
-    hour: date.getHours(),
-    minute: date.getMinutes(),
+    hour: date.getUTCHours(),
+    minute: date.getUTCMinutes(),
   };
 };
 const dateUtils = {
