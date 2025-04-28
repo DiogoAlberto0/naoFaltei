@@ -62,8 +62,8 @@ const listClockinFetch = async ({
 const expectations = async ({
   workerId = "",
   cookie = "",
-  finalDate = "2025-04-04",
-  inicialDate = "2025-04-04",
+  finalDate = dateUtils.formatToYMD(new Date()),
+  inicialDate = dateUtils.formatToYMD(new Date()),
   page = 1,
   pageSize = 10,
   expectedStatusCode = 200,
@@ -191,6 +191,30 @@ describe("GET on `/api/v1/clockin/timeSheet/:workerId`", () => {
         workerId: scenario2.worker.id,
         cookie: scenario1.author.cookies,
         expectedStatusCode: 403,
+      });
+    });
+
+    it("should be return error if tring to get timesheet from date before creation date", async () => {
+      const baseDate = new Date();
+
+      baseDate.setUTCFullYear(baseDate.getUTCFullYear() - 1);
+      const inicialDate = dateUtils.formatToYMD(baseDate);
+
+      baseDate.setUTCMonth(baseDate.getUTCMonth() + 1);
+      const finalDate = dateUtils.formatToYMD(baseDate);
+
+      const { data } = await expectations({
+        workerId: scenario1.worker.id,
+        cookie: scenario1.author.cookies,
+        expectedStatusCode: 400,
+        inicialDate,
+        finalDate,
+      });
+
+      expect(data).toStrictEqual({
+        action: "Informe uma data inicial após a data de criação do usuário",
+        message:
+          "A data inicial não pode ser anterior a data de criação do funcionário",
       });
     });
 

@@ -64,6 +64,12 @@ export const GET = async (
       request.nextUrl.searchParams,
     );
 
+    if (inicialDate.getTime() < worker.created_at.getTime())
+      throw new InputError({
+        message:
+          "A data inicial não pode ser anterior a data de criação do funcionário",
+        action: "Informe uma data inicial após a data de criação do usuário",
+      });
     const timeSheet = await clockinModel.getTimeSheetByWorker({
       workerId,
       inicialDate,
