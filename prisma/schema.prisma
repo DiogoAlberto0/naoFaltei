@@ -103,6 +103,8 @@ model Workers {
   hash String
   is_active Boolean @default(true)
 
+  created_at DateTime @default(now())
+
   establishment_id String
   establishment Establishment @relation(fields: [establishment_id], references: [id])
 

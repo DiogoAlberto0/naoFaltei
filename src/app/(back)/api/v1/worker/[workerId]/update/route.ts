@@ -8,6 +8,9 @@ import {
 } from "@/src/Errors/errors";
 import { NextRequest, NextResponse } from "next/server";
 
+//utils
+import { omit } from "lodash";
+
 export const PUT = async (
   request: NextRequest,
   { params }: { params: Promise<{ workerId: string }> },
@@ -48,7 +51,7 @@ export const PUT = async (
 
     return NextResponse.json(
       {
-        ...newWorkerData,
+        ...omit(newWorkerData, "hash"),
       },
       {
         status: 200,

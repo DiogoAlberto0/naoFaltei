@@ -15,8 +15,6 @@ const validateAndExtractParams = (searchParams: URLSearchParams) => {
   const inicialDateString = searchParams.get("inicialDate");
   const finalDateString = searchParams.get("finalDate");
 
-  console.log(inicialDateString);
-  console.log(finalDateString);
   if (!inicialDateString || !finalDateString)
     throw new InputError({
       message: "Periodo não informado.",
@@ -25,6 +23,12 @@ const validateAndExtractParams = (searchParams: URLSearchParams) => {
 
   const inicialDate = dateUtils.validateAndReturnDate(inicialDateString);
   const finalDate = dateUtils.validateAndReturnDate(finalDateString);
+
+  if (finalDate.getTime() > new Date().getTime())
+    throw new InputError({
+      message: "A data final não pode ser após a data atual",
+      action: "Informe uma data final anterior a data atual",
+    });
 
   if (dateUtils.calculateFullDaysBetween(inicialDate, finalDate) > 60)
     throw new InputError({
@@ -64,6 +68,12 @@ export const GET = async (
       request.nextUrl.searchParams,
     );
 
+    if (inicialDate.getTime() < worker.created_at.getTime())
+      throw new InputError({
+        message:
+          "A data inicial não pode ser anterior a data de criação do funcionário",
+        action: "Informe uma data inicial após a data de criação do usuário",
+      });
     const timeSheet = await clockinModel.getTimeSheetByWorker({
       workerId,
       inicialDate,

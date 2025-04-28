@@ -4,6 +4,7 @@ import { workerModel } from "../models/worker";
 import { signinForTest } from "./signinForTest";
 import { userModel } from "../models/user";
 import { clockinModel } from "../models/clockin/clockin";
+import { prisma } from "@/prisma/prisma";
 
 export interface IValidAuthor {
   id: string;
@@ -132,6 +133,18 @@ const createWorker = async (
 
   if (isManager) await workerModel.setManager(createdWorker.id);
 
+  const created_at = new Date();
+
+  created_at.setUTCMonth(created_at.getUTCMonth() - 2);
+
+  await prisma.workers.update({
+    where: {
+      id: createdWorker.id,
+    },
+    data: {
+      created_at,
+    },
+  });
   return {
     id: createdWorker.id,
     login: createdWorker.login,

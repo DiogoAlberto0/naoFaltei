@@ -92,7 +92,7 @@ const expectations = async ({
   expectedUpdatedData,
 }: IExpectations) => {
   const oldWorkerData = await workerModel.findUniqueBy({ id: workerId });
-  const sanitizedOldData = omit(oldWorkerData, "hash", "is_admin", "is_active");
+  const sanitizedOldData = omit(oldWorkerData, "hash", "created_at");
 
   const { response, data } = await updateFetch({
     workerId,
@@ -103,12 +103,14 @@ const expectations = async ({
   expect(response.status).toStrictEqual(expectedStatusCode);
 
   const expectedFinalResponse = expectedUpdatedData ?? updatePayload;
-  expect(data).toStrictEqual(
+  expect(omit(data, "created_at")).toStrictEqual(
     expectedResponseData || { ...sanitizedOldData, ...expectedFinalResponse },
   );
 
+  expect(new Date(data.created_at)).not.toBeNaN();
+
   const newWorkerData = await workerModel.findUniqueBy({ id: workerId });
-  const sanitizedNewData = omit(newWorkerData, "hash", "is_admin", "is_active");
+  const sanitizedNewData = omit(newWorkerData, "hash", "created_at");
 
   const expectedFinalData = expectedUpdatedData ?? updatePayload;
 
@@ -117,6 +119,8 @@ const expectations = async ({
       ...sanitizedOldData,
       ...expectedFinalData,
     });
+
+    expect(oldWorkerData?.created_at).toStrictEqual(newWorkerData?.created_at);
   } else {
     expect(sanitizedNewData).toStrictEqual(sanitizedOldData);
   }
