@@ -73,10 +73,10 @@ export const CountdownAdModal = () => {
               <Script
                 async
                 data-cfasync="false"
-                src="//pl26519059.profitableratecpm.com/a5ebb9f612314b53a34a114942a1200e/invoke.js"
+                src={`//${process.env.NEXT_PUBLIC_ADSTERRA_NATIVE_BANNER_SUBDOMAIN}.profitableratecpm.com/${process.env.NEXT_PUBLIC_ADSTERRA_NATIVE_BANNER_ID}/invoke.js`}
               />
               <div
-                id="container-a5ebb9f612314b53a34a114942a1200e"
+                id={`container-${process.env.NEXT_PUBLIC_ADSTERRA_NATIVE_BANNER_ID}`}
                 className="flex"
               />
 

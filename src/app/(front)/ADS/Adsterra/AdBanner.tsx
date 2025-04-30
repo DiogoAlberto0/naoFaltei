@@ -24,7 +24,7 @@ export const AdBanner = () => {
 
     if (width < 470) {
       (window as any).atOptions = {
-        key: "e2d1c460a7777e6eb6321ed398239202",
+        key: `${process.env.NEXT_PUBLIC_ADSTERRA_SMALL_BANNER_ID}`,
         format: "iframe",
         height: 50,
         width: 320,
@@ -32,7 +32,7 @@ export const AdBanner = () => {
       };
     } else if (width >= 470 && width <= 768) {
       (window as any).atOptions = {
-        key: "62cd59d8fca42e137ae80d5255f1e15b",
+        key: `${process.env.NEXT_PUBLIC_ADSTERRA_MEDIUM_BANNER_ID}`,
         format: "iframe",
         height: 60,
         width: 468,
@@ -40,7 +40,7 @@ export const AdBanner = () => {
       };
     } else {
       (window as any).atOptions = {
-        key: "c201a10f1fb4923bc4c5d44f9c08a33d",
+        key: `${process.env.NEXT_PUBLIC_ADSTERRA_BIG_BANNER_ID}`,
         format: "iframe",
         height: 90,
         width: 728,
@@ -51,10 +51,13 @@ export const AdBanner = () => {
     // Cria o script e injeta
     const script = document.createElement("script");
     script.type = "text/javascript";
-    script.src =
-      width >= 768
-        ? "//www.highperformanceformat.com/c201a10f1fb4923bc4c5d44f9c08a33d/invoke.js"
-        : "//www.highperformanceformat.com/e2d1c460a7777e6eb6321ed398239202/invoke.js";
+    if (width < 470) {
+      script.src = `//www.highperformanceformat.com/${process.env.NEXT_PUBLIC_ADSTERRA_SMALL_BANNER_ID}/invoke.js`;
+    } else if (width >= 470 && width <= 768) {
+      script.src = `//www.highperformanceformat.com/${process.env.NEXT_PUBLIC_ADSTERRA_MEDIUM_BANNER_ID}/invoke.js`;
+    } else {
+      script.src = `//www.highperformanceformat.com/${process.env.NEXT_PUBLIC_ADSTERRA_BIG_BANNER_ID}/invoke.js`;
+    }
     script.async = true;
 
     containerRef.current.appendChild(script);
