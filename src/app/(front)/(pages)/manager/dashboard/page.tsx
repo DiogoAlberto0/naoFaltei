@@ -13,6 +13,7 @@ import { axios } from "@/src/utils/fetcher";
 //utils
 import { phoneUtils } from "@/src/utils/phone";
 import { cepUtils } from "@/src/utils/cep";
+import { CountdownAdModal } from "../../../ADS/Adsterra/CountdownAdModal";
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 interface IEstablishment {
@@ -47,6 +48,7 @@ export default async function ManagerDashboard(props: {
 
     return (
       <div className="w-full h-full max-h-full overflow-auto p-5 md:p-10 flex flex-col lg:flex-row gap-4">
+        <CountdownAdModal />
         {/* Coluna da esquerda */}
         <div className="flex-1 flex flex-col gap-4 min-w-[300px]">
           <EstablishmentInfoCard

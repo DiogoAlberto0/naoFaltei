@@ -8,6 +8,7 @@ import { Unauthorized } from "../../../components/Unauthorized";
 
 // hooks
 import { getWorkerDetails } from "../../../hooks/getWorkerDetails";
+import { CountdownAdModal } from "../../../ADS/Adsterra/CountdownAdModal";
 
 export default async function ManagerDashboard() {
   const session = await auth();
@@ -18,6 +19,7 @@ export default async function ManagerDashboard() {
 
   return (
     <div className="w-full h-full max-h-full overflow-auto p-5 md:p-10 flex flex-col lg:flex-row gap-4">
+      <CountdownAdModal />
       {/* Coluna da esquerda */}
       <div className="flex-1 flex flex-col gap-4 min-w-[300px]">
         <EstablishmentInfoCard
