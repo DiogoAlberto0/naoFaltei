@@ -80,11 +80,6 @@ export const CountdownAdModal = () => {
                 className="flex"
               />
 
-              <Script
-                type="text/javascript"
-                src="//pl26520367.profitableratecpm.com/44/af/eb/44afeb0e2b5b037db21ec387ac151363.js"
-              />
-
               <div className="bg-red-500 flex justify-center items-center">
                 <AdBanner />
               </div>
