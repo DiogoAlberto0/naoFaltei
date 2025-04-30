@@ -8,6 +8,7 @@ import { RegisterMedicalLeaveModal } from "@/src/app/(front)/components/Modal/Re
 
 // getter
 import { getWorkerDetails } from "@/src/app/(front)/hooks/getWorkerDetails";
+import { CountdownAdModal } from "@/src/app/(front)/ADS/Adsterra/CountdownAdModal";
 
 interface IWorkerPageProps {
   params: Promise<{ workerId: string }>;
@@ -19,6 +20,7 @@ const WorkerPage = async ({ params }: IWorkerPageProps) => {
 
   return (
     <div className="w-full h-full max-h-full overflow-auto p-2 sm:p-4 md:p-6 flex flex-col gap-6">
+      <CountdownAdModal />
       <div className="flex flex-col lg:flex-row gap-6 w-full">
         {/* Coluna esquerda */}
         <div className="w-full lg:w-1/2 flex flex-col gap-4">
