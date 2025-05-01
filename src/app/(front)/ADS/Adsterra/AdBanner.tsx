@@ -52,11 +52,11 @@ export const AdBanner = () => {
     const script = document.createElement("script");
     script.type = "text/javascript";
     if (width < 470) {
-      script.src = `//www.highperformanceformat.com/${process.env.NEXT_PUBLIC_ADSTERRA_SMALL_BANNER_ID}/invoke.js`;
+      script.src = `${process.env.NEXT_PUBLIC_ADSTERRA_BANNER_BASE_LINK}/${process.env.NEXT_PUBLIC_ADSTERRA_SMALL_BANNER_ID}/invoke.js`;
     } else if (width >= 470 && width <= 768) {
-      script.src = `//www.highperformanceformat.com/${process.env.NEXT_PUBLIC_ADSTERRA_MEDIUM_BANNER_ID}/invoke.js`;
+      script.src = `${process.env.NEXT_PUBLIC_ADSTERRA_BANNER_BASE_LINK}/${process.env.NEXT_PUBLIC_ADSTERRA_MEDIUM_BANNER_ID}/invoke.js`;
     } else {
-      script.src = `//www.highperformanceformat.com/${process.env.NEXT_PUBLIC_ADSTERRA_BIG_BANNER_ID}/invoke.js`;
+      script.src = `${process.env.NEXT_PUBLIC_ADSTERRA_BANNER_BASE_LINK}/${process.env.NEXT_PUBLIC_ADSTERRA_BIG_BANNER_ID}/invoke.js`;
     }
     script.async = true;
 
