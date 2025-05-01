@@ -1,5 +1,11 @@
 "use client";
-import { CloseIcon } from "@/assets/icons/CloseIcon";
+import Script from "next/script";
+import {
+  ButtonHTMLAttributes,
+  DetailedHTMLProps,
+  useEffect,
+  useState,
+} from "react";
 //heroui components
 import {
   Modal,
@@ -8,13 +14,9 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@heroui/react";
-import Script from "next/script";
-import {
-  ButtonHTMLAttributes,
-  DetailedHTMLProps,
-  useEffect,
-  useState,
-} from "react";
+
+// components
+import { CloseIcon } from "@/assets/icons/CloseIcon";
 import { AdBanner } from "./AdBanner";
 
 const CloseButton = ({
@@ -73,7 +75,7 @@ export const CountdownAdModal = () => {
               <Script
                 async
                 data-cfasync="false"
-                src={`//${process.env.NEXT_PUBLIC_ADSTERRA_NATIVE_BANNER_SUBDOMAIN}.profitableratecpm.com/${process.env.NEXT_PUBLIC_ADSTERRA_NATIVE_BANNER_ID}/invoke.js`}
+                src={`${process.env.NEXT_PUBLIC_ADSTERRA_NATIVE_BANNER_BASE_LINK}/${process.env.NEXT_PUBLIC_ADSTERRA_NATIVE_BANNER_ID}/invoke.js`}
               />
               <div
                 id={`container-${process.env.NEXT_PUBLIC_ADSTERRA_NATIVE_BANNER_ID}`}
