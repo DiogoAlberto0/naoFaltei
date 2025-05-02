@@ -1,7 +1,7 @@
 "use client";
 // next
 import useSWR from "swr";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 //heroui components
 import { Pagination } from "@heroui/pagination";
@@ -61,6 +61,8 @@ export const WorkersTable = ({
 }: IWorkersTableProps) => {
   const [page, setPage] = useState(1);
 
+  const [totalPages, setTotalPages] = useState<number | null>(null);
+
   const { data, isLoading, error } = useSWR<{
     workers: IWorker[];
     meta: IMeta;
@@ -68,6 +70,12 @@ export const WorkersTable = ({
     `/api/v1/worker/list?establishmentId=${establishmentId}&page=${page}&pageSize=${7}`,
     fetcher,
   );
+
+  useEffect(() => {
+    if (data?.meta.totalPages && totalPages === null) {
+      setTotalPages(data.meta.totalPages);
+    }
+  }, [data, totalPages]);
 
   const loadingState = isLoading ? "loading" : "idle";
   if (error)
@@ -93,7 +101,7 @@ export const WorkersTable = ({
               showShadow
               color="secondary"
               page={page}
-              total={data?.meta.totalPages || 1}
+              total={totalPages || 1}
               onChange={(page) => setPage(page)}
             />
           </div>
