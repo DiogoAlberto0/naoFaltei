@@ -110,10 +110,10 @@ export const AddressInputs = ({ address, setAddress }: IAddressInputsProps) => {
 
       <Input
         isRequired
-        label="Distância Máxima para Registro (KM):"
+        label="Distância Máxima para Registro (Metros):"
         labelPlacement="outside"
         name="ratio"
-        placeholder="Ex: 0.5 - Funcionário poderá registrar o ponto até 500 metros do estabelecimento"
+        placeholder="Ex: 500 - Funcionário poderá registrar o ponto até 500 metros do estabelecimento"
         type="number"
         tabIndex={8}
       />

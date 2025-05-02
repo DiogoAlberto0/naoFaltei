@@ -65,10 +65,10 @@ export const UpdateLocaleModal = ({
         <Input
           name="ratio"
           type="number"
-          label="Raio em KM para registro:"
+          label="Raio em metros para registro:"
           labelPlacement="outside"
           isRequired
-          placeholder="Defina um raio em KM que o funcionário possa registrar seu ponto"
+          placeholder="Defina um raio em metros que o funcionário possa registrar seu ponto"
           defaultValue={ratio.toString()}
           required
         />
