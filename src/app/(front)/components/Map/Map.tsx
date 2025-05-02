@@ -5,6 +5,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { DetailedHTMLProps, HTMLAttributes, useEffect } from "react";
 import {
+  Circle,
   MapContainer,
   Marker,
   Popup,
@@ -20,6 +21,7 @@ interface IMapProps
     latitude: number;
     longitude: number;
   };
+  markerRadius?: number;
   userLocationPosition?: {
     latitude: number;
     longitude: number;
@@ -71,6 +73,7 @@ export const Map = ({
   onPress,
   markerPosition,
   userLocationPosition,
+  markerRadius,
   ...otherProps
 }: IMapProps) => {
   const defCenter = () => {
@@ -102,6 +105,15 @@ export const Map = ({
             <Marker
               position={[markerPosition.latitude, markerPosition.longitude]}
               icon={markerIcon}
+            />
+          </>
+        )}
+
+        {markerRadius && markerPosition && (
+          <>
+            <Circle
+              center={[markerPosition.latitude, markerPosition.longitude]}
+              radius={markerRadius}
             />
           </>
         )}
