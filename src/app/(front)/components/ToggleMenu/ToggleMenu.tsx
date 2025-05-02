@@ -25,7 +25,7 @@ export const ToggleMenu = ({ children }: IToggleMenuProps) => {
         flex flex-col-reverse
         rounded-t-xl sm:rounded-r-xl
         border border-default-200 dark:border-default-100
-        bg-opacity-60 backdrop-blur-md shadow-xl
+        bg-background bg-opacity-60 backdrop-blur-md shadow-xl
         transition-all duration-500 ease-in-out
         ${isOpenToggle ? "h-[90%] sm:w-[260px]" : "h-12 sm:w-12"}
       `}
@@ -42,7 +42,7 @@ export const ToggleMenu = ({ children }: IToggleMenuProps) => {
           flex justify-center items-center
           w-full h-12 sm:w-12 sm:h-full
           border-t sm:border-t-0 sm:border-r border-default-200 dark:border-default-100
-          bg-background hover:bg-content3
+          bg-background bg-opacity-30 hover:bg-opacity-100
           transition-colors
         `}
       >
