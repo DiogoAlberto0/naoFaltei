@@ -34,6 +34,7 @@ export const GET = async () => {
     return NextResponse.json({
       lat: establishment.lat,
       lng: establishment.lng,
+      ratio: establishment.ratio,
     });
   } catch (error: any) {
     return NextResponse.json(
