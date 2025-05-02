@@ -4,7 +4,7 @@ import { useState, useEffect, ReactNode } from "react";
 import { Input } from "@heroui/input";
 
 //components
-import { Map } from "@/src/app/(front)/components/Map/Map";
+
 import { ModalForm } from "@/src/app/(front)/components/Modal/ModalForm";
 import { AddressInputs, IAddress } from "./AddressInputs";
 
@@ -86,26 +86,6 @@ export const AddEstablishmentFormModal = ({
       <Input type="hidden" name="lat" value={addressState.lat} />
 
       <Input type="hidden" name="lng" value={addressState.lng} />
-
-      <h1 className="text-xl">Clique no mapa para selecionar o local:</h1>
-      <Map
-        className="w-full h-[500px]"
-        markerPosition={
-          addressState.lat && addressState.lng
-            ? {
-                latitude: Number(addressState.lat),
-                longitude: Number(addressState.lng),
-              }
-            : undefined
-        }
-        onPress={(pos) => {
-          setAddressState((prevState) => ({
-            ...prevState,
-            lat: `${pos.Lat}`,
-            lng: `${pos.Lng}`,
-          }));
-        }}
-      />
     </ModalForm>
   );
 };
