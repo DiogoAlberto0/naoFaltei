@@ -21,12 +21,14 @@ interface IUpdateLocaleModalProps {
 export const UpdateLocaleModal = ({
   establishmentId,
   inicialCoords,
-  ratio,
+  ratio: inicialRatio,
 }: IUpdateLocaleModalProps) => {
   const [coords, setCoords] = useState<ICoords>({
     lat: inicialCoords.lat,
     lng: inicialCoords.lng,
   });
+
+  const [ratio, setRatio] = useState(inicialRatio);
 
   return (
     <>
@@ -50,6 +52,7 @@ export const UpdateLocaleModal = ({
             latitude: coords.lat,
             longitude: coords.lng,
           }}
+          markerRadius={ratio}
           onPress={({ Lat, Lng }) => {
             setCoords({ lat: Lat, lng: Lng });
           }}
@@ -69,7 +72,8 @@ export const UpdateLocaleModal = ({
           labelPlacement="outside"
           isRequired
           placeholder="Defina um raio em metros que o funcionário possa registrar seu ponto"
-          defaultValue={ratio.toString()}
+          value={String(ratio)}
+          onValueChange={(value) => setRatio(Number(value))}
           required
         />
       </ModalForm>

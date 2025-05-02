@@ -35,6 +35,7 @@ export const LocationCard = ({
           latitude: markerPosition.lat,
           longitude: markerPosition.lng,
         }}
+        markerRadius={ratio}
       />
       <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100 flex justify-between items-center">
         <h1 className="text-xl">Localização</h1>
