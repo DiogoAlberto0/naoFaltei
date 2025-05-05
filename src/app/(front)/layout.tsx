@@ -9,14 +9,11 @@ import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { ToastProvider } from "@heroui/toast";
 
-// Componentes locais
-import { AdScript } from "./ADS/Adsesne/AdScript";
-
 export const metadata: Metadata = {
   title: "Não faltei",
   description: "Developed by Diogo Alberto",
   other: {
-    "google-adsense-account": "ca-pub-3749871067204923",
+    "google-adsense-account": `${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ACCOUNT_METATAG}`,
     "apple-mobile-web-app-title": "Não Faltei",
   },
 };
@@ -28,9 +25,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br" suppressHydrationWarning>
-      <head>
-        <AdScript />
-      </head>
       <body className={``}>
         <SessionProvider>
           <ThemeProvider attribute="class" defaultTheme="dark">
