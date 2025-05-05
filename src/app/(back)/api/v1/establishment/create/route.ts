@@ -20,7 +20,7 @@ export const POST = async (request: NextRequest) => {
       throw new InputError({
         message: "Raio para registro de ponto inválido",
         status_code: 400,
-        action: "Informe o raio em KM como um numero inteiro",
+        action: "Informe o raio em metros como um numero inteiro",
       });
 
     const session = await auth();

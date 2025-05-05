@@ -77,8 +77,8 @@ export const WorkerLastRegisters = () => {
                   </TableCell>
                   <TableCell>
                     <HourText
-                      hour={date.getUTCHours()}
-                      minute={date.getUTCMinutes()}
+                      hour={date.getHours()}
+                      minute={date.getMinutes()}
                     />
                   </TableCell>
                 </TableRow>

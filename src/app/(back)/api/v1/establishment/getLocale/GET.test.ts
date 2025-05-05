@@ -70,7 +70,7 @@ const expectations = async ({
     data,
   };
 };
-describe("GET on `/api/v1/establishent/[:establishmentId]/getLocale`", () => {
+describe("GET on `/api/v1/establishent/getLocale`", () => {
   describe("Anonymous user", () => {
     it("should be return error message if cookie is not provided", async () => {
       await expectations({
@@ -100,6 +100,7 @@ describe("GET on `/api/v1/establishent/[:establishmentId]/getLocale`", () => {
       expect(data).toStrictEqual({
         lat: establishent?.lat,
         lng: establishent?.lng,
+        ratio: establishent?.ratio,
       });
     });
   });
@@ -117,6 +118,7 @@ describe("GET on `/api/v1/establishent/[:establishmentId]/getLocale`", () => {
       expect(data).toStrictEqual({
         lat: establishent?.lat,
         lng: establishent?.lng,
+        ratio: establishent?.ratio,
       });
 
       const establishent2 = await establishmentModel.findBy({
@@ -130,6 +132,7 @@ describe("GET on `/api/v1/establishent/[:establishmentId]/getLocale`", () => {
       expect(data2).toStrictEqual({
         lat: establishent2?.lat,
         lng: establishent2?.lng,
+        ratio: establishent2?.ratio,
       });
     });
   });

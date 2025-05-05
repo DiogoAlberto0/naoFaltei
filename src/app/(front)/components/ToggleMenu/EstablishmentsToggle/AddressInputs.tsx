@@ -4,6 +4,9 @@ import { Dispatch, SetStateAction, useState } from "react";
 //heroui components
 import { Input } from "@heroui/react";
 
+// components
+import { Map } from "@/src/app/(front)/components/Map/Map";
+
 export interface IAddress {
   address: string;
   address_name: string;
@@ -24,6 +27,8 @@ interface IAddressInputsProps {
 }
 
 export const AddressInputs = ({ address, setAddress }: IAddressInputsProps) => {
+  const [ratio, setRatio] = useState(500);
+
   const fetchCepInfos = async (cep: string) => {
     setAddress((prevState) => ({ ...prevState, address: "", state: "" }));
     setFetchAddressStatus("warning");
@@ -110,12 +115,35 @@ export const AddressInputs = ({ address, setAddress }: IAddressInputsProps) => {
 
       <Input
         isRequired
-        label="Distância Máxima para Registro (KM):"
+        label="Distância Máxima para Registro (Metros):"
         labelPlacement="outside"
         name="ratio"
-        placeholder="Ex: 0.5 - Funcionário poderá registrar o ponto até 500 metros do estabelecimento"
+        placeholder="Ex: 500 - Funcionário poderá registrar o ponto até 500 metros do estabelecimento"
         type="number"
+        onValueChange={(value) => setRatio(Number(value))}
+        value={String(ratio)}
         tabIndex={8}
+      />
+
+      <h1 className="text-xl">Clique no mapa para selecionar o local:</h1>
+      <Map
+        className="w-full h-[500px]"
+        markerPosition={
+          address.lat && address.lng
+            ? {
+                latitude: Number(address.lat),
+                longitude: Number(address.lng),
+              }
+            : undefined
+        }
+        markerRadius={ratio}
+        onPress={(pos) => {
+          setAddress((prevState) => ({
+            ...prevState,
+            lat: `${pos.Lat}`,
+            lng: `${pos.Lng}`,
+          }));
+        }}
       />
     </>
   );

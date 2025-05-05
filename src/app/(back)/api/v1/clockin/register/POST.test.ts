@@ -128,8 +128,8 @@ describe("POST on `/api/v1/clockin`", () => {
         lng: -74.005974,
         expectedStatusCode: 400,
         expectedResponseData: {
-          message: `Você está fora do raio de atuação do establecimento. Raio de atuação: ${localeEstablishment.ratio}Km.`,
-          action: `Se aproxime mais do estabelecimento. Sua distância: ${Math.round(distance)}Km.`,
+          message: `Você está fora do raio de atuação do establecimento. Raio de atuação: ${localeEstablishment.ratio}metros.`,
+          action: `Se aproxime mais do estabelecimento. Sua distância: ${Math.round(distance)}metros.`,
         },
       });
     });
@@ -189,8 +189,8 @@ describe("POST on `/api/v1/clockin`", () => {
         lng: 0,
         expectedStatusCode: 400,
         expectedResponseData: {
-          message: `Você está fora do raio de atuação do establecimento. Raio de atuação: ${localeEstablishment.ratio}Km.`,
-          action: `Se aproxime mais do estabelecimento. Sua distância: ${Math.round(distance)}Km.`,
+          message: `Você está fora do raio de atuação do establecimento. Raio de atuação: ${localeEstablishment.ratio}metros.`,
+          action: `Se aproxime mais do estabelecimento. Sua distância: ${Math.round(distance)}metros.`,
         },
       });
     });

@@ -10,6 +10,8 @@ import { Divider } from "@heroui/react";
 import { GoogleSigninButton } from "@/src/app/(front)/components/Buttons/GoogleSigninButton";
 import { ThemeSwitcher } from "@/src/app/(front)/components/ThemeSwitcher";
 import { CredentialsSigninForm } from "@/src/app/(front)/components/CredentialsSigninForm/CredentialsSigninForm";
+import { verifyIfUserIsAdmin } from "../../hooks/verifyIfUserIsAdmin";
+import { redirect } from "next/navigation";
 
 const SigninForm = ({ className }: { className?: string }) => {
   return (
@@ -45,6 +47,16 @@ const SigninForm = ({ className }: { className?: string }) => {
 };
 
 export default async function SigninPage() {
+  const isAdmin = await verifyIfUserIsAdmin()
+    .then((resp) => resp)
+    .catch((error) => {
+      console.warn(error);
+      return null;
+    });
+
+  if (isAdmin === true) redirect("/manager/dashboard");
+  if (isAdmin === false) redirect("/worker");
+
   return (
     <div className="h-dvh flex relative">
       <div className="w-3/5 flex justify-center items-center max-sm:absolute max-sm:w-full max-sm:h-full">

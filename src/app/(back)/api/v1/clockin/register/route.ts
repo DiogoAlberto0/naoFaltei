@@ -50,8 +50,8 @@ export const POST = async (request: NextRequest) => {
 
     if (!isOnRatio)
       throw new BadRequestError({
-        message: `Você está fora do raio de atuação do establecimento. Raio de atuação: ${localeEstablishment.ratio}Km.`,
-        action: `Se aproxime mais do estabelecimento. Sua distância: ${Math.round(distance)}Km.`,
+        message: `Você está fora do raio de atuação do establecimento. Raio de atuação: ${localeEstablishment.ratio}metros.`,
+        action: `Se aproxime mais do estabelecimento. Sua distância: ${Math.round(distance)}metros.`,
       });
 
     await clockinModel.register({

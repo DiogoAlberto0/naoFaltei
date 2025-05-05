@@ -70,7 +70,7 @@ const getDistanceBetween = (
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return R * c;
+  return R * c * 1000; // transformando em metros
 };
 
 const isOnRatio = (

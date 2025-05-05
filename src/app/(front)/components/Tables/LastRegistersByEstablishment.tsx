@@ -1,6 +1,6 @@
 "use client";
 //next
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 // heroui components
 import { Pagination } from "@heroui/pagination";
@@ -118,10 +118,19 @@ export const LastRegistersByEstablishment = ({
   establishmentId: string;
 }) => {
   const [page, setPage] = useState(1);
+
+  const [totalPages, setTotalPages] = useState<number | null>(null);
+
   const { data, error, isLoading } = useSWR<IListClockinResponse>(
     `/api/v1/clockin/listByEstablishment?establishmentId=${establishmentId}&pageSize=${maxRegisters}&page=${page}`,
     fetcher,
   );
+
+  useEffect(() => {
+    if (data?.meta.totalPages && totalPages === null) {
+      setTotalPages(data.meta.totalPages);
+    }
+  }, [data, totalPages]);
 
   if (error)
     return <ComponentError message={error.message} action={error.action} />;
@@ -143,8 +152,8 @@ export const LastRegistersByEstablishment = ({
               showShadow
               color="secondary"
               page={page}
-              total={data?.meta.totalPages || 1}
-              onChange={(page) => setPage(page)}
+              total={totalPages || 1}
+              onChange={(value) => setPage(value)}
             />
           </div>
         </div>

@@ -18,10 +18,11 @@ import { useLocale } from "./useLocale";
 export const RegisterMap = () => {
   const { userLocation } = useLocale();
 
-  const { data, error, isLoading } = useSWR<{ lat: number; lng: number }>(
-    "/api/v1/establishment/getLocale",
-    fetcher,
-  );
+  const { data, error, isLoading } = useSWR<{
+    lat: number;
+    lng: number;
+    ratio: number;
+  }>("/api/v1/establishment/getLocale", fetcher);
 
   useEffect(() => {
     if (error)
@@ -53,6 +54,7 @@ export const RegisterMap = () => {
               longitude: data?.lng,
             }
           }
+          markerRadius={data?.ratio && data.ratio}
         />
 
         <Button

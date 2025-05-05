@@ -1,5 +1,3 @@
-"use client";
-
 //next
 import Image from "next/image";
 
@@ -11,8 +9,10 @@ import backgroundImage from "@/assets/workersBackground.jpg";
 
 //icons
 import { CheckCircleIcon } from "@/assets/icons/CheckCircleIcon";
+import { redirect } from "next/navigation";
+import { verifyIfUserIsWorker } from "./hooks/verifyIfUserIsWorker";
 
-function BenefitsList() {
+const BenefitsList = () => {
   const benefits = [
     {
       text: "Cadastro rápido e sem burocracia",
@@ -56,9 +56,9 @@ function BenefitsList() {
       </div>
     </section>
   );
-}
+};
 
-function FeaturesList() {
+const FeaturesList = () => {
   const features = [
     {
       text: "Geolocalização do funcionário",
@@ -102,9 +102,12 @@ function FeaturesList() {
       </div>
     </section>
   );
-}
+};
 
-export default function PresentationPage() {
+const PresentationPage = async () => {
+  const isWorker = await verifyIfUserIsWorker();
+  if (isWorker) redirect("/worker");
+
   return (
     <div className="flex flex-col min-h-dvh">
       {/* Hero section */}
@@ -191,4 +194,6 @@ export default function PresentationPage() {
       </div>
     </div>
   );
-}
+};
+
+export default PresentationPage;
