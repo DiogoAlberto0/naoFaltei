@@ -8,6 +8,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { ToastProvider } from "@heroui/toast";
+import { RegisterSW } from "./components/RegisterSW";
 
 export const metadata: Metadata = {
   title: "Não faltei",
@@ -26,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br" suppressHydrationWarning>
       <body className={``}>
+        <RegisterSW />
         <SessionProvider>
           <ThemeProvider attribute="class" defaultTheme="dark">
             <ToastProvider placement="top-right" />
