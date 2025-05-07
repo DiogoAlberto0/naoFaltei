@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { EstablishmentToggle } from "@/src/app/(front)/components/ToggleMenu/EstablishmentsToggle/EstablishmentToggle";
 import { NavBar } from "@/src/app/(front)/components/Navbar/Navbar";
 import { Unauthorized } from "@/src/app/(front)/components/Unauthorized";
+import { InstalPrompt } from "../../components/Pwa/InstalPrompt";
 
 export default async function RootLayout({
   children,
@@ -17,6 +18,7 @@ export default async function RootLayout({
 
   return (
     <div className="h-dvh w-dvw max-h-dvh flex flex-col overflow-hidden relative">
+      <InstalPrompt />
       <NavBar />
       <div className="flex-1 h-full w-full max-w-full overflow-auto relative">
         <EstablishmentToggle />
