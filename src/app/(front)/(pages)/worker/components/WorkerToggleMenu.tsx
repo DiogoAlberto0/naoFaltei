@@ -10,12 +10,15 @@ import { Listbox, ListboxItem } from "@heroui/react";
 
 //custom components
 import { ToggleMenu } from "@/src/app/(front)/components/ToggleMenu/ToggleMenu";
+import { usePwaInstallContext } from "../../../components/Pwa/PwaInstallContext";
 
 export const WorkerToggleMenu = () => {
   const router = useRouter();
   const pathName = usePathname();
 
   const [selectedKeys, setSelectedKeys] = useState(new Set([pathName]));
+
+  const { setIsPwaInstallDismissed } = usePwaInstallContext();
 
   return (
     <ToggleMenu>
@@ -65,6 +68,15 @@ export const WorkerToggleMenu = () => {
           Alterar meus dados
         </ListboxItem>
 
+        <ListboxItem
+          onPress={() => {
+            setIsPwaInstallDismissed(false);
+            router.refresh();
+          }}
+          color="primary"
+        >
+          Habilitar Instalação
+        </ListboxItem>
         <ListboxItem
           onPress={() => {
             router.push(`/worker/dashboard`, {
