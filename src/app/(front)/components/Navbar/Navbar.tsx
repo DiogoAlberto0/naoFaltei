@@ -1,4 +1,7 @@
 "use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import {
   Navbar,
   NavbarBrand,
@@ -9,10 +12,15 @@ import {
   NavbarMenuItem,
 } from "@heroui/react";
 import { AvatarDropdown } from "./AvatarDropdown";
-import { useState } from "react";
+
+//pwa context
+import { usePwaInstallContext } from "../Pwa/PwaInstallContext";
 
 export function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const router = useRouter();
+  const { setIsPwaInstallDismissed } = usePwaInstallContext();
   return (
     <Navbar position="static" onMenuOpenChange={setIsMenuOpen} isBordered>
       <NavbarContent>
@@ -32,6 +40,17 @@ export function NavBar() {
         <NavbarMenuItem key={`establishments`}>
           <Link className="w-full" color="primary" href="#" size="lg">
             Estabelecimentos
+          </Link>
+          <Link
+            className="w-full"
+            color="primary"
+            size="lg"
+            onPress={() => {
+              setIsPwaInstallDismissed(false);
+              router.refresh();
+            }}
+          >
+            Habilitar Instalação
           </Link>
         </NavbarMenuItem>
       </NavbarMenu>
