@@ -13,7 +13,10 @@ const WorkerPage = async () => {
   return (
     <main className="h-full overflow-auto w-full relative flex flex-col">
       <InstalPrompt />
-      <DateInfosHeader className="absolute z-10 left-0 top-0" />
+      <DateInfosHeader
+        className="absolute z-10 left-0 top-0"
+        name={session.user.name}
+      />
       <div className="flex-1 flex">
         <RegisterMap />
       </div>

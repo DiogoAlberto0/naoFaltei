@@ -33,6 +33,7 @@ export const WorkerToggleMenu = () => {
         }
       >
         <ListboxItem
+          className="border-b-1 border-primary-100"
           onPress={() => {
             router.push(`/worker`, {
               scroll: false,
@@ -45,6 +46,7 @@ export const WorkerToggleMenu = () => {
         </ListboxItem>
 
         <ListboxItem
+          className="border-b-1 border-primary-100"
           onPress={() => {
             router.push(`/worker/timeSheet`, {
               scroll: false,
@@ -57,6 +59,7 @@ export const WorkerToggleMenu = () => {
         </ListboxItem>
 
         <ListboxItem
+          className="border-b-1 border-primary-100"
           onPress={() => {
             router.push(`/worker/updateInfos`, {
               scroll: false,
@@ -69,6 +72,7 @@ export const WorkerToggleMenu = () => {
         </ListboxItem>
 
         <ListboxItem
+          className="border-b-1 border-primary-100"
           onPress={() => {
             setIsPwaInstallDismissed(false);
             router.refresh();
@@ -94,9 +98,7 @@ export const WorkerToggleMenu = () => {
             signOut();
           }}
           key="delete"
-          className="text-danger"
-          color="danger"
-          variant="shadow"
+          className="text-white bg-danger"
         >
           Sair
         </ListboxItem>

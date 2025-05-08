@@ -1,61 +1,51 @@
 "use client";
+import { DetailedHTMLProps, HTMLAttributes, useState } from "react";
 
-import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
-import { ArrowIcon } from "@/assets/icons/ArrowIcon";
+//icons
+import { CloseIcon } from "@/assets/icons/CloseIcon";
+import { HamburguerMenuIcon } from "@/assets/icons/HamburguerMenu";
 
 interface IToggleMenuProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}
 
+const smallScreensStyles = `
+        max-sm:h-14 max-sm:w-full
+        max-sm:left-0 max-sm:bottom-0
+`;
 export const ToggleMenu = ({ children }: IToggleMenuProps) => {
   const [isOpenToggle, setIsOpenToggle] = useState(false);
-
-  const route = usePathname();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    setIsOpenToggle(false);
-  }, [route, searchParams]);
 
   return (
     <div
       className={`
-        absolute z-30 bottom-0 sm:left-0 
-        max-sm:w-full sm:h-full sm:flex-row
-        flex flex-col-reverse
-        rounded-t-xl sm:rounded-r-xl
-        border border-default-200 dark:border-default-100
-        bg-background bg-opacity-60 backdrop-blur-md shadow-xl
+        absolute z-50
+        bg-primary-200
+        flex flex-col
+        justify-center items-center
+
+        ${smallScreensStyles}
+
+        sm:flex-row-reverse
+        sm:h-full ${isOpenToggle ? "sm:w-64" : "sm:w-14"}
+
         transition-all duration-500 ease-in-out
-        ${isOpenToggle ? "h-[90%] sm:w-[260px]" : "h-12 sm:w-12"}
+        
+        ${isOpenToggle && "max-sm:h-[90%]"}
       `}
+      onClick={() => setIsOpenToggle(!isOpenToggle)}
     >
-      {/* Conteúdo do menu (visível apenas quando aberto) */}
-      <div className="h-full w-full overflow-auto px-2 py-4">
+      <div className="max-sm:h-14 max-sm:w-full  sm:h-full sm:w-14 flex justify-center items-center">
+        {isOpenToggle ? (
+          <CloseIcon size={32} className="animate-bounce" />
+        ) : (
+          <HamburguerMenuIcon size={32} className="animate-bounce" />
+        )}
+      </div>
+      <div
+        className={`h-full w-full overflow-auto px-2 py-4  ${isOpenToggle ? "flex" : "hidden"}`}
+      >
         {isOpenToggle && children}
       </div>
-
-      {/* Botão toggle */}
-      <button
-        onClick={() => setIsOpenToggle((prev) => !prev)}
-        className={`
-          flex justify-center items-center
-          w-full h-12 sm:w-12 sm:h-full
-          border-t sm:border-t-0 sm:border-r border-default-200 dark:border-default-100
-          bg-background bg-opacity-30 hover:bg-opacity-100
-          transition-colors
-        `}
-      >
-        <span
-          className={`transition-transform duration-300 ease-in-out ${
-            isOpenToggle
-              ? "rotate-180 sm:rotate-[-90deg] max-sm:rotate-180"
-              : "rotate-0 sm:rotate-90 max-sm:rotate-0"
-          }`}
-        >
-          <ArrowIcon direction="top" />
-        </span>
-      </button>
     </div>
   );
 };
