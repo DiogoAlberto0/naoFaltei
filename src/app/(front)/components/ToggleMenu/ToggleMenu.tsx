@@ -32,9 +32,11 @@ export const ToggleMenu = ({ children }: IToggleMenuProps) => {
         
         ${isOpenToggle && "max-sm:h-[90%]"}
       `}
-      onClick={() => setIsOpenToggle(!isOpenToggle)}
     >
-      <div className="max-sm:h-14 max-sm:w-full  sm:h-full sm:w-14 flex justify-center items-center">
+      <div 
+          className="max-sm:h-14 max-sm:w-full  sm:h-full sm:w-14 flex justify-center items-center"
+          onClick={() => setIsOpenToggle(!isOpenToggle)}
+      >
         {isOpenToggle ? (
           <CloseIcon size={32} className="animate-bounce" />
         ) : (
@@ -42,7 +44,7 @@ export const ToggleMenu = ({ children }: IToggleMenuProps) => {
         )}
       </div>
       <div
-        className={`h-full w-full overflow-auto px-2 py-4  ${isOpenToggle ? "flex" : "hidden"}`}
+          className={`h-full w-full overflow-auto px-2 py-4  ${isOpenToggle ? "flex" : "hidden"}`}
       >
         {isOpenToggle && children}
       </div>
