@@ -39,12 +39,13 @@ export const EstablishmentToggle = () => {
   }, []);
   return (
     <ToggleMenu>
-      <div className=" h-full flex flex-col overflow-auto gap-1">
+      <div className=" w-full h-full flex flex-col overflow-auto gap-1">
         {establishments.map(({ id, name }) => (
           <ToggleItem
             key={id}
             href={`/manager/dashboard?establishmentId=${id}`}
             isActive={establishmentId == id}
+            className={`w-full border-b-1 border-primary-100 ${establishmentId == id && "bg-secondary"}`}
           >
             {name}
           </ToggleItem>
@@ -53,7 +54,7 @@ export const EstablishmentToggle = () => {
           openButton={({ onPress }) => (
             <Button
               onPress={onPress}
-              variant="bordered"
+              variant="shadow"
               color="success"
               className="w-full min-h-10"
               startContent={<AddIcon />}

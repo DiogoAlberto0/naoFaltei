@@ -20,8 +20,8 @@ export default async function RootLayout({
     <div className="h-dvh w-dvw max-h-dvh flex flex-col overflow-hidden relative">
       <InstalPrompt />
       <NavBar />
+      <EstablishmentToggle />
       <div className="flex-1 h-full w-full max-w-full overflow-auto relative">
-        <EstablishmentToggle />
         <div className="flex-1 h-full w-full max-w-full overflow-auto max-sm:pb-12 sm:pl-10">
           {children}
         </div>
