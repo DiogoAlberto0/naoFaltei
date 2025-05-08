@@ -7,7 +7,7 @@ import { WorkerLastRegisters } from "./WorkerLastRegisters";
 import { HourText } from "@/src/app/(front)/components/DataViews/Date/HourText";
 
 //hooks
-import { useCurrentTime } from "./useCurrentTime";
+import { useCurrentTime } from "../../../hooks/useCurrentTime";
 
 interface IDateInfosHeader
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
