@@ -1,37 +1,21 @@
 "use client";
-import { useEffect } from "react";
-
 //components
 import { Map } from "@/src/app/(front)/components/Map/Map";
 
 // hero ui
-import { addToast, Button } from "@heroui/react";
-
-//fetcher
-import useSWR from "swr";
-import { fetcher } from "@/src/utils/fetcher";
-import { handlerRegister } from "./handlerRegister";
+import { Button } from "@heroui/react";
 
 //hooks
-import { useLocale } from "./useLocale";
+import { useLocale } from "../../../hooks/useLocale";
+import { useEstablishmentLocale } from "../../../hooks/useEstablishmentLocale";
+import { useRegisterClockin } from "../../../hooks/useRegisterClockin";
 
 export const RegisterMap = () => {
   const { userLocation } = useLocale();
 
-  const { data, error, isLoading } = useSWR<{
-    lat: number;
-    lng: number;
-    ratio: number;
-  }>("/api/v1/establishment/getLocale", fetcher);
+  const { data, isLoading } = useEstablishmentLocale();
 
-  useEffect(() => {
-    if (error)
-      addToast({
-        title: error.message,
-        description: error.action,
-        color: "danger",
-      });
-  }, [error]);
+  const { handlerRegister, isRegistering } = useRegisterClockin();
 
   if (!userLocation || isLoading)
     return (
@@ -60,8 +44,9 @@ export const RegisterMap = () => {
         <Button
           color="primary"
           className="absolute bottom-5 left-1/2 -translate-x-1/2"
+          isLoading={isRegistering}
           onPress={async () =>
-            await handlerRegister(userLocation.lat, userLocation.lng)
+            handlerRegister(userLocation.lat, userLocation.lng)
           }
         >
           Registrar ponto
