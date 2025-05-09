@@ -45,7 +45,6 @@ export const ToggleMenu = ({ children }: IToggleMenuProps) => {
       </div>
       <div
         className={`h-full w-full overflow-auto px-2 py-4  ${isOpenToggle ? "flex" : "hidden"}`}
-        onClick={() => setIsOpenToggle(!isOpenToggle)}
       >
         {isOpenToggle && children}
       </div>
