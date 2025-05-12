@@ -11,6 +11,7 @@ import { ToastProvider } from "@heroui/toast";
 
 //PWA PROVIDER
 import { PwaInstallProvider } from "./components/Pwa/PwaInstallContext";
+import { GoogleScripts } from "./Google/Script";
 
 export const metadata: Metadata = {
   title: "Não faltei",
@@ -28,6 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br" suppressHydrationWarning>
+      <GoogleScripts />
       <body className={`relative`}>
         <PwaInstallProvider>
           <SessionProvider>
