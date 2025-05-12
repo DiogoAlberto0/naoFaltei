@@ -3,15 +3,15 @@ import { prisma } from "@/prisma/prisma";
 //utils
 import { groupBy } from "lodash";
 import { dateUtils } from "@/src/utils/date";
+import { randomUUID } from "crypto";
 
 //models
-import { workerModel } from "../worker";
 import { clockinGetters } from "./getters";
 import { clockinModel } from "./clockin";
+import { scheduleModule } from "../schedule/schedule";
 
 //errors
 import { InputError } from "@/src/Errors/errors";
-import { randomUUID } from "crypto";
 
 const register = async ({
   workerId,
@@ -57,7 +57,7 @@ const registerSummary = async ({
 }) => {
   const startOfDay = dateUtils.getStartOfDay(clocked_at);
 
-  const expectedMinutes = await workerModel.getExpectedMinutes(
+  const expectedMinutes = await scheduleModule.getExpectedMinutes(
     workerId,
     clocked_at,
   );
@@ -341,8 +341,11 @@ const getClockinsByScheduleRange = async ({
   return clockins;
 };
 const recalculateSummary = async (workerId: string, date: Date) => {
-  const expectedMinutes = await workerModel.getExpectedMinutes(workerId, date);
-  const workerSchduleDay = await workerModel.getScheduleByDay(
+  const expectedMinutes = await scheduleModule.getExpectedMinutes(
+    workerId,
+    date,
+  );
+  const workerSchduleDay = await scheduleModule.getScheduleByDay(
     workerId,
     date.getUTCDay(),
   );

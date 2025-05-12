@@ -5,7 +5,7 @@ import { omit } from "lodash";
 import { resetAllDatabase } from "@/prisma/prisma";
 
 // models
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
 
 //utils
 import { emailUtils } from "@/src/utils/email";

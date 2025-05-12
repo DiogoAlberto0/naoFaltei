@@ -1,5 +1,5 @@
 import { resetAllDatabase } from "@/prisma/prisma";
-import { workerModel } from "@/src/app/(back)/models/worker";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
 import {
   createScenario1,
   createScenario2,

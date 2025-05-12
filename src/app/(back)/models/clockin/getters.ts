@@ -5,8 +5,8 @@ import { groupBy } from "lodash";
 import { dateUtils } from "@/src/utils/date";
 
 //models
-import { workerModel } from "../worker";
 import { clockinModel } from "./clockin";
+import { scheduleModule } from "../schedule/schedule";
 
 const getLastRegistersByEstablishment = async (
   establishmentId: string,
@@ -168,7 +168,7 @@ const getSummaryByDate = async (
   );
 
   const expectedMinutes =
-    await workerModel.getExpectedMinuteOfAllWeekDays(workerId);
+    await scheduleModule.getExpectedMinuteOfAllWeekDays(workerId);
 
   for (const date of allDates) {
     if (!summariesGroupByDate[dateUtils.formatToYMD(date)]) {

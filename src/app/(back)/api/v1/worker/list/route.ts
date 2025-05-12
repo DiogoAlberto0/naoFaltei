@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 
 //model
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
-import { workerModel } from "@/src/app/(back)/models/worker";
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
 
 //errors
 import {

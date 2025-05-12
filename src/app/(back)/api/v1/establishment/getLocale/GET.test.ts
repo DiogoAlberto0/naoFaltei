@@ -8,7 +8,7 @@ import {
   IScenario,
 } from "@/src/app/(back)/tests/entitysForTest";
 
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
 
 let scenario1: IScenario;
 let scenario2: IScenario;

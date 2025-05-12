@@ -3,8 +3,9 @@ import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 // model
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
-import { workerModel } from "@/src/app/(back)/models/worker";
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
+import { scheduleModule } from "@/src/app/(back)/models/schedule/schedule";
 
 //error
 import {
@@ -37,7 +38,7 @@ export const GET = async (
     if (!isManagerFromDB && session.user.id !== worker.id)
       throw new ForbiddenError();
 
-    const schedule = await workerModel.getSchedule(workerId);
+    const schedule = await scheduleModule.getSchedule(workerId);
     return NextResponse.json(schedule);
   } catch (error: any) {
     return NextResponse.json(
