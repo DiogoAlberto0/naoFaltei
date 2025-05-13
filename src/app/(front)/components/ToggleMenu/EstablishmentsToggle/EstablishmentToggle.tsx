@@ -1,5 +1,4 @@
 "use client";
-import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 // hero ui components
@@ -10,37 +9,47 @@ import { AddEstablishmentFormModal } from "./AddEstablishmentFormModal";
 import { ToggleMenu } from "../ToggleMenu";
 import { AddIcon } from "@/assets/icons/AddIcon";
 import { ToggleItem } from "./EstablishmentToggleItem";
+import { ComponentError } from "../../ComponentError";
+
+// fetcher
+import useSWR from "swr";
+import { fetcher } from "@/src/utils/fetcher";
 
 interface IEstablishmentProps {
   id: string;
   name: string;
 }
-
+interface IData {
+  establishments: IEstablishmentProps[];
+}
+interface IError {
+  message: string;
+  action: string;
+}
 export const EstablishmentToggle = () => {
-  const [establishments, setEstablishments] = useState<IEstablishmentProps[]>(
-    [],
+  const { data, isLoading, error, mutate } = useSWR<IData, IError>(
+    `/api/v1/establishment/list`,
+    fetcher,
   );
 
   const searchParams = useSearchParams();
   const establishmentId = searchParams.get("establishmentId"); // retorna "123"
 
-  useEffect(() => {
-    const fetchEstablishments = async () => {
-      const establishments = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/establishment/list`,
-      );
-
-      const data = await establishments.json();
-
-      setEstablishments(data.establishments);
-    };
-
-    fetchEstablishments();
-  }, []);
   return (
     <ToggleMenu>
       <div className=" w-full h-full flex flex-col overflow-auto gap-1">
-        {establishments.map(({ id, name }) => (
+        {error && (
+          <ComponentError message={error.message} action={error.action} />
+        )}
+        {isLoading && (
+          <ToggleItem
+            href=""
+            className={`w-full border-b-1 border-primary-100`}
+          >
+            Carregando...
+          </ToggleItem>
+        )}
+        {data?.establishments.map(({ id, name }) => (
           <ToggleItem
             key={id}
             href={`/manager/dashboard?establishmentId=${id}`}
@@ -51,6 +60,7 @@ export const EstablishmentToggle = () => {
           </ToggleItem>
         ))}
         <AddEstablishmentFormModal
+          onAdd={() => mutate()}
           openButton={({ onPress }) => (
             <Button
               onPress={onPress}

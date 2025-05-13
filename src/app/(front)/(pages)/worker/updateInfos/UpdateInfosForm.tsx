@@ -17,7 +17,7 @@ import { frontPasswordUtils } from "@/src/utils/password.front";
 
 // fetcher
 import { axios } from "@/src/utils/fetcher";
-import { revalidateWorker } from "../../../components/Tables/WorkersTable/revalidateData";
+import { revalidateWorkerDetails } from "../../../hooks/getWorkerDetails";
 
 const handleSubmit = async (formData: FormData) => {
   const workerId = formData.get("workerId")?.toString();
@@ -54,7 +54,7 @@ const handleSubmit = async (formData: FormData) => {
     },
   });
 
-  revalidateWorker(workerId);
+  revalidateWorkerDetails(workerId);
 
   if (response.status === 200) {
     addToast({

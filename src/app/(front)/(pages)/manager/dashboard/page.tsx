@@ -1,30 +1,16 @@
-//next
-import { cookies } from "next/headers";
-
 //components
 import { EstablishmentInfoCard } from "@/src/app/(front)/components/Cards/EstablishmentInfoCard/EstablishmentInfoCard";
 import { WorkersTable } from "@/src/app/(front)/components/Tables/WorkersTable/WorkersTable";
 import { LocationCard } from "@/src/app/(front)/components/Cards/LocationCard/LocationCard";
 import { LastRegistersByEstablishment } from "../../../components/Tables/LastRegistersByEstablishment";
 
-//fetcher
-import { axios } from "@/src/utils/fetcher";
-
 //utils
 import { phoneUtils } from "@/src/utils/phone";
 import { cepUtils } from "@/src/utils/cep";
 import { CountdownAdModal } from "../../../ADS/Adsterra/CountdownAdModal";
+import { getEstablishmentDetails } from "../../../hooks/getEstablishmentDetails";
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-interface IEstablishment {
-  name: string;
-  phone: string;
-  email: string;
-  cep: string;
-  lat: number;
-  lng: number;
-  ratio: number;
-}
 export default async function ManagerDashboard(props: {
   searchParams: SearchParams;
 }) {
@@ -39,12 +25,7 @@ export default async function ManagerDashboard(props: {
       </div>
     );
   else {
-    const cookie = await cookies();
-    const { data: establishmentData } = await axios<IEstablishment>({
-      route: `/api/v1/establishment/${establishmentId}/details`,
-      cookie: cookie.toString(),
-      revalidateTags: [`establishmentId=${establishmentId}`],
-    });
+    const establishmentData = await getEstablishmentDetails(establishmentId);
 
     return (
       <div className="w-full h-full max-h-full overflow-auto p-5 md:p-10 flex flex-col lg:flex-row gap-4">

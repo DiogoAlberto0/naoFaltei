@@ -6,7 +6,10 @@ import { Button, Input } from "@heroui/react";
 import { ModalForm } from "../../Modal/ModalForm";
 import { Map } from "../../Map/Map";
 import { EditIcon } from "@/assets/icons/EditIcon";
+
+// fetcher
 import { updateLocaleHandler } from "./updateLocaleHandler";
+import { revalidateEstablishmentDetails } from "../../../hooks/getEstablishmentDetails";
 
 interface ICoords {
   lat: number;
@@ -33,7 +36,10 @@ export const UpdateLocaleModal = ({
   return (
     <>
       <ModalForm
-        handleSubmit={updateLocaleHandler}
+        handleSubmit={async (formData) => {
+          await updateLocaleHandler(formData);
+          revalidateEstablishmentDetails(establishmentId);
+        }}
         submitButtonText="Salvar"
         openButton={({ onPress }) => (
           <Button

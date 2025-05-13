@@ -63,7 +63,7 @@ export const WorkersTable = ({
 
   const [totalPages, setTotalPages] = useState<number | null>(null);
 
-  const { data, isLoading, error } = useSWR<{
+  const { data, isLoading, error, mutate } = useSWR<{
     workers: IWorker[];
     meta: IMeta;
   }>(
@@ -87,7 +87,10 @@ export const WorkersTable = ({
       topContent={
         <div className="flex justify-between items-center">
           <h1 className="text-xl">Funcionários</h1>
-          <CreateWorkerModal establishmentId={establishmentId} />
+          <CreateWorkerModal
+            establishmentId={establishmentId}
+            onCreate={() => mutate()}
+          />
         </div>
       }
       bottomContent={

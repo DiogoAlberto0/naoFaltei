@@ -1,4 +1,6 @@
+"use server";
 import { axios } from "@/src/utils/fetcher";
+import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 export interface IWorker {
@@ -24,4 +26,8 @@ export const getWorkerDetails = async (workerId: string) => {
   });
 
   return { worker };
+};
+
+export const revalidateWorkerDetails = async (workerId: string) => {
+  revalidateTag(`workerId=${workerId}`);
 };
