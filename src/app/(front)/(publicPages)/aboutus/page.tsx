@@ -1,14 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { Button } from "@heroui/button";
 
 //printscreens
-import workerHomePage from "@/assets/screens/workerHomePage.png";
-import workersTable from "@/assets/screens/workersTable.png";
-import lastRegistersTable from "@/assets/screens/lastRegitersTable.png";
-import workerSchedule from "@/assets/screens/workerSchedule.png";
-import timeSheetTable from "@/assets/screens/timeSheetTable.png";
+import { Chip, Link } from "@heroui/react";
 
 export default function AboutPage() {
   return (
@@ -48,115 +43,37 @@ export default function AboutPage() {
       </section>
 
       {/* Screens Section */}
-      <section className="bg-gray-50 py-16 flex flex-col gap-16">
-        <div className="max-w-7xl mx-auto px-6 md:px-20 flex flex-col gap-24">
-          {/* Tela Principal do Funcionário */}
-          <div className="flex flex-col md:flex-row items-center gap-10">
-            <div className="w-full md:w-1/2 flex justify-center">
-              <Image
-                src={workerHomePage}
-                alt="Tela Principal do Funcionário"
-                className="rounded-2xl border border-gray-200 w-64 md:w-80"
-              />
-            </div>
-            <div className="text-center md:text-left flex flex-col gap-4 md:w-1/2">
-              <h3 className="text-2xl font-bold text-default-100">
-                Tela Principal do Funcionário
-              </h3>
-              <p className="text-primary-500 text-lg">
-                Página inicial otimizada para dispositivos móveis, exibindo
-                localização no mapa, distância até o estabelecimento, registros
-                recentes e botão de novo ponto.
-              </p>
-            </div>
-          </div>
-
-          {/* Tabela de Funcionários com Status */}
-          <div className="flex flex-col md:flex-row-reverse items-center gap-10">
-            <div className="w-full md:w-1/2 flex justify-center">
-              <Image
-                src={workersTable}
-                alt="Tabela de Funcionários com Status"
-                className="rounded-2xl border border-gray-200 w-64 md:w-80"
-              />
-            </div>
-            <div className="text-center md:text-right flex flex-col gap-4 md:w-1/2">
-              <h3 className="text-2xl font-bold text-default-100">
-                Tabela de Funcionários
-              </h3>
-              <p className="text-primary-500 text-lg">
-                Visualize todos os funcionários com seus status em tempo real:
-                ativo, ausente ou fora da área. Gerencie e acompanhe a presença
-                da equipe de forma centralizada.
-              </p>
-            </div>
-          </div>
-
-          {/* Últimos Registros do Estabelecimento */}
-          <div className="flex flex-col md:flex-row items-center gap-10">
-            <div className="w-full md:w-1/2 flex justify-center">
-              <Image
-                src={lastRegistersTable}
-                alt="Últimos Registros do Estabelecimento"
-                className="rounded-2xl border border-gray-200 w-64 md:w-80"
-              />
-            </div>
-            <div className="text-center md:text-left flex flex-col gap-4 md:w-1/2">
-              <h3 className="text-2xl font-bold text-default-100">
-                Últimos Registros
-              </h3>
-              <p className="text-primary-500 text-lg">
-                Acompanhe as últimas entradas e saídas feitas no
-                estabelecimento, com informações detalhadas como tipo de
-                registro, funcionário e horário.
-              </p>
-            </div>
-          </div>
-
-          {/* Tabela de Escala do Funcionário */}
-          <div className="flex flex-col md:flex-row-reverse items-center gap-10">
-            <div className="w-full md:w-1/2 flex justify-center">
-              <Image
-                src={workerSchedule}
-                alt="Tabela de Escala do Funcionário"
-                className="rounded-2xl border border-gray-200 w-64 md:w-80"
-              />
-            </div>
-            <div className="text-center md:text-right flex flex-col gap-4 md:w-1/2">
-              <h3 className="text-2xl font-bold text-default-100">
-                Escala de Trabalho
-              </h3>
-              <p className="text-primary-500 text-lg">
-                Consulte a escala semanal do colaborador, com horários de
-                entrada, saída e tempo de descanso por dia da semana, tudo de
-                forma organizada e fácil de editar.
-              </p>
-            </div>
-          </div>
-
-          {/* Tabela de Registros por Período */}
-          <div className="flex flex-col md:flex-row items-center gap-10">
-            <div className="w-full md:w-1/2 flex justify-center">
-              <Image
-                src={timeSheetTable}
-                alt="Tabela de Registros por Período"
-                className="rounded-2xl border border-gray-200 w-64 md:w-80"
-              />
-            </div>
-            <div className="text-center md:text-left flex flex-col gap-4 md:w-1/2">
-              <h3 className="text-2xl font-bold text-default-100">
-                Registros por Período
-              </h3>
-              <p className="text-primary-500 text-lg">
-                Analise os registros detalhados do funcionário em um intervalo
-                específico, com total de faltas, atestados e banco de horas
-                acumulado.
-              </p>
-            </div>
+      {/* FAQ Preview */}
+      <section className="bg-gray-50 py-16">
+        <div className="max-w-4xl mx-auto px-6 md:px-20 text-center text-black">
+          <Chip variant="flat" color="primary">
+            Dúvidas Frequentes
+          </Chip>
+          <h2 className="text-3xl font-bold mt-4 mb-6">
+            Precisa de ajuda rápida?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+            {[
+              "Como cadastrar meus funcionários?",
+              "Quais os requisitos para usar o aplicativo?",
+              "Como faço para resetar minha senha?",
+              "O sistema funciona offline?",
+              "Posso usar em mais de uma empresa?",
+              "Como funciona o cálculo de horas extras?",
+            ].map((question, index) => (
+              <Link
+                key={index}
+                href="/ajuda"
+                color="primary"
+                className="flex items-center gap-2 hover:text-primary-500 transition-colors"
+              >
+                <span className="i-heroicons-question-mark-circle-20-solid text-primary-500" />
+                {question}
+              </Link>
+            ))}
           </div>
         </div>
       </section>
-
       {/* Call to Action */}
       <section className="bg-primary-500 py-16 flex flex-col items-center text-center gap-6 px-6">
         <h2 className="text-3xl md:text-4xl font-bold text-white">
