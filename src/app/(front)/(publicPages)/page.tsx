@@ -10,7 +10,7 @@ import backgroundImage from "@/assets/workersBackground.jpg";
 //icons
 import { CheckCircleIcon } from "@/assets/icons/CheckCircleIcon";
 import { redirect } from "next/navigation";
-import { verifyIfUserIsWorker } from "./hooks/verifyIfUserIsWorker";
+import { verifyIfUserIsWorker } from "../hooks/verifyIfUserIsWorker";
 
 const BenefitsList = () => {
   const benefits = [

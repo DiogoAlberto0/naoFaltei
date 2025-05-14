@@ -38,9 +38,16 @@ export function NavBar() {
 
       <NavbarMenu>
         <NavbarMenuItem key={`establishments`}>
-          <Link className="w-full" color="primary" href="#" size="lg">
+          <Link
+            className="w-full"
+            color="primary"
+            href="/manager/dashboard"
+            size="lg"
+          >
             Estabelecimentos
           </Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
           <Link
             className="w-full"
             color="primary"
