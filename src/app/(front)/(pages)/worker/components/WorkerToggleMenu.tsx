@@ -12,7 +12,7 @@ import { Listbox, ListboxItem } from "@heroui/react";
 import { ToggleMenu } from "@/src/app/(front)/components/ToggleMenu/ToggleMenu";
 import { usePwaInstallContext } from "../../../components/Pwa/PwaInstallContext";
 
-export const WorkerToggleMenu = () => {
+export const WorkerToggleMenu = ({ isManager }: { isManager: boolean }) => {
   const router = useRouter();
   const pathName = usePathname();
 
@@ -81,6 +81,7 @@ export const WorkerToggleMenu = () => {
         >
           Habilitar Instalação
         </ListboxItem>
+
         <ListboxItem
           onPress={() => {
             router.push(`/worker/dashboard`, {
@@ -89,6 +90,7 @@ export const WorkerToggleMenu = () => {
           }}
           key="/worker/dashboard"
           color="primary"
+          className={`${!isManager && "hidden"}`}
         >
           Painel do gerente
         </ListboxItem>

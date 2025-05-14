@@ -32,3 +32,21 @@ export const verifyIfUserIsWorker = async () => {
     return false;
   }
 };
+
+export const verifyIfUserIsManager = async () => {
+  try {
+    const session = await auth();
+    const cookie = await cookies();
+
+    const { data: worker } = await axios<IWorker>({
+      route: `/api/v1/worker/${session?.user.id}/details`,
+      cookie: cookie.toString(),
+    });
+
+    if (worker.is_manager) return true;
+    else return false;
+  } catch (error: any) {
+    console.warn(error);
+    return false;
+  }
+};
