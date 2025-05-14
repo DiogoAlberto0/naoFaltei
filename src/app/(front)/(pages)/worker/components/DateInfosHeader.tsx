@@ -8,6 +8,7 @@ import { HourText } from "@/src/app/(front)/components/DataViews/Date/HourText";
 
 //hooks
 import { useCurrentTime } from "../../../hooks/useCurrentTime";
+import { Alert } from "@heroui/alert";
 
 interface IDateInfosHeader
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -27,27 +28,35 @@ export const DateInfosHeader = ({
     else return `Boa noite${name}!`;
   };
   return (
-    <div
-      className={`
-       w-full
-       p-2
-       bg-primary bg-opacity-70 dark:bg-primary-100 dark:bg-opacity-70 text-white
-       flex flex-col justify-center items-center 
-       ${className}
-    `}
-      {...otherProps}
-    >
-      <h1 className="text-base">
-        {greetings(now, name ? `, ${name.split(" ")[0]} ` : ``)}
-      </h1>
-      <HourText
-        className="text-2xl font-bold"
-        hour={hour}
-        minute={minute}
-        seconds={second}
+    <div className={`flex flex-col gap-2 ${className}`}>
+      <div
+        className={`
+          w-full
+          p-2
+          bg-primary bg-opacity-70 dark:bg-primary-100 dark:bg-opacity-70 text-white
+          flex flex-col justify-center items-center
+          gap-1
+          
+        `}
+        {...otherProps}
+      >
+        <h1 className="text-base">
+          {greetings(now, name ? `, ${name.split(" ")[0]} ` : ``)}
+        </h1>
+        <HourText
+          className="text-2xl font-bold"
+          hour={hour}
+          minute={minute}
+          seconds={second}
+        />
+        <DateText isFullDate={true} date={now} />
+        <WorkerLastRegisters />
+      </div>
+      <Alert
+        title="Caso esqueça de registrar alguma entrada/saída, Informe imediatamente ao seu superior"
+        variant="solid"
+        color="primary"
       />
-      <DateText isFullDate={true} date={now} />
-      <WorkerLastRegisters />
     </div>
   );
 };
