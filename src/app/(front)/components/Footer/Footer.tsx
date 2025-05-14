@@ -25,6 +25,18 @@ export const Footer = () => {
           <Link href="/privacityPolitics" className="hover:underline">
             Privacidade
           </Link>
+          <Link
+            href="/privacityPolitics#cookiesPolitics"
+            className="hover:underline"
+          >
+            Politica de cookies
+          </Link>
+          <Link
+            href="/privacityPolitics#termsOfUse"
+            className="hover:underline"
+          >
+            Termos de uso
+          </Link>
         </nav>
 
         {/* Ícones sociais */}
