@@ -106,7 +106,7 @@ const FeaturesList = () => {
 
 const PresentationPage = async () => {
   const isWorker = await verifyIfUserIsWorker();
-  if (isWorker) redirect("/worker");
+  if (isWorker === true) redirect("/worker");
 
   return (
     <div className="flex flex-col min-h-dvh">

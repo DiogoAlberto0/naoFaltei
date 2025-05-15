@@ -126,7 +126,7 @@ export default function ContactPage() {
               <Spacer y={2} />
               <Button
                 as="a"
-                href="/aboutus#frequentQuestions"
+                href="/faq"
                 variant="flat"
                 color="secondary"
                 fullWidth

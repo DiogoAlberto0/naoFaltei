@@ -63,7 +63,7 @@ export default function AboutPage() {
             ].map((question, index) => (
               <Link
                 key={index}
-                href="/ajuda"
+                href="/faq"
                 color="primary"
                 className="flex items-center gap-2 hover:text-primary-500 transition-colors"
               >

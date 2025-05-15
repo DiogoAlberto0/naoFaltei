@@ -47,12 +47,7 @@ const SigninForm = ({ className }: { className?: string }) => {
 };
 
 export default async function SigninPage() {
-  const isAdmin = await verifyIfUserIsAdmin()
-    .then((resp) => resp)
-    .catch((error) => {
-      console.warn(error);
-      return null;
-    });
+  const isAdmin = await verifyIfUserIsAdmin();
 
   if (isAdmin === true) redirect("/manager/dashboard");
   if (isAdmin === false) redirect("/worker");

@@ -6,14 +6,18 @@ export interface IResponse {
 }
 
 export const verifyIfUserIsAdmin = async () => {
-  const cookie = await cookies();
+  try {
+    const cookie = await cookies();
 
-  const {
-    data: { is_admin },
-  } = await axios<IResponse>({
-    route: `/api/v1/signin/isAdmin`,
-    cookie: cookie.toString(),
-  });
+    const {
+      data: { is_admin },
+    } = await axios<IResponse>({
+      route: `/api/v1/signin/isAdmin`,
+      cookie: cookie.toString(),
+    });
 
-  return is_admin;
+    return is_admin;
+  } catch (error: any) {
+    console.warn(error);
+  }
 };
