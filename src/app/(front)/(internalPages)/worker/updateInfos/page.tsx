@@ -6,13 +6,22 @@ import { UserInfoCard } from "./UserInfoCard"; // novo componente
 
 //hooks
 import { getWorkerDetails } from "../../../hooks/getWorkerDetails";
+import { Unauthorized } from "../../../components/Unauthorized";
 
-const UpdateInfosPage = async () => {
+type SearchParams = Promise<{ demo?: string }>;
+const UpdateInfosPage = async ({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) => {
+  const { demo } = await searchParams;
+  const isDemo = demo?.toString().toLowerCase() === "true";
+
   const session = await auth();
 
-  if (!session || !session.user) return null;
+  if (!isDemo && (!session || !session.user)) return <Unauthorized />;
 
-  const { worker } = await getWorkerDetails(session.user.id);
+  const { worker } = await getWorkerDetails(session?.user.id, isDemo);
 
   return (
     <main className="h-full w-full overflow-auto mx-auto flex flex-col gap-6 p-6 sm:p-8">
@@ -33,7 +42,7 @@ const UpdateInfosPage = async () => {
         phone={worker.phone}
       />
 
-      <UpdateInfosForm workerId={worker.id} />
+      <UpdateInfosForm workerId={worker.id} isDemo={isDemo} />
     </main>
   );
 };

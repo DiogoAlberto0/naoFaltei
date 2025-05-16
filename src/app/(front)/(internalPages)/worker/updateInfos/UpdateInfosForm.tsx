@@ -19,52 +19,64 @@ import { frontPasswordUtils } from "@/src/utils/password.front";
 import { axios } from "@/src/utils/fetcher";
 import { revalidateWorkerDetails } from "../../../hooks/getWorkerDetails";
 
-const handleSubmit = async (formData: FormData) => {
-  const workerId = formData.get("workerId")?.toString();
-  if (!workerId)
-    throw new InputError({
-      message: "Falha ao buscar funcionário para atualização",
-      action: "Recarregue a página",
+export const UpdateInfosForm = ({
+  workerId,
+  isDemo = false,
+}: {
+  workerId: string;
+  isDemo?: boolean;
+}) => {
+  const handleSubmit = async (formData: FormData) => {
+    if (isDemo) {
+      addToast({
+        title: "Você está em uma versão demo",
+        color: "warning",
+      });
+      return;
+    }
+    const workerId = formData.get("workerId")?.toString();
+    if (!workerId)
+      throw new InputError({
+        message: "Falha ao buscar funcionário para atualização",
+        action: "Recarregue a página",
+      });
+
+    const login = formData.get("login")?.toString();
+    const password = formData.get("password")?.toString();
+    const confirmPassword = formData.get("confirmPassword")?.toString();
+
+    if (!login || !password || !confirmPassword)
+      throw new InputError({
+        message: "Campos obrigatórios faltando",
+        action: "Favor informar login, senha e a confirmação da senha",
+      });
+
+    if (password !== confirmPassword)
+      throw new InputError({
+        message: "As senhas devem ser iguais",
+        action: "Verifique se as senhas informadas estão corretas",
+      });
+
+    frontPasswordUtils.isValidOrThrow(password);
+
+    const { response } = await axios<{ message: string }>({
+      route: `/api/v1/signin/updateLoginAndPass`,
+      method: "PUT",
+      body: {
+        login,
+        password,
+      },
     });
 
-  const login = formData.get("login")?.toString();
-  const password = formData.get("password")?.toString();
-  const confirmPassword = formData.get("confirmPassword")?.toString();
+    revalidateWorkerDetails(workerId);
 
-  if (!login || !password || !confirmPassword)
-    throw new InputError({
-      message: "Campos obrigatórios faltando",
-      action: "Favor informar login, senha e a confirmação da senha",
-    });
-
-  if (password !== confirmPassword)
-    throw new InputError({
-      message: "As senhas devem ser iguais",
-      action: "Verifique se as senhas informadas estão corretas",
-    });
-
-  frontPasswordUtils.isValidOrThrow(password);
-
-  const { response } = await axios<{ message: string }>({
-    route: `/api/v1/signin/updateLoginAndPass`,
-    method: "PUT",
-    body: {
-      login,
-      password,
-    },
-  });
-
-  revalidateWorkerDetails(workerId);
-
-  if (response.status === 200) {
-    addToast({
-      title: "Login e senha atualizados com sucesso",
-      color: "success",
-    });
-  }
-};
-
-export const UpdateInfosForm = ({ workerId }: { workerId: string }) => {
+    if (response.status === 200) {
+      addToast({
+        title: "Login e senha atualizados com sucesso",
+        color: "success",
+      });
+    }
+  };
   const { onSumit, isLoading } = useSubmitForm(handleSubmit);
 
   return (
