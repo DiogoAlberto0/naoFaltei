@@ -13,10 +13,12 @@ import { Alert } from "@heroui/alert";
 interface IDateInfosHeader
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   name?: string | null | undefined;
+  isDemo?: boolean;
 }
 export const DateInfosHeader = ({
   className,
   name,
+  isDemo = false,
   ...otherProps
 }: IDateInfosHeader) => {
   const { now, hour, minute, second } = useCurrentTime();
@@ -50,7 +52,7 @@ export const DateInfosHeader = ({
           seconds={second}
         />
         <DateText isFullDate={true} date={now} />
-        <WorkerLastRegisters />
+        <WorkerLastRegisters isDemo={isDemo} />
       </div>
       <Alert
         title="Caso esqueça de registrar alguma entrada/saída, Informe imediatamente ao seu superior"

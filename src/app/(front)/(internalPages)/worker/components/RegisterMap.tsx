@@ -3,17 +3,17 @@
 import { Map } from "@/src/app/(front)/components/Map/Map";
 
 // hero ui
-import { Button } from "@heroui/react";
+import { addToast, Button } from "@heroui/react";
 
 //hooks
 import { useLocale } from "../../../hooks/useLocale";
 import { useEstablishmentLocale } from "../../../hooks/useEstablishmentLocale";
 import { useRegisterClockin } from "../../../hooks/useRegisterClockin";
 
-export const RegisterMap = () => {
+export const RegisterMap = ({ isDemo = false }: { isDemo?: boolean }) => {
   const { userLocation } = useLocale();
 
-  const { data, isLoading } = useEstablishmentLocale();
+  const { data, isLoading } = useEstablishmentLocale({ isDemo });
 
   const { handlerRegister, isRegistering } = useRegisterClockin();
 
@@ -33,21 +33,32 @@ export const RegisterMap = () => {
             longitude: userLocation.lng,
           }}
           markerPosition={
-            data && {
-              latitude: data?.lat,
-              longitude: data?.lng,
-            }
+            !isDemo && data
+              ? {
+                  latitude: data?.lat,
+                  longitude: data?.lng,
+                }
+              : {
+                  latitude: userLocation.lat + 0.001,
+                  longitude: userLocation.lng + 0.001,
+                }
           }
-          markerRadius={data?.ratio && data.ratio}
+          markerRadius={isDemo ? 1000 : data?.ratio}
         />
 
         <Button
           color="primary"
           className="absolute bottom-5 left-1/2 -translate-x-1/2"
           isLoading={isRegistering}
-          onPress={async () =>
-            handlerRegister(userLocation.lat, userLocation.lng)
-          }
+          onPress={async () => {
+            if (isDemo) {
+              addToast({
+                title: "Você está em um modo demo",
+                color: "warning",
+              });
+            }
+            handlerRegister(userLocation.lat, userLocation.lng);
+          }}
         >
           Registrar ponto
         </Button>

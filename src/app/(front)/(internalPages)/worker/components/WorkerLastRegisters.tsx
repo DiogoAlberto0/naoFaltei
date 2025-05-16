@@ -17,6 +17,7 @@ import {
 import useSWR from "swr";
 import { ComponentError } from "../../../components/ComponentError";
 import { HourText } from "../../../components/DataViews/Date/HourText";
+import { IRegister } from "../../../components/Tables/RegistersTable/useTimeSheet";
 
 interface IClockin {
   id: string;
@@ -28,9 +29,66 @@ interface IClockin {
   registered_by: string;
   worker_id: string;
 }
-export const WorkerLastRegisters = () => {
+
+const fakeRegisters: IClockin[] = [
+  {
+    id: "1234",
+    clocked_at: new Date().toISOString(),
+    is_entry: true,
+    lat: 0,
+    lng: 0,
+    is_auto_generated: false,
+    registered_by: "1234",
+    worker_id: "1234",
+  },
+  {
+    id: "1235",
+    clocked_at: new Date().toISOString(),
+    is_entry: false,
+    lat: 0,
+    lng: 0,
+    is_auto_generated: false,
+    registered_by: "1234",
+    worker_id: "1234",
+  },
+];
+
+const renderLastRegistersTableRows = ({
+  registers,
+}: {
+  registers: IRegister[];
+}) => {
+  return registers.map(({ id, clocked_at, is_entry }) => {
+    const date = new Date(clocked_at);
+    return (
+      <TableRow key={id}>
+        <TableCell>
+          <DateText
+            date={date}
+            isFullDay={true}
+            isFullMonth={true}
+            isFullYear={true}
+            className="max-sm:hidden"
+          />
+          <DateText date={date} className="sm:hidden" />
+        </TableCell>
+        <TableCell>
+          <TypeRegisterChip clockIn={is_entry} />
+        </TableCell>
+        <TableCell>
+          <HourText hour={date.getHours()} minute={date.getMinutes()} />
+        </TableCell>
+      </TableRow>
+    );
+  });
+};
+export const WorkerLastRegisters = ({
+  isDemo = false,
+}: {
+  isDemo?: boolean;
+}) => {
   const { data, isLoading, error } = useSWR<{ lastTwoRegisters: IClockin[] }>(
-    "/api/v1/clockin/lastTwoRegisters",
+    isDemo ? null : "/api/v1/clockin/lastTwoRegisters",
     fetcher,
   );
 
@@ -55,35 +113,12 @@ export const WorkerLastRegisters = () => {
           </TableHeader>
           <TableBody
             isLoading={isLoading}
-            items={data?.lastTwoRegisters}
+            items={isDemo ? fakeRegisters : data?.lastTwoRegisters}
             emptyContent="Você ainda não possui registros"
           >
-            {data?.lastTwoRegisters.map(({ id, clocked_at, is_entry }) => {
-              const date = new Date(clocked_at);
-              return (
-                <TableRow key={id}>
-                  <TableCell>
-                    <DateText
-                      date={date}
-                      isFullDay={true}
-                      isFullMonth={true}
-                      isFullYear={true}
-                      className="max-sm:hidden"
-                    />
-                    <DateText date={date} className="sm:hidden" />
-                  </TableCell>
-                  <TableCell>
-                    <TypeRegisterChip clockIn={is_entry} />
-                  </TableCell>
-                  <TableCell>
-                    <HourText
-                      hour={date.getHours()}
-                      minute={date.getMinutes()}
-                    />
-                  </TableCell>
-                </TableRow>
-              );
-            }) || []}
+            {renderLastRegistersTableRows({
+              registers: isDemo ? fakeRegisters : data?.lastTwoRegisters || [],
+            })}
           </TableBody>
         </Table>
       </PopoverContent>

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 //next auth
 import { signOut } from "next-auth/react";
@@ -16,10 +16,19 @@ export const WorkerToggleMenu = ({ isManager }: { isManager: boolean }) => {
   const router = useRouter();
   const pathName = usePathname();
 
+  //verify if is running demo verison
+  const searchParams = useSearchParams();
+  const demo = searchParams.get("demo");
+  const isDemo = demo?.toString().toLowerCase() === "true";
+
   const [selectedKeys, setSelectedKeys] = useState(new Set([pathName]));
 
   const { setIsPwaInstallDismissed } = usePwaInstallContext();
 
+  const generateHref = (href: string) => {
+    if (isDemo) return `${href}?demo=true`;
+    else return href;
+  };
   return (
     <ToggleMenu>
       <Listbox
@@ -34,11 +43,8 @@ export const WorkerToggleMenu = ({ isManager }: { isManager: boolean }) => {
       >
         <ListboxItem
           className="border-b-1 border-primary-100"
-          onPress={() => {
-            router.push(`/worker`, {
-              scroll: false,
-            });
-          }}
+          as="a"
+          href={generateHref("/worker")}
           key="/worker"
           color="primary"
         >
@@ -47,11 +53,8 @@ export const WorkerToggleMenu = ({ isManager }: { isManager: boolean }) => {
 
         <ListboxItem
           className="border-b-1 border-primary-100"
-          onPress={() => {
-            router.push(`/worker/timeSheet`, {
-              scroll: false,
-            });
-          }}
+          as="a"
+          href={generateHref("/worker/timeSheet")}
           key="/worker/timeSheet"
           color="primary"
         >
@@ -60,15 +63,22 @@ export const WorkerToggleMenu = ({ isManager }: { isManager: boolean }) => {
 
         <ListboxItem
           className="border-b-1 border-primary-100"
-          onPress={() => {
-            router.push(`/worker/updateInfos`, {
-              scroll: false,
-            });
-          }}
+          as="a"
+          href={generateHref("/worker/updateInfos")}
           key="/worker/updateInfos"
           color="primary"
         >
           Alterar meus dados
+        </ListboxItem>
+
+        <ListboxItem
+          as="a"
+          href={generateHref("/worker/dashboard")}
+          key="/worker/dashboard"
+          color="primary"
+          className={`${!isManager && "hidden"}`}
+        >
+          Painel do gerente
         </ListboxItem>
 
         <ListboxItem
@@ -81,23 +91,13 @@ export const WorkerToggleMenu = ({ isManager }: { isManager: boolean }) => {
         >
           Habilitar Instalação
         </ListboxItem>
-
         <ListboxItem
           onPress={() => {
-            router.push(`/worker/dashboard`, {
-              scroll: false,
-            });
-          }}
-          key="/worker/dashboard"
-          color="primary"
-          className={`${!isManager && "hidden"}`}
-        >
-          Painel do gerente
-        </ListboxItem>
-
-        <ListboxItem
-          onPress={() => {
-            signOut();
+            if (isDemo) {
+              router.push("/");
+            } else {
+              signOut();
+            }
           }}
           key="delete"
           className="text-white bg-danger"
