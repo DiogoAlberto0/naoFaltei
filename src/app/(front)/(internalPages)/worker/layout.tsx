@@ -1,7 +1,4 @@
-import { auth } from "@/auth";
-
 //components
-import { Unauthorized } from "@/src/app/(front)/components/Unauthorized";
 import { WorkerToggleMenu } from "./components/WorkerToggleMenu";
 import { verifyIfUserIsManager } from "../../hooks/verifyIfUserIsWorker";
 
@@ -10,10 +7,6 @@ export default async function WorkerLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-
-  if (!session || !session.user) return <Unauthorized />;
-
   const isManager = await verifyIfUserIsManager();
   return (
     <div className="h-dvh w-dvw max-h-dvh flex flex-col overflow-hidden relative">
