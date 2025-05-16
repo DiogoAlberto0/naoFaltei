@@ -6,10 +6,18 @@ import { CalendarInput } from "../../../components/Inputs/CalendarInput/Calendar
 import { Unauthorized } from "../../../components/Unauthorized";
 import { CountdownAdModal } from "../../../ADS/Adsterra/CountdownAdModal";
 
-const TimeSheetPage = async () => {
+type SearchParams = Promise<{ demo?: boolean }>;
+const TimeSheetPage = async ({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) => {
+  const { demo } = await searchParams;
+  const isDemo = demo?.toString().toLowerCase() === "true";
+
   const session = await auth();
 
-  if (!session || !session.user) return <Unauthorized />;
+  if (!isDemo && (!session || !session.user)) return <Unauthorized />;
 
   return (
     <main className="h-full w-full overflow-auto mx-auto flex flex-col gap-6 px-2 py-4 sm:px-4 md:px-6 lg:px-8">
@@ -27,15 +35,17 @@ const TimeSheetPage = async () => {
         <CalendarInput
           title="Selecione um intervalo de datas"
           onSubmitRedirect="/worker/timeSheet"
+          isDemo={isDemo}
         />
       </section>
 
       <section className="w-full">
         <RegistersTable
-          workerId={session.user.id}
+          workerId={session?.user.id || ""}
           detailed
           maxRegisters={10}
           overflowAuto={true}
+          isDemo={isDemo}
         />
       </section>
     </main>

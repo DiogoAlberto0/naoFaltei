@@ -17,13 +17,15 @@ export const RegistersTable = ({
   overflowAuto = true,
   maxRegisters = 5,
   workerId,
+  isDemo = false,
 }: {
   maxRegisters?: number;
   detailed?: boolean;
   overflowAuto?: boolean;
   workerId: string;
+  isDemo?: boolean;
 }) => {
-  const { title, error, data, isLoading } = useTimeSheet(workerId);
+  const { title, error, data, isLoading } = useTimeSheet(workerId, isDemo);
 
   const timeSheet = data?.timeSheet || [];
   const maxPerPage = maxRegisters;
