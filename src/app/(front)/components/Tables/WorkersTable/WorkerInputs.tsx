@@ -102,6 +102,7 @@ export const WorkerInputs = ({
         isRequired={!isUpdate}
         name="password"
         errorMessage="Favor digitar a senha do funcionário"
+        description="Essa senha poderá ser alterada pelo funcionário depois"
       />
 
       <Input

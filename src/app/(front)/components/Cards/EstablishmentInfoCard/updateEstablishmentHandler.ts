@@ -1,5 +1,3 @@
-import { revalidateTag } from "next/cache";
-
 //errors
 import { InputError } from "@/src/Errors/errors";
 
@@ -13,6 +11,7 @@ import { axios } from "@/src/utils/fetcher";
 
 //heroui
 import { addToast } from "@heroui/toast";
+import { revalidateEstablishmentDetails } from "../../../hooks/getEstablishmentDetails";
 
 interface IUpdateLocaleResponse {
   id: string;
@@ -60,5 +59,6 @@ export const updateEstablishmentHandler = async (formData: FormData) => {
     color: "success",
     title: `Estabelecimento ${data.name} atualizado com sucesso!`,
   });
-  revalidateTag(`establishmentId=${id}`);
+
+  revalidateEstablishmentDetails(data.id);
 };

@@ -19,7 +19,7 @@ const GoogleSigninButton = () => {
           alt="Google icons"
         />{" "}
         {/* Logo do Google */}
-        Sign in with Google
+        Login com o google
       </button>
     </form>
   );

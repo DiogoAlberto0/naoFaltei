@@ -1,0 +1,69 @@
+//components
+import { EstablishmentInfoCard } from "@/src/app/(front)/components/Cards/EstablishmentInfoCard/EstablishmentInfoCard";
+import { WorkersTable } from "@/src/app/(front)/components/Tables/WorkersTable/WorkersTable";
+import { LocationCard } from "@/src/app/(front)/components/Cards/LocationCard/LocationCard";
+import { LastRegistersByEstablishment } from "../../../components/Tables/LastRegistersByEstablishment";
+
+//utils
+import { phoneUtils } from "@/src/utils/phone";
+import { cepUtils } from "@/src/utils/cep";
+import { CountdownAdModal } from "../../../ADS/Adsterra/CountdownAdModal";
+import { getEstablishmentDetails } from "../../../hooks/getEstablishmentDetails";
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export default async function ManagerDashboard(props: {
+  searchParams: SearchParams;
+}) {
+  const searchParams = await props.searchParams;
+
+  const establishmentId = searchParams.establishmentId;
+
+  if (typeof establishmentId != "string")
+    return (
+      <div className="w-full h-full flex justify-center items-center p-4 text-center">
+        <h1 className="text-xl">Selecione um estabelecimento...</h1>
+      </div>
+    );
+  else {
+    const establishmentData = await getEstablishmentDetails(establishmentId);
+
+    return (
+      <div className="w-full h-full max-h-full overflow-auto p-5 md:p-10 flex flex-col lg:flex-row gap-4">
+        <CountdownAdModal />
+        {/* Coluna da esquerda */}
+        <div className="flex-1 flex flex-col gap-4 min-w-[300px]">
+          <EstablishmentInfoCard
+            id={establishmentId}
+            name={establishmentData.name}
+            phone={phoneUtils.format(establishmentData.phone)}
+            email={establishmentData.email}
+            cep={cepUtils.format(establishmentData.cep)}
+          />
+          <WorkersTable
+            establishmentId={establishmentId}
+            baseRoute="/manager/worker"
+          />
+        </div>
+
+        {/* Coluna da direita */}
+        <div className="flex-1 flex flex-col gap-4 min-w-[300px]">
+          <LastRegistersByEstablishment
+            establishmentId={establishmentId}
+            title="Últimos registros"
+            maxRegisters={7}
+          />
+
+          <LocationCard
+            className="w-full flex-1 min-h-[300px]"
+            establishmentId={establishmentId}
+            markerPosition={{
+              lat: establishmentData.lat,
+              lng: establishmentData.lng,
+            }}
+            ratio={establishmentData.ratio}
+          />
+        </div>
+      </div>
+    );
+  }
+}

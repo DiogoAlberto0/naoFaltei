@@ -7,12 +7,14 @@ import { fetcher } from "@/src/utils/fetcher";
 // hero uu
 import { addToast } from "@heroui/toast";
 
-export const useEstablishmentLocale = () => {
+export const useEstablishmentLocale = (
+  { isDemo }: { isDemo: boolean } = { isDemo: false },
+) => {
   const { data, error, isLoading } = useSWR<{
     lat: number;
     lng: number;
     ratio: number;
-  }>("/api/v1/establishment/getLocale", fetcher);
+  }>(isDemo ? null : "/api/v1/establishment/getLocale", fetcher);
   useEffect(() => {
     if (error)
       addToast({

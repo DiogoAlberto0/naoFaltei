@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { clockinModel } from "@/src/app/(back)/models/clockin/clockin";
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
 import {
   ForbiddenError,
   InputError,

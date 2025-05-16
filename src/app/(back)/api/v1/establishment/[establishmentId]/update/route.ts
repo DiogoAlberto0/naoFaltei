@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { UnauthorizedError, ForbiddenError } from "@/src/Errors/errors";
 
 // models
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
 import { coordinateUtils } from "@/src/utils/coordinate";
 
 export const PUT = async (

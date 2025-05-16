@@ -67,6 +67,7 @@ export const AddressInputs = ({ address, setAddress }: IAddressInputsProps) => {
         type="text"
         onValueChange={(value) => value.length >= 8 && fetchCepInfos(value)}
         tabIndex={4}
+        description="A localização inicial é baseada no CEP"
       />
       <Input
         disabled={

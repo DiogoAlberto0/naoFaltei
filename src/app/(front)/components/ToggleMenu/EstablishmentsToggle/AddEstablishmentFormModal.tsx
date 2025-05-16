@@ -26,10 +26,12 @@ const INITIAL_ADDRESS: IAddress = {
 };
 
 interface IAddEstablishmentFormModal {
+  onAdd: () => void;
   openButton: (props: { onPress: () => void }) => ReactNode;
 }
 export const AddEstablishmentFormModal = ({
   openButton,
+  onAdd,
 }: IAddEstablishmentFormModal) => {
   const [addressState, setAddressState] = useState<IAddress>(INITIAL_ADDRESS);
 
@@ -49,7 +51,10 @@ export const AddEstablishmentFormModal = ({
 
   return (
     <ModalForm
-      handleSubmit={handleSubmit}
+      handleSubmit={async (e) => {
+        await handleSubmit(e);
+        onAdd();
+      }}
       submitButtonText="Criar"
       openButton={openButton}
     >

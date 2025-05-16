@@ -1,10 +1,13 @@
-//models
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
-import { workerModel } from "../models/worker";
-import { signinForTest } from "./signinForTest";
-import { userModel } from "../models/user";
-import { clockinModel } from "../models/clockin/clockin";
 import { prisma } from "@/prisma/prisma";
+//models
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
+import { workerModel } from "../models/worker/worker";
+import { userModel } from "../models/user/user";
+import { clockinModel } from "../models/clockin/clockin";
+import { scheduleModule } from "../models/schedule/schedule";
+
+// data for tests
+import { signinForTest } from "./signinForTest";
 
 export interface IValidAuthor {
   id: string;
@@ -323,7 +326,7 @@ export const setValidSchedule = async (workerId: string) => {
     endMinute: 0,
     restTimeInMinutes: 90,
   };
-  await workerModel.setSchedule({
+  await scheduleModule.setSchedule({
     workerId: workerId,
     schedule: {
       monday: weekSchedule,
@@ -351,7 +354,7 @@ export const setValidSchedule2 = async (workerId: string) => {
     endMinute: 0,
     restTimeInMinutes: 60,
   };
-  await workerModel.setSchedule({
+  await scheduleModule.setSchedule({
     workerId: workerId,
     schedule: {
       monday: weekSchedule,

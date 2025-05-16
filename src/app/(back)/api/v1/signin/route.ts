@@ -1,7 +1,7 @@
 import { signIn } from "@/auth";
 import { InputError } from "@/src/Errors/errors";
-import { userModel } from "@/src/app/(back)/models/user";
-import { workerModel } from "@/src/app/(back)/models/worker";
+import { userModel } from "@/src/app/(back)/models/user/user";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
 import { passwordUtils } from "@/src/utils/password";
 import { NextRequest, NextResponse } from "next/server";
 

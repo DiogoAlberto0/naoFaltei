@@ -20,10 +20,10 @@ export const useCalendarInput = (onSubmitRedirect: string) => {
   const [dates, setDates] = useState<RangeValue<CalendarDate> | null>({
     start: inicialDateString
       ? parseDate(inicialDateString)
-      : today(getLocalTimeZone()).set({ day: 0 }),
+      : today(getLocalTimeZone()).subtract({ months: 1 }),
     end: finalDateString
       ? parseDate(finalDateString)
-      : today(getLocalTimeZone()).set({ day: 0 }).add({ months: 1 }),
+      : today(getLocalTimeZone()),
   });
 
   const searchTimeSheet = () => {

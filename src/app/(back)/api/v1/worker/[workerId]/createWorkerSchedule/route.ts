@@ -1,13 +1,20 @@
 import { auth } from "@/auth";
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
-import { workerModel } from "@/src/app/(back)/models/worker";
+import { NextRequest, NextResponse } from "next/server";
+
+// models
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
+import { scheduleModule } from "@/src/app/(back)/models/schedule/schedule";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
+
+// errors
 import {
   ForbiddenError,
   InputError,
   NotFoundError,
   UnauthorizedError,
 } from "@/src/Errors/errors";
-import { NextRequest, NextResponse } from "next/server";
+
+// scheme validator
 import { z } from "zod";
 
 const scheduleScheme = z.object({
@@ -68,7 +75,7 @@ export const POST = async (
     }
 
     const schedule = result.data.schedule;
-    await workerModel.setSchedule({
+    await scheduleModule.setSchedule({
       workerId,
       schedule: {
         sunday: schedule.sunday || null,

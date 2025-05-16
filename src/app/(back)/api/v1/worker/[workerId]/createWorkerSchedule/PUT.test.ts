@@ -9,7 +9,7 @@ import {
 import { resetAllDatabase } from "@/prisma/prisma";
 
 //model
-import { workerModel } from "@/src/app/(back)/models/worker";
+import { scheduleModule } from "@/src/app/(back)/models/schedule/schedule";
 
 //scenario 1 variables
 let author1Cookie: string;
@@ -106,7 +106,7 @@ const expectations = async ({
   const { response, data } = await createScheduleFetch(cookie, workerId, body);
 
   expect(response.status).toStrictEqual(expectedStatusCode);
-  const workerScheduleFromDB = await workerModel.getSchedule(workerId);
+  const workerScheduleFromDB = await scheduleModule.getSchedule(workerId);
 
   if (response.status === 201) {
     expect(workerScheduleFromDB).toEqual(data);

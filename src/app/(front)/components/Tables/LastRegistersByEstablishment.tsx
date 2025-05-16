@@ -1,7 +1,6 @@
 "use client";
 //next
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 // heroui components
 import { Pagination } from "@heroui/pagination";
 import {
@@ -23,7 +22,9 @@ import { DateText } from "@/src/app/(front)/components/DataViews/Date/DateText";
 import { ComponentError } from "../ComponentError";
 
 //fetcher
+import useSWR from "swr";
 import { fetcher } from "@/src/utils/fetcher";
+import { RefreshIconButton } from "../Buttons/RefreshButton";
 
 interface IRegister {
   id: string;
@@ -139,6 +140,7 @@ export const LastRegistersByEstablishment = ({
       topContent={
         <div className=" w-full flex justify-between items-center">
           <h1 className="text-xl">{title}</h1>
+          <RefreshIconButton onPress={() => window.location.reload()} />
         </div>
       }
       bottomContent={

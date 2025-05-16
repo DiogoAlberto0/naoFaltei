@@ -4,7 +4,7 @@ import { omit } from "lodash";
 import { resetAllDatabase } from "@/prisma/prisma";
 
 //models
-import { workerModel } from "@/src/app/(back)/models/worker";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
 
 //valid entitys from test
 import {

@@ -3,7 +3,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { resetAllDatabase } from "@/prisma/prisma";
 
 //models
-import { workerModel } from "@/src/app/(back)/models/worker";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
 
 // valid entitys for tests
 import {

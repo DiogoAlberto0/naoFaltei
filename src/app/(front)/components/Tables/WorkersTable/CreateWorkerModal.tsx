@@ -9,15 +9,20 @@ import { createWorker } from "./handlers";
 
 interface ICreateWorkerModalProps {
   establishmentId: string;
+  onCreate: () => void;
 }
 
 export const CreateWorkerModal = ({
   establishmentId,
+  onCreate,
 }: ICreateWorkerModalProps) => {
   return (
     <ModalForm
       title="Criar novo funcionário"
-      handleSubmit={createWorker}
+      handleSubmit={async (formData) => {
+        await createWorker(formData);
+        onCreate();
+      }}
       submitButtonText="Criar"
       openButton={({ onPress }) => <AddIconButton onPress={onPress} />}
     >
