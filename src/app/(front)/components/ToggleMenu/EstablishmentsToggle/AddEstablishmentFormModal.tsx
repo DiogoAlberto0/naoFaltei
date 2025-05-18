@@ -10,6 +10,7 @@ import { AddressInputs, IAddress } from "./AddressInputs";
 
 //hook
 import { useCreateEstablishment } from "./useCreateEstablishment";
+import { addToast } from "@heroui/toast";
 
 const INITIAL_ADDRESS: IAddress = {
   address: "",
@@ -28,10 +29,12 @@ const INITIAL_ADDRESS: IAddress = {
 interface IAddEstablishmentFormModal {
   onAdd: () => void;
   openButton: (props: { onPress: () => void }) => ReactNode;
+  isDemo?: boolean;
 }
 export const AddEstablishmentFormModal = ({
   openButton,
   onAdd,
+  isDemo = false,
 }: IAddEstablishmentFormModal) => {
   const [addressState, setAddressState] = useState<IAddress>(INITIAL_ADDRESS);
 
@@ -52,6 +55,11 @@ export const AddEstablishmentFormModal = ({
   return (
     <ModalForm
       handleSubmit={async (e) => {
+        if (isDemo)
+          return addToast({
+            title: "Você está em uma versão demo",
+            color: "warning",
+          });
         await handleSubmit(e);
         onAdd();
       }}

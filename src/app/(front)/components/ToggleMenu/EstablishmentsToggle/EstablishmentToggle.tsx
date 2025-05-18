@@ -26,13 +26,45 @@ interface IError {
   message: string;
   action: string;
 }
+
+const fakeData: IEstablishmentProps[] = [
+  {
+    id: "123",
+    name: "Estabelecimento 1",
+  },
+];
+
+const ToggleItems = ({
+  activeEstablishmentId,
+  establishments,
+  isDemo = false,
+}: {
+  activeEstablishmentId: string | null;
+  establishments: IEstablishmentProps[];
+  isDemo?: boolean;
+}) => {
+  return establishments.map(({ id, name }) => (
+    <ToggleItem
+      key={id}
+      href={`/manager/dashboard?establishmentId=${id}${isDemo ? "&beta=true" : ""}`}
+      isActive={activeEstablishmentId == id}
+      className={`w-full border-b-1 border-primary-100 ${activeEstablishmentId == id && "bg-secondary"}`}
+    >
+      {name}
+    </ToggleItem>
+  ));
+};
 export const EstablishmentToggle = () => {
+  const searchParams = useSearchParams();
+
+  const demo = searchParams.get("demo");
+  const isDemo = demo?.toString().toLowerCase() === "true";
+
   const { data, isLoading, error, mutate } = useSWR<IData, IError>(
-    `/api/v1/establishment/list`,
+    isDemo ? null : `/api/v1/establishment/list`,
     fetcher,
   );
 
-  const searchParams = useSearchParams();
   const establishmentId = searchParams.get("establishmentId"); // retorna "123"
 
   return (
@@ -49,17 +81,21 @@ export const EstablishmentToggle = () => {
             Carregando...
           </ToggleItem>
         )}
-        {data?.establishments.map(({ id, name }) => (
-          <ToggleItem
-            key={id}
-            href={`/manager/dashboard?establishmentId=${id}`}
-            isActive={establishmentId == id}
-            className={`w-full border-b-1 border-primary-100 ${establishmentId == id && "bg-secondary"}`}
-          >
-            {name}
-          </ToggleItem>
-        ))}
+        {isDemo ? (
+          <ToggleItems
+            isDemo={isDemo}
+            activeEstablishmentId={establishmentId}
+            establishments={fakeData}
+          />
+        ) : (
+          <ToggleItems
+            isDemo={isDemo}
+            activeEstablishmentId={establishmentId}
+            establishments={data?.establishments || []}
+          />
+        )}
         <AddEstablishmentFormModal
+          isDemo={isDemo}
           onAdd={() => mutate()}
           openButton={({ onPress }) => (
             <Button

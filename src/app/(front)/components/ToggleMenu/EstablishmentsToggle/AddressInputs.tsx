@@ -1,12 +1,14 @@
 //react
 import { Dispatch, SetStateAction, useState } from "react";
+import dynamic from "next/dynamic";
 
 //heroui components
 import { Input } from "@heroui/react";
 
 // components
-import { Map } from "@/src/app/(front)/components/Map/Map";
-
+const Map = dynamic(() => import("../../Map/Map").then((mod) => mod.Map), {
+  ssr: false, // <-- força a renderização apenas no cliente
+});
 export interface IAddress {
   address: string;
   address_name: string;
