@@ -1,7 +1,7 @@
 import { describe, it, beforeAll, expect } from "vitest";
 import { resetAllDatabase } from "@/prisma/prisma";
 import { createScenario1 } from "@/src/app/(back)/tests/entitysForTest";
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
 import { coordinateUtils } from "@/src/utils/coordinate";
 
 let scenario1: {

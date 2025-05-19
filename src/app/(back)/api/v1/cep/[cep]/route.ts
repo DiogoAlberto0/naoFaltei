@@ -1,4 +1,4 @@
-import { cepModel } from "@/src/app/(back)/models/cep";
+import { cepModel } from "@/src/app/(back)/models/cep/cep";
 import { NextResponse, NextRequest } from "next/server";
 
 export const GET = async (

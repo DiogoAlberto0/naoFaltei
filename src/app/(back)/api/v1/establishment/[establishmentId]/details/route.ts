@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
 import { ForbiddenError, UnauthorizedError } from "@/src/Errors/errors";
 import { NextRequest, NextResponse } from "next/server";
 

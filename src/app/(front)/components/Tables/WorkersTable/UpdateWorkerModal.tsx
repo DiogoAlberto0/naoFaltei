@@ -11,7 +11,7 @@ import { ComponentError } from "../../ComponentError";
 import { updateWorker } from "./handlers";
 
 // hero ui
-import { Spinner, Tooltip } from "@heroui/react";
+import { addToast, Spinner, Tooltip } from "@heroui/react";
 
 interface IWorker {
   id: string;
@@ -25,6 +25,19 @@ interface IWorker {
   is_active: boolean;
   establishment_id: string;
 }
+const fakeWorker: IWorker = {
+  id: "worker-001",
+  name: "Lucas Andrade",
+  login: "lucas.andrade",
+  cpf: "123.456.789-00",
+  phone: "(11) 91234-5678",
+  email: "lucas.andrade@example.com",
+  is_manager: true,
+  is_admin: false,
+  is_active: true,
+  establishment_id: "estab-123",
+};
+
 const EditTooltip = ({ onPress }: { onPress: () => void }) => {
   return (
     <Tooltip content="Editar funcionário">
@@ -78,18 +91,29 @@ const UpdateWorkerForm = ({ worker }: { worker: IWorker }) => {
   );
 };
 export const UpdateWorkerModal = ({
-  worker,
+  worker: originalWorker,
   workerId,
   isButton = true,
+  isDemo = false,
 }: {
   worker?: IWorker;
   workerId?: string;
   isButton?: boolean;
+  isDemo?: boolean;
 }) => {
+  const worker = isDemo ? fakeWorker : originalWorker;
+
   return (
     <ModalForm
       title="Criar novo funcionário"
-      handleSubmit={updateWorker}
+      handleSubmit={async (formData) => {
+        if (isDemo)
+          return addToast({
+            title: "Você está em uma versão demo",
+            color: "warning",
+          });
+        await updateWorker(formData);
+      }}
       submitButtonText="Criar"
       openButton={({ onPress }) =>
         isButton ? (

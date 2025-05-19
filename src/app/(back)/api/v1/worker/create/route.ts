@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // model user
-import { workerModel } from "@/src/app/(back)/models/worker";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
 import {
   ForbiddenError,
   InputError,
@@ -11,7 +11,7 @@ import {
 
 // authjs
 import { auth } from "@/auth";
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
 
 export const POST = async (request: NextRequest) => {
   try {

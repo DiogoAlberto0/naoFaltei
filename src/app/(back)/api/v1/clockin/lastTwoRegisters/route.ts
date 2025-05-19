@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 
 // model
 import { clockinModel } from "@/src/app/(back)/models/clockin/clockin";
-import { workerModel } from "@/src/app/(back)/models/worker";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
 
 // errors
 import { NotFoundError, UnauthorizedError } from "@/src/Errors/errors";

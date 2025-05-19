@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import {
   Navbar,
@@ -10,19 +10,31 @@ import {
   NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
+  NavbarProps,
 } from "@heroui/react";
 import { AvatarDropdown } from "./AvatarDropdown";
 
 //pwa context
 import { usePwaInstallContext } from "../Pwa/PwaInstallContext";
 
-export function NavBar() {
+interface INavBarProps extends NavbarProps {}
+export function NavBar({ ...otherProps }: INavBarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const router = useRouter();
   const { setIsPwaInstallDismissed } = usePwaInstallContext();
+
+  const searchParams = useSearchParams();
+  const demo = searchParams.get("demo");
+  const isDemo = demo?.toString().toLowerCase() === "true";
+
   return (
-    <Navbar position="static" onMenuOpenChange={setIsMenuOpen} isBordered>
+    <Navbar
+      position="static"
+      onMenuOpenChange={setIsMenuOpen}
+      isBordered
+      {...otherProps}
+    >
       <NavbarContent>
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -33,14 +45,21 @@ export function NavBar() {
       </NavbarContent>
 
       <NavbarContent as="div" justify="end">
-        <AvatarDropdown />
+        <AvatarDropdown isDemo={isDemo} />
       </NavbarContent>
 
       <NavbarMenu>
         <NavbarMenuItem key={`establishments`}>
-          <Link className="w-full" color="primary" href="#" size="lg">
+          <Link
+            className="w-full"
+            color="primary"
+            href={`/manager/dashboard${isDemo ? "?demo=true" : ""}`}
+            size="lg"
+          >
             Estabelecimentos
           </Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
           <Link
             className="w-full"
             color="primary"

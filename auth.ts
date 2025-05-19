@@ -8,8 +8,8 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/prisma/prisma";
 import { passwordUtils } from "@/src/utils/password";
-import { workerModel } from "@/src/app/(back)/models/worker";
-import { userModel } from "@/src/app/(back)/models/user";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
+import { userModel } from "@/src/app/(back)/models/user/user";
 
 declare module "next-auth" {
   /**

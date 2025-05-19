@@ -10,7 +10,7 @@ import { frontPasswordUtils } from "@/src/utils/password.front";
 
 //fetcher
 import { axios } from "@/src/utils/fetcher";
-import { revalidateWorker } from "./revalidateData";
+import { revalidateWorkerDetails } from "../../../hooks/worker/getWorkerDetails";
 
 //hero ui
 import { addToast } from "@heroui/toast";
@@ -141,7 +141,7 @@ export const updateWorker = async (formData: FormData) => {
     },
   });
 
-  revalidateWorker(workerId);
+  revalidateWorkerDetails(workerId);
   addToast({
     color: "success",
     title: `Funcionário ${data.name} alterado com sucesso`,

@@ -72,6 +72,7 @@ export const TopContentRegistersTable = ({
         <h1 className="text-xl">{title}</h1>
         {detailed && <TimeSheetModal timeSheet={timeSheet} />}
       </div>
+      <h2>Os dados informados correspondem somente ao período selecionado</h2>
       {detailed && <TopContentDetails {...otherProps} />}
     </div>
   );

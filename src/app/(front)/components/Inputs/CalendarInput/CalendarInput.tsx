@@ -3,7 +3,13 @@
 
 // heroui
 import { I18nProvider } from "@react-aria/i18n";
-import { Card, CardBody, CardHeader, DateRangePicker } from "@heroui/react";
+import {
+  addToast,
+  Card,
+  CardBody,
+  CardHeader,
+  DateRangePicker,
+} from "@heroui/react";
 import { today, getLocalTimeZone } from "@internationalized/date";
 
 //icons
@@ -19,12 +25,14 @@ interface ICalendarInputProps {
   className?: string;
   title: string;
   onSubmitRedirect: string;
+  isDemo?: boolean;
 }
 
 export const CalendarInput = ({
   title,
   className,
   onSubmitRedirect,
+  isDemo = false,
 }: ICalendarInputProps) => {
   const { dates, setDates, searchTimeSheet } =
     useCalendarInput(onSubmitRedirect);
@@ -39,7 +47,16 @@ export const CalendarInput = ({
             ponto.
           </h2>
         </div>
-        <SearchIconButton onPress={searchTimeSheet} />
+        <SearchIconButton
+          onPress={() => {
+            if (isDemo)
+              return addToast({
+                title: "Você está em uma versão demo",
+                color: "warning",
+              });
+            else return searchTimeSheet();
+          }}
+        />
       </CardHeader>
       <CardBody>
         <I18nProvider locale="pt-br">

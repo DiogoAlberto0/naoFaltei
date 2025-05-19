@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { InputError, UnauthorizedError } from "@/src/Errors/errors";
 
 //models
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
 import { auth } from "@/auth";
 
 export const POST = async (request: NextRequest) => {

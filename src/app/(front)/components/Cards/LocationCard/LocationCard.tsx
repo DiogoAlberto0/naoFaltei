@@ -7,6 +7,7 @@ import { Map } from "@/src/app/(front)/components/Map/Map";
 import { UpdateLocaleModal } from "./UpdateLocaleModal";
 
 interface ILocationCardProps extends CardProps {
+  isDemo?: boolean;
   establishmentId: string;
   isEditable?: boolean;
   markerPosition: {
@@ -16,6 +17,7 @@ interface ILocationCardProps extends CardProps {
   ratio: number;
 }
 export const LocationCard = ({
+  isDemo = false,
   isEditable = true,
   className,
   markerPosition,
@@ -45,6 +47,7 @@ export const LocationCard = ({
             establishmentId={establishmentId}
             inicialCoords={markerPosition}
             ratio={ratio}
+            isDemo={isDemo}
           />
         )}
       </CardFooter>

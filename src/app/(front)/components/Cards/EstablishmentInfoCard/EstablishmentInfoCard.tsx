@@ -15,6 +15,7 @@ export const EstablishmentInfoCard = ({
   email,
   phone,
   isEditable = true,
+  isDemo = false,
 }: {
   id: string;
   name: string;
@@ -22,6 +23,7 @@ export const EstablishmentInfoCard = ({
   email: string;
   cep: string;
   isEditable?: boolean;
+  isDemo?: boolean;
 }) => {
   return (
     <Card className="flex flex-col min-h-max">
@@ -40,6 +42,7 @@ export const EstablishmentInfoCard = ({
           <Divider />
           <CardFooter className="flex justify-end">
             <UpdateEstablishmentModal
+              isDemo={isDemo}
               id={id}
               name={name}
               phone={phone}

@@ -3,7 +3,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { resetAllDatabase } from "@/prisma/prisma";
 
 // models
-import { establishmentModel } from "@/src/app/(back)/models/establishment";
+import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
 // valid entitys for test
 import {
   createScenario1,

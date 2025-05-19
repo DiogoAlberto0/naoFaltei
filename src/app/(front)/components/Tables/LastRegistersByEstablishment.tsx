@@ -1,7 +1,5 @@
 "use client";
-//next
-import { useEffect, useState } from "react";
-import useSWR from "swr";
+
 // heroui components
 import { Pagination } from "@heroui/pagination";
 import {
@@ -21,71 +19,50 @@ import {
 } from "@/src/app/(front)/components/DataViews/Chips/TypeRegisterChip";
 import { DateText } from "@/src/app/(front)/components/DataViews/Date/DateText";
 import { ComponentError } from "../ComponentError";
+import { RefreshIconButton } from "../Buttons/RefreshButton";
 
 //fetcher
-import { fetcher } from "@/src/utils/fetcher";
+import { useClockinsByEstablishment } from "../../hooks/clockins/useClockinsByEstablishment";
+import { IRegister } from "../../hooks/clockins/clockins.types";
 
-interface IRegister {
-  id: string;
-  clocked_at: string;
-  is_entry: boolean;
-  worker: {
-    name: string;
-    email: string;
-  };
-}
-
-interface IMetaInfos {
-  currentPage: number;
-  pageSize: number;
-  totalPages: number;
-  totalItems: number;
-}
-
-interface IListClockinResponse {
-  lastRegisters: IRegister[];
-  meta: IMetaInfos;
-}
-export const renderRegitersTableRow = ({
-  id,
-  name,
-  clockIn,
-  date,
-  hour,
-  minute,
-}: {
-  id: string;
-  name: string;
-  clockIn: boolean;
-  date: Date;
-  hour: number;
-  minute: number;
-}) => {
-  return (
-    <TableRow
-      key={id}
-      className={`${clockIn ? "max-sm:bg-success-400 max-sm:bg-opacity-50" : "max-sm:bg-danger-400 max-sm:bg-opacity-50"}`}
-    >
-      <TableCell className="whitespace-nowrap">
-        {name.split(" ")[0]} {name.split(" ")[1]}
-      </TableCell>
-      <TableCell className="max-sm:hidden">
-        <TypeRegisterChip clockIn={clockIn} />
-      </TableCell>
-      <TableCell>
-        <DateText
-          date={date}
-          isFullDate
-          className="hidden sm:flex md:hidden lg:flex"
-        />
-        <DateText date={date} className="sm:hidden md:flex lg:hidden" />
-      </TableCell>
-      <TableCell>
-        {hour.toString().padStart(2, "0")}:{minute.toString().padStart(2, "0")}
-      </TableCell>
-    </TableRow>
-  );
-};
+const fakeRegisters: IRegister[] = [
+  {
+    id: "reg-001",
+    clocked_at: "2025-05-19T08:30:00Z",
+    is_entry: true,
+    worker: {
+      name: "João Silva",
+      email: "joao.silva@example.com",
+    },
+  },
+  {
+    id: "reg-002",
+    clocked_at: "2025-05-19T17:45:00Z",
+    is_entry: false,
+    worker: {
+      name: "João Silva",
+      email: "joao.silva@example.com",
+    },
+  },
+  {
+    id: "reg-003",
+    clocked_at: "2025-05-19T09:00:00Z",
+    is_entry: true,
+    worker: {
+      name: "Maria Oliveira",
+      email: "maria.oliveira@example.com",
+    },
+  },
+  {
+    id: "reg-004",
+    clocked_at: "2025-05-19T18:10:00Z",
+    is_entry: false,
+    worker: {
+      name: "Maria Oliveira",
+      email: "maria.oliveira@example.com",
+    },
+  },
+];
 
 const renderRegistersTableRows = ({
   registers,
@@ -95,14 +72,31 @@ const renderRegistersTableRows = ({
   return registers.map(
     ({ id, worker: { name }, is_entry: clockIn, clocked_at }) => {
       const date = new Date(clocked_at);
-      return renderRegitersTableRow({
-        id,
-        name,
-        clockIn,
-        date: date,
-        hour: date.getHours(),
-        minute: date.getMinutes(),
-      });
+      return (
+        <TableRow
+          key={id}
+          className={`${clockIn ? "max-sm:bg-success-400 max-sm:bg-opacity-50" : "max-sm:bg-danger-400 max-sm:bg-opacity-50"}`}
+        >
+          <TableCell className="whitespace-nowrap">
+            {name.split(" ")[0]} {name.split(" ")[1]}
+          </TableCell>
+          <TableCell className="max-sm:hidden">
+            <TypeRegisterChip clockIn={clockIn} />
+          </TableCell>
+          <TableCell>
+            <DateText
+              date={date}
+              isFullDate
+              className="hidden sm:flex md:hidden lg:flex"
+            />
+            <DateText date={date} className="sm:hidden md:flex lg:hidden" />
+          </TableCell>
+          <TableCell>
+            {date.getHours().toString().padStart(2, "0")}:
+            {date.getMinutes().toString().padStart(2, "0")}
+          </TableCell>
+        </TableRow>
+      );
     },
   );
 };
@@ -111,34 +105,30 @@ export const LastRegistersByEstablishment = ({
   title,
   establishmentId,
   maxRegisters,
+  isDemo = false,
 }: {
   title: string;
   maxRegisters: number;
   detailed?: boolean;
   establishmentId: string;
+  isDemo?: boolean;
 }) => {
-  const [page, setPage] = useState(1);
-
-  const [totalPages, setTotalPages] = useState<number | null>(null);
-
-  const { data, error, isLoading } = useSWR<IListClockinResponse>(
-    `/api/v1/clockin/listByEstablishment?establishmentId=${establishmentId}&pageSize=${maxRegisters}&page=${page}`,
-    fetcher,
-  );
-
-  useEffect(() => {
-    if (data?.meta.totalPages && totalPages === null) {
-      setTotalPages(data.meta.totalPages);
-    }
-  }, [data, totalPages]);
+  const { data, error, isLoading, page, setPage, totalPages } =
+    useClockinsByEstablishment({
+      establishmentId,
+      maxRegisters,
+      isDemo,
+    });
 
   if (error)
     return <ComponentError message={error.message} action={error.action} />;
+
   return (
     <Table
       topContent={
         <div className=" w-full flex justify-between items-center">
           <h1 className="text-xl">{title}</h1>
+          <RefreshIconButton onPress={() => window.location.reload()} />
         </div>
       }
       bottomContent={
@@ -172,7 +162,9 @@ export const LastRegistersByEstablishment = ({
         loadingState={isLoading ? "loading" : "idle"}
         emptyContent="Ainda não há registros..."
       >
-        {renderRegistersTableRows({ registers: data?.lastRegisters || [] })}
+        {isDemo
+          ? renderRegistersTableRows({ registers: fakeRegisters })
+          : renderRegistersTableRows({ registers: data?.lastRegisters || [] })}
       </TableBody>
     </Table>
   );

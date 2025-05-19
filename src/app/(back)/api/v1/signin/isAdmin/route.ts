@@ -4,8 +4,8 @@ import { auth } from "@/auth";
 
 //errors
 import { UnauthorizedError } from "@/src/Errors/errors";
-import { workerModel } from "@/src/app/(back)/models/worker";
-import { userModel } from "@/src/app/(back)/models/user";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
+import { userModel } from "@/src/app/(back)/models/user/user";
 
 export const GET = async (request: NextRequest) => {
   try {

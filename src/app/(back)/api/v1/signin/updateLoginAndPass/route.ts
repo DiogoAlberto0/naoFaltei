@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { workerModel } from "@/src/app/(back)/models/worker";
+import { workerModel } from "@/src/app/(back)/models/worker/worker";
 import {
   InputError,
   NotFoundError,

@@ -1,10 +1,14 @@
+import { describe, it, expect, beforeAll } from "vitest";
 import { resetAllDatabase } from "@/prisma/prisma";
-import { workerModel } from "@/src/app/(back)/models/worker";
+
+// models
+import { scheduleModule } from "@/src/app/(back)/models/schedule/schedule";
+
+// data for tests
 import {
   createScenario1,
   createScenario2,
 } from "@/src/app/(back)/tests/entitysForTest";
-import { describe, it, expect, beforeAll } from "vitest";
 
 let worker1Id: string;
 let worker1Cookie: string;
@@ -29,7 +33,7 @@ beforeAll(async () => {
     endMinute: 0,
     restTimeInMinutes: 90,
   };
-  await workerModel.setSchedule({
+  await scheduleModule.setSchedule({
     workerId: worker1Id,
     schedule: {
       sunday: validEntryAndExit,
@@ -80,7 +84,7 @@ const expectations = async ({
   expect(response.status).toStrictEqual(expectedStatusCode || 200);
 
   if (response.status === 200) {
-    const scheduleFromDB = await workerModel.getSchedule(workerId);
+    const scheduleFromDB = await scheduleModule.getSchedule(workerId);
 
     expect(data).toStrictEqual(scheduleFromDB);
   } else if (response.status === 401) {
