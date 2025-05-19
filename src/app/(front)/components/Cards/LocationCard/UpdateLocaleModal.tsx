@@ -1,6 +1,6 @@
 import { useState } from "react";
 //hero ui
-import { Button, Input } from "@heroui/react";
+import { addToast, Button, Input } from "@heroui/react";
 
 //coponents
 import { ModalForm } from "../../Modal/ModalForm";
@@ -16,6 +16,7 @@ interface ICoords {
   lng: number;
 }
 interface IUpdateLocaleModalProps {
+  isDemo?: boolean;
   establishmentId: string;
   inicialCoords: ICoords;
   ratio: number;
@@ -25,6 +26,7 @@ export const UpdateLocaleModal = ({
   establishmentId,
   inicialCoords,
   ratio: inicialRatio,
+  isDemo = false,
 }: IUpdateLocaleModalProps) => {
   const [coords, setCoords] = useState<ICoords>({
     lat: inicialCoords.lat,
@@ -37,6 +39,11 @@ export const UpdateLocaleModal = ({
     <>
       <ModalForm
         handleSubmit={async (formData) => {
+          if (isDemo)
+            return addToast({
+              title: "Você está em uma versão demo",
+              color: "warning",
+            });
           await updateLocaleHandler(formData);
           revalidateEstablishmentDetails(establishmentId);
         }}
