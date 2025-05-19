@@ -126,6 +126,14 @@ const PresentationPage = async () => {
           <h2 className="text-lg md:text-2xl text-primary-500 font-semibold mb-6">
             Controle de ponto gratuito para pequenas empresas.
           </h2>
+          <p className="text-base md:text-lg font-semibold mb-6">
+            O Não Faltei é um sistema de ponto eletrônico online desenvolvido
+            para pequenas empresas que buscam controle de presença eficiente e
+            acessível. Com ele, é possível registrar e acompanhar os horários
+            dos funcionários em tempo real, usando geolocalização, relatórios
+            detalhados e funcionalidades gratuitas. Ideal para quem precisa de
+            um sistema de ponto simples, moderno e sem complicações.
+          </p>
           <Button
             as="a"
             href="/signin"
