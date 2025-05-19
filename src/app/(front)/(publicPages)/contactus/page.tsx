@@ -144,8 +144,8 @@ export default function ContactPage() {
         </div>
 
         {/* Contact Form */}
-        <Card className="sticky top-24 h-fit">
-          <CardHeader>
+        <Card className="sticky top-24 h-full">
+          <CardHeader className="flex flex-col">
             <h2 className="text-2xl font-bold">Envie sua mensagem</h2>
             <p className="text-default-500">
               Preencha o formulário e entraremos em contato o mais breve
@@ -154,8 +154,18 @@ export default function ContactPage() {
           </CardHeader>
           <Divider />
           <CardBody>
-            <form className="space-y-6">
+            <form
+              className="h-full gap-6 flex flex-col justify-evenly"
+              action={`https://formsubmit.co/${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}
+              method="POST"
+            >
+              <input
+                type="hidden"
+                name="_next"
+                value={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/contactSuccess`}
+              />
               <Input
+                name="name"
                 label="Nome completo"
                 labelPlacement="outside"
                 placeholder="Seu nome"
@@ -167,8 +177,9 @@ export default function ContactPage() {
                 }
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex max-sm:flex-col gap-6">
                 <Input
+                  name="email"
                   label="E-mail"
                   labelPlacement="outside"
                   type="email"
@@ -182,6 +193,7 @@ export default function ContactPage() {
                 />
 
                 <Input
+                  name="phone"
                   label="Telefone"
                   labelPlacement="outside"
                   type="tel"
@@ -195,6 +207,7 @@ export default function ContactPage() {
               </div>
 
               <Input
+                name="_subject"
                 label="Assunto"
                 labelPlacement="outside"
                 placeholder="Qual o assunto da sua mensagem?"
@@ -207,6 +220,7 @@ export default function ContactPage() {
               />
 
               <Textarea
+                name="message"
                 label="Mensagem"
                 labelPlacement="outside"
                 placeholder="Escreva sua mensagem aqui..."
