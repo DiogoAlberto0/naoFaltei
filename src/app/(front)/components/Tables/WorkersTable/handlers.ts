@@ -10,7 +10,7 @@ import { frontPasswordUtils } from "@/src/utils/password.front";
 
 //fetcher
 import { axios } from "@/src/utils/fetcher";
-import { revalidateWorkerDetails } from "../../../hooks/getWorkerDetails";
+import { revalidateWorkerDetails } from "../../../hooks/worker/getWorkerDetails";
 
 //hero ui
 import { addToast } from "@heroui/toast";

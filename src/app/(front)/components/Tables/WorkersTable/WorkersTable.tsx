@@ -1,8 +1,4 @@
 "use client";
-// next
-import useSWR from "swr";
-import { useEffect, useState } from "react";
-
 //heroui components
 import { Pagination } from "@heroui/pagination";
 import {
@@ -21,27 +17,15 @@ import { StatusChip } from "./WorkerStatusChip";
 import { ActionsToolTips } from "./WorkerActions";
 
 //fetcher
-import { fetcher } from "@/src/utils/fetcher";
 import { ComponentError } from "../../ComponentError";
+import { useWorkersByEstablishment } from "../../../hooks/worker/useWorkersByEstablishment";
+import { IWorkerByEstablishment } from "../../../hooks/worker/worker.type";
 
-interface IWorker {
-  id: string;
-  name: string;
-  email: string;
-  worker_clockin: {
-    is_entry: boolean;
-  }[];
-}
-interface IMeta {
-  currentPage: number;
-  pageSize: number;
-  totalItems: number;
-  totalPages: number;
-}
 export interface IWorkersTableProps {
   establishmentId: string;
   isWorkerEditable?: boolean;
   baseRoute: string;
+  isDemo?: boolean;
 }
 
 const Legend = () => {
@@ -54,30 +38,70 @@ const Legend = () => {
   );
 };
 
+const renderTableRows = ({
+  workers,
+  isWorkerEditable,
+  baseRoute,
+  isDemo = false,
+}: {
+  workers: IWorkerByEstablishment[];
+  isWorkerEditable: boolean;
+  baseRoute: string;
+  isDemo?: boolean;
+}) => {
+  return workers.map(({ id, email, name, worker_clockin }) => (
+    <TableRow key={id}>
+      <TableCell>
+        <div className="flex flex-col">
+          <p className="text-bold text-sm capitalize">{name}</p>
+          <p className="text-bold text-sm capitalize text-default-400">
+            {email}
+          </p>
+        </div>
+      </TableCell>
+      <TableCell>
+        <StatusChip
+          responsive
+          isWorking={worker_clockin[0]?.is_entry || false}
+        />
+      </TableCell>
+      <TableCell>
+        <ActionsToolTips
+          workerId={id}
+          isWorkerEditable={isWorkerEditable}
+          baseRoute={baseRoute}
+          isDemo={isDemo}
+        />
+      </TableCell>
+    </TableRow>
+  ));
+};
+
+const fakeWorkersByEstablishment: IWorkerByEstablishment[] = [
+  {
+    id: "worker-001",
+    name: "João Silva",
+    email: "joao.silva@email.com",
+    worker_clockin: [{ is_entry: false }],
+  },
+  {
+    id: "worker-002",
+    name: "Maria Oliveira",
+    email: "maria.oliveira@email.com",
+    worker_clockin: [{ is_entry: true }],
+  },
+];
 export const WorkersTable = ({
   establishmentId,
   isWorkerEditable = true,
   baseRoute,
+  isDemo = false,
 }: IWorkersTableProps) => {
-  const [page, setPage] = useState(1);
-
-  const [totalPages, setTotalPages] = useState<number | null>(null);
-
-  const { data, isLoading, error, mutate } = useSWR<{
-    workers: IWorker[];
-    meta: IMeta;
-  }>(
-    `/api/v1/worker/list?establishmentId=${establishmentId}&page=${page}&pageSize=${7}`,
-    fetcher,
-  );
-
-  useEffect(() => {
-    if (data?.meta.totalPages && totalPages === null) {
-      setTotalPages(data.meta.totalPages);
-    }
-  }, [data, totalPages]);
-
-  const loadingState = isLoading ? "loading" : "idle";
+  const { data, error, isLoading, mutate, page, setPage, totalPages } =
+    useWorkersByEstablishment({
+      establishmentId,
+      isDemo,
+    });
   if (error)
     return <ComponentError message={error.message} action={error.action} />;
   return (
@@ -88,6 +112,7 @@ export const WorkersTable = ({
         <div className="flex justify-between items-center">
           <h1 className="text-xl">Funcionários</h1>
           <CreateWorkerModal
+            isDemo={isDemo}
             establishmentId={establishmentId}
             onCreate={() => mutate()}
           />
@@ -120,35 +145,21 @@ export const WorkersTable = ({
         emptyContent={"Essa empresa ainda não possui funcionário"}
         items={data?.workers ?? []}
         loadingContent={<Spinner />}
-        loadingState={loadingState}
+        loadingState={isLoading ? "loading" : "idle"}
       >
-        <>
-          {data?.workers.map(({ id, email, name, worker_clockin }) => (
-            <TableRow key={id}>
-              <TableCell>
-                <div className="flex flex-col">
-                  <p className="text-bold text-sm capitalize">{name}</p>
-                  <p className="text-bold text-sm capitalize text-default-400">
-                    {email}
-                  </p>
-                </div>
-              </TableCell>
-              <TableCell>
-                <StatusChip
-                  responsive
-                  isWorking={worker_clockin[0]?.is_entry || false}
-                />
-              </TableCell>
-              <TableCell>
-                <ActionsToolTips
-                  workerId={id}
-                  isWorkerEditable={isWorkerEditable}
-                  baseRoute={baseRoute}
-                />
-              </TableCell>
-            </TableRow>
-          ))}
-        </>
+        {isDemo
+          ? renderTableRows({
+              workers: fakeWorkersByEstablishment,
+              baseRoute,
+              isWorkerEditable,
+              isDemo: true,
+            })
+          : renderTableRows({
+              workers: data?.workers || [],
+              baseRoute,
+              isWorkerEditable,
+              isDemo: false,
+            })}
       </TableBody>
     </Table>
   );

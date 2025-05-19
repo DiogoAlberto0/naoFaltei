@@ -14,17 +14,21 @@ export const ActionsToolTips = ({
   workerId,
   isWorkerEditable,
   baseRoute,
+  isDemo,
 }: {
   workerId: string;
   isWorkerEditable: boolean;
   baseRoute: string;
+  isDemo?: boolean;
 }) => {
   const router = useRouter();
   return (
     <div className="relative flex flex-col sm:flex-row items-center justify-center gap-2 ">
       <Tooltip content="Details">
         <span
-          onClick={() => router.push(`${baseRoute}/${workerId}`)}
+          onClick={() =>
+            router.push(`${baseRoute}/${workerId}${isDemo ? "?demo=true" : ""}`)
+          }
           className="text-lg text-default-400 cursor-pointer active:opacity-50"
         >
           <EyeIcon />
@@ -32,7 +36,11 @@ export const ActionsToolTips = ({
       </Tooltip>
       {isWorkerEditable && (
         <>
-          <UpdateWorkerModal workerId={workerId} isButton={false} />
+          <UpdateWorkerModal
+            workerId={workerId}
+            isButton={false}
+            isDemo={isDemo}
+          />
           <Tooltip color="danger" content="Delete user">
             <span className="text-lg text-danger cursor-pointer active:opacity-50">
               <DeleteIcon />
