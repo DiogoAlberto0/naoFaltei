@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
+import { ISchedule } from "./schedule.types";
 
-import { ISchedule } from "./WorkSchedule";
-
-export const useScheduleState = (prevSchedule?: ISchedule) => {
+export const useScheduleDayOffsState = (prevSchedule?: ISchedule) => {
   const [daysOff, setDaysOff] = useState<Record<string, boolean>>({});
 
   useEffect(() => {

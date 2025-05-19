@@ -1,7 +1,5 @@
 "use client";
 //fetcher
-import useSWR from "swr";
-import { fetcher } from "@/src/utils/fetcher";
 
 // heroui
 import {
@@ -20,23 +18,8 @@ import { SetScheduleModal } from "./SetScheduleModal";
 // utils
 import { dateUtils } from "@/src/utils/date";
 
-export interface IDaySchedule {
-  startHour: number;
-  startMinute: number;
-  endHour: number;
-  endMinute: number;
-  restTimeInMinutes: number;
-  isDayOff: boolean;
-}
-export interface ISchedule {
-  sunday: IDaySchedule;
-  monday: IDaySchedule;
-  tuesday: IDaySchedule;
-  wednesday: IDaySchedule;
-  thursday: IDaySchedule;
-  friday: IDaySchedule;
-  saturday: IDaySchedule;
-}
+// hooks
+import { useScheduleByWorker } from "../../../hooks/schedule/useScheduleByWorker";
 
 const days = {
   sunday: "Dom.",
@@ -48,15 +31,17 @@ const days = {
   saturday: "Sab.",
 };
 
-export const WorkSchedule = ({ workerId }: { workerId: string }) => {
-  const { data, error, isLoading, mutate } = useSWR<ISchedule>(
-    `/api/v1/worker/${workerId}/getSchedule`,
-    fetcher,
-  );
-
-  const schedule = data
-    ? (Object.entries(data) as [keyof ISchedule, IDaySchedule][])
-    : [];
+export const WorkSchedule = ({
+  workerId,
+  isDemo = false,
+}: {
+  workerId: string;
+  isDemo?: boolean;
+}) => {
+  const { data, error, isLoading, mutate, schedule } = useScheduleByWorker({
+    workerId,
+    isDemo,
+  });
 
   if (error)
     return <ComponentError message={"Falha ao carregar escala de trabalho"} />;
@@ -67,6 +52,7 @@ export const WorkSchedule = ({ workerId }: { workerId: string }) => {
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-semibold">Escala de trabalho:</h1>
           <SetScheduleModal
+            isDemo={isDemo}
             workerId={workerId}
             prevSchedule={data}
             updateSchedule={() => mutate()}

@@ -1,6 +1,11 @@
+// utils
 import { dateUtils } from "@/src/utils/date";
+
+// components
 import { Input, Switch } from "@heroui/react";
-import { ISchedule } from "./WorkSchedule";
+
+// hook
+import { ISchedule } from "../../../hooks/schedule/schedule.types";
 
 const daysOfWeek = [
   { name: "Domingo", key: "sunday" },
