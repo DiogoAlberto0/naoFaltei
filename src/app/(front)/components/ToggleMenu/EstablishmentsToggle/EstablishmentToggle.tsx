@@ -46,7 +46,7 @@ const ToggleItems = ({
   return establishments.map(({ id, name }) => (
     <ToggleItem
       key={id}
-      href={`/manager/dashboard?establishmentId=${id}${isDemo ? "&beta=true" : ""}`}
+      href={`/manager/dashboard?establishmentId=${id}${isDemo ? "&demo=true" : ""}`}
       isActive={activeEstablishmentId == id}
       className={`w-full border-b-1 border-primary-100 ${activeEstablishmentId == id && "bg-secondary"}`}
     >
