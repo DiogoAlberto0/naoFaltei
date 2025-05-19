@@ -13,12 +13,18 @@ import { UserNameDataIcon } from "../../DataViews/DataIcons/UserNameDataIcon";
 // worker fetcher
 import { IWorker } from "../../../hooks/worker/worker.type";
 
-export const WorkerInfoCard = ({ worker }: { worker: IWorker }) => {
+export const WorkerInfoCard = ({
+  worker,
+  isDemo = false,
+}: {
+  worker: IWorker;
+  isDemo?: boolean;
+}) => {
   return (
     <Card className="min-h-min">
       <CardHeader className="flex justify-between items-center">
         <h1 className="text-2xl">{worker.name}</h1>
-        <UpdateWorkerModal worker={worker} />
+        <UpdateWorkerModal worker={worker} isDemo={isDemo} />
       </CardHeader>
       <Divider />
       <CardBody>

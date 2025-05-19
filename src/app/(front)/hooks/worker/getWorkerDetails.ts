@@ -9,7 +9,7 @@ import { cookies } from "next/headers";
 const fakeWorker: IWorker = {
   id: "worker-123",
   name: "João Silva",
-  login: "joao.silva",
+  login: "joaosilva@empresa",
   cpf: "123.456.789-00",
   phone: "(11) 91234-5678",
   email: "joao.silva@example.com",
