@@ -11,7 +11,7 @@ import { PhoneDataIcon } from "../../DataViews/DataIcons/PhoneDataIcon";
 import { UserNameDataIcon } from "../../DataViews/DataIcons/UserNameDataIcon";
 
 // getter
-import { IWorker } from "@/src/app/(front)/hooks/getWorkerDetails";
+import { IWorker } from "@/src/app/(front)/hooks/worker/getWorkerDetails";
 
 export const WorkerInfoCard = ({ worker }: { worker: IWorker }) => {
   return (
