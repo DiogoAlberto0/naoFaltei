@@ -7,7 +7,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
+    <div className="h-dvh w-dvw max-h-dvh overflow-auto ">
       <PublicNavBar />
       {children}
       <Footer />
