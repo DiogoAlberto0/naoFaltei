@@ -53,13 +53,22 @@ const registerMedicalLeaveHandler = async (formData: FormData) => {
 };
 export const RegisterMedicalLeaveModal = ({
   workerId,
+  isDemo = false,
 }: {
   workerId: string;
+  isDemo?: boolean;
 }) => {
   return (
     <ModalForm
       title="Registrar atestados"
-      handleSubmit={registerMedicalLeaveHandler}
+      handleSubmit={async (formData) => {
+        if (isDemo)
+          return addToast({
+            title: "Você está em uma versão demo",
+            color: "warning",
+          });
+        else await registerMedicalLeaveHandler(formData);
+      }}
       openButton={({ onPress }) => (
         <Button color="secondary" onPress={onPress}>
           Registrar atestados
