@@ -7,7 +7,7 @@ import { RegisterClockModal } from "../../../../components/Modal/RegisterClockin
 import { RegisterMedicalLeaveModal } from "@/src/app/(front)/components/Modal/RegisterMedicalLeaveModal/RegisterMedicalLeave";
 
 // getter
-import { getWorkerDetails } from "@/src/app/(front)/hooks/getWorkerDetails";
+import { getWorkerDetails } from "@/src/app/(front)/hooks/worker/getWorkerDetails";
 
 interface IWorkerPageProps {
   params: Promise<{ workerId: string }>;

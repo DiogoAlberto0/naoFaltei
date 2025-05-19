@@ -5,7 +5,7 @@ import { UpdateInfosForm } from "./UpdateInfosForm";
 import { UserInfoCard } from "./UserInfoCard"; // novo componente
 
 //hooks
-import { getWorkerDetails } from "../../../hooks/getWorkerDetails";
+import { getWorkerDetails } from "../../../hooks/worker/getWorkerDetails";
 import { Unauthorized } from "../../../components/Unauthorized";
 
 type SearchParams = Promise<{ demo?: string }>;

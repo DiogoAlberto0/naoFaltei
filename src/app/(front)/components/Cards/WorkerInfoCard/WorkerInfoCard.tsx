@@ -10,8 +10,8 @@ import { UpdateWorkerModal } from "../../Tables/WorkersTable/UpdateWorkerModal";
 import { PhoneDataIcon } from "../../DataViews/DataIcons/PhoneDataIcon";
 import { UserNameDataIcon } from "../../DataViews/DataIcons/UserNameDataIcon";
 
-// getter
-import { IWorker } from "@/src/app/(front)/hooks/worker/getWorkerDetails";
+// worker fetcher
+import { IWorker } from "../../../hooks/worker/worker.type";
 
 export const WorkerInfoCard = ({ worker }: { worker: IWorker }) => {
   return (

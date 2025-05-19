@@ -10,7 +10,7 @@ import { Divider } from "@heroui/react";
 import { GoogleSigninButton } from "@/src/app/(front)/components/Buttons/GoogleSigninButton";
 import { ThemeSwitcher } from "@/src/app/(front)/components/ThemeSwitcher";
 import { CredentialsSigninForm } from "@/src/app/(front)/components/CredentialsSigninForm/CredentialsSigninForm";
-import { verifyIfUserIsAdmin } from "../../hooks/verifyIfUserIsAdmin";
+import { verifyIfUserIsAdmin } from "../../hooks/worker/verifyIfUserIsAdmin";
 import { redirect } from "next/navigation";
 
 const SigninForm = ({ className }: { className?: string }) => {

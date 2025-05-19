@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 //components
 import { WorkerToggleMenu } from "./components/WorkerToggleMenu";
-import { verifyIfUserIsManager } from "../../hooks/verifyIfUserIsWorker";
+import { verifyIfUserIsManager } from "../../hooks/worker/verifyIfUserIsWorker";
 
 export default async function WorkerLayout({
   children,

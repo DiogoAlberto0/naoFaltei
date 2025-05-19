@@ -7,7 +7,7 @@ import { LastRegistersByEstablishment } from "../../../components/Tables/LastReg
 import { Unauthorized } from "../../../components/Unauthorized";
 
 // hooks
-import { getWorkerDetails } from "../../../hooks/getWorkerDetails";
+import { getWorkerDetails } from "../../../hooks/worker/getWorkerDetails";
 import { CountdownAdModal } from "../../../ADS/Adsterra/CountdownAdModal";
 
 export default async function ManagerDashboard() {

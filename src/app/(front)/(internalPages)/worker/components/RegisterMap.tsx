@@ -8,7 +8,7 @@ import { addToast, Button } from "@heroui/react";
 //hooks
 import { useLocale } from "../../../hooks/useLocale";
 import { useEstablishmentLocale } from "../../../hooks/useEstablishmentLocale";
-import { useRegisterClockin } from "../../../hooks/useRegisterClockin";
+import { useRegisterClockin } from "../../../hooks/clockins/useRegisterClockin";
 
 export const RegisterMap = ({ isDemo = false }: { isDemo?: boolean }) => {
   const { userLocation } = useLocale();
