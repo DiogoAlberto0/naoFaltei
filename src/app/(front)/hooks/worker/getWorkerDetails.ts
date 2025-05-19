@@ -1,20 +1,10 @@
 "use server";
+//types
+import { IWorker } from "./worker.type";
+
 import { axios } from "@/src/utils/fetcher";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
-
-export interface IWorker {
-  id: string;
-  name: string;
-  login: string;
-  cpf: string;
-  phone: string;
-  email: string;
-  is_manager: boolean;
-  is_admin: boolean;
-  is_active: true;
-  establishment_id: string;
-}
 
 const fakeWorker: IWorker = {
   id: "worker-123",
