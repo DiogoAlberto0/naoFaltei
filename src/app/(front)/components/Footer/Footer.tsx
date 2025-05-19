@@ -49,14 +49,14 @@ export const Footer = () => {
             <LinkedinIcon className="h-5 w-5 hover:text-foreground" />
           </Link>
           <Link
-            href="mailto:contato@naofaltei.com.br"
+            href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}
             target="_blank"
             aria-label="Twitter"
           >
             <EmailIcon className="h-5 w-5 hover:text-foreground" />
           </Link>
           <Link
-            href="https://wa.me/5561986548270"
+            href={`https://wa.me/${process.env.NEXT_PUBLIC_CONTACT_WHATS_APP_NUMBER}`}
             target="_blank"
             aria-label="LinkedIn"
           >

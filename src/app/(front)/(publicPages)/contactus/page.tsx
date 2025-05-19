@@ -1,6 +1,7 @@
 "use client";
 import { EmailIcon } from "@/assets/icons/EmailIcon";
 import { WhatsAppIcon } from "@/assets/icons/WhatsAppIcon";
+import { phoneUtils } from "@/src/utils/phone";
 import {
   Button,
   Input,
@@ -59,7 +60,7 @@ export default function ContactPage() {
               <Spacer y={2} />
               <Button
                 as="a"
-                href="mailto:contato@naofaltei.com"
+                href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}
                 variant="light"
                 color="primary"
                 fullWidth
@@ -67,7 +68,7 @@ export default function ContactPage() {
                   <span className="i-heroicons-envelope-20-solid" />
                 }
               >
-                contato@naofaltei.com
+                {process.env.NEXT_PUBLIC_CONTACT_EMAIL}
               </Button>
             </CardBody>
           </Card>
@@ -87,7 +88,7 @@ export default function ContactPage() {
               <Spacer y={2} />
               <Button
                 as="a"
-                href="https://wa.me/5561986548270"
+                href={`https://wa.me/${process.env.NEXT_PUBLIC_CONTACT_WHATS_APP_NUMBER}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 color="success"
@@ -97,7 +98,9 @@ export default function ContactPage() {
                   <span className="i-heroicons-chat-bubble-bottom-center-text-20-solid" />
                 }
               >
-                +55 (61) 986548270
+                {phoneUtils.format(
+                  `${process.env.NEXT_PUBLIC_CONTACT_WHATS_APP_NUMBER}`,
+                )}
               </Button>
             </CardBody>
             <CardFooter>

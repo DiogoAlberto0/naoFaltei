@@ -97,8 +97,11 @@ export default function PrivacyPolicyPage() {
           <li>Revogar a permissão de localização a qualquer momento.</li>
           <li>
             Entrar em contato pelo e-mail{" "}
-            <a href="mailto:contato@naofaltei.com" className="underline">
-              contato@naofaltei.com
+            <a
+              href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}
+              className="underline"
+            >
+              {process.env.NEXT_PUBLIC_CONTACT_EMAIL}
             </a>
             .
           </li>
@@ -192,8 +195,11 @@ export default function PrivacyPolicyPage() {
         <h3 className="font-semibold">7. Contato</h3>
         <p>
           Em caso de dúvidas, escreva para{" "}
-          <a href="mailto:contato@naofaltei.com" className="underline">
-            contato@naofaltei.com
+          <a
+            href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}
+            className="underline"
+          >
+            {process.env.NEXT_PUBLIC_CONTACT_EMAIL}
           </a>
           .
         </p>

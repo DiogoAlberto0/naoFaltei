@@ -12,6 +12,9 @@ const isValid = (phone: string) => {
 function format(phone: string) {
   phone = clean(phone);
 
+  if (phone.length === 13) {
+    return `+${phone.substring(0, 2)} (${phone.substring(2, 4)}) ${phone.substring(4, 8)}-${phone.substring(8)}`;
+  }
   // Aplica a formatação (XX) XXXXX-XXXX
   if (phone.length === 11) {
     return `(${phone.substring(0, 2)}) ${phone.substring(2, 7)}-${phone.substring(7)}`;
