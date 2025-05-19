@@ -1,5 +1,5 @@
 // heroui components
-import { Input } from "@heroui/react";
+import { addToast, Input } from "@heroui/react";
 
 //components
 import { ModalForm } from "../../Modal/ModalForm";
@@ -13,6 +13,7 @@ interface IUpdateEstablishmentModal {
   phone: string;
   email: string;
   cep: string;
+  isDemo?: boolean;
 }
 
 export const UpdateEstablishmentModal = ({
@@ -21,10 +22,18 @@ export const UpdateEstablishmentModal = ({
   phone,
   email,
   cep,
+  isDemo,
 }: IUpdateEstablishmentModal) => {
   return (
     <ModalForm
-      handleSubmit={updateEstablishmentHandler}
+      handleSubmit={async (formData) => {
+        if (isDemo)
+          return addToast({
+            title: "Você está em uma versão demo",
+            color: "warning",
+          });
+        await updateEstablishmentHandler(formData);
+      }}
       submitButtonText="Salvar"
       openButton={({ onPress }) => <EditButton onPress={onPress} />}
     >
