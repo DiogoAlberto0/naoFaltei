@@ -10,7 +10,11 @@ import { Unauthorized } from "@/src/app/(front)/components/Unauthorized";
 
 // getter
 import { getWorkerDetails } from "@/src/app/(front)/hooks/worker/getWorkerDetails";
-import { CountdownAdModal } from "@/src/app/(front)/ADS/Adsterra/CountdownAdModal";
+
+// ADS
+import { MonetagInPagePush } from "@/src/app/(front)/ADS/Monetag/InPagePush";
+import { MonetagInterstitial } from "@/src/app/(front)/ADS/Monetag/Interstitial";
+import { MonetagVignette } from "@/src/app/(front)/ADS/Monetag/Vignette";
 
 interface IWorkerPageProps {
   params: Promise<{ workerId: string }>;
@@ -30,7 +34,9 @@ const WorkerPage = async ({ params, searchParams }: IWorkerPageProps) => {
 
   return (
     <div className="w-full h-full max-h-full overflow-auto p-2 sm:p-4 md:p-6 flex flex-col gap-6">
-      <CountdownAdModal />
+      <MonetagInPagePush />
+      <MonetagInterstitial />
+      <MonetagVignette />
       <div className="flex flex-col lg:flex-row gap-6 w-full">
         {/* Coluna esquerda */}
         <div className="w-full lg:w-1/2 flex flex-col gap-4">

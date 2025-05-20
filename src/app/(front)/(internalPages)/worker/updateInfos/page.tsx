@@ -7,6 +7,8 @@ import { UserInfoCard } from "./UserInfoCard"; // novo componente
 //hooks
 import { getWorkerDetails } from "../../../hooks/worker/getWorkerDetails";
 import { Unauthorized } from "../../../components/Unauthorized";
+import { MonetagInterstitial } from "../../../ADS/Monetag/Interstitial";
+import { MonetagInPagePush } from "../../../ADS/Monetag/InPagePush";
 
 type SearchParams = Promise<{ demo?: string }>;
 const UpdateInfosPage = async ({
@@ -25,6 +27,8 @@ const UpdateInfosPage = async ({
 
   return (
     <main className="h-full w-full overflow-auto mx-auto flex flex-col gap-6 p-6 sm:p-8">
+      <MonetagInterstitial />
+      <MonetagInPagePush />
       <header className="text-center">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
           Atualize seus dados
