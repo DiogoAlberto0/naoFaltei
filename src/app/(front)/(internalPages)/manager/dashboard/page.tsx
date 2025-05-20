@@ -6,7 +6,11 @@ import { WorkersTable } from "@/src/app/(front)/components/Tables/WorkersTable/W
 import { LocationCard } from "@/src/app/(front)/components/Cards/LocationCard/LocationCard";
 import { LastRegistersByEstablishment } from "../../../components/Tables/LastRegistersByEstablishment";
 import { Unauthorized } from "../../../components/Unauthorized";
-import { CountdownAdModal } from "../../../ADS/Adsterra/CountdownAdModal";
+
+// ADS
+import { MonetagInPagePush } from "../../../ADS/Monetag/InPagePush";
+import { MonetagInterstitial } from "../../../ADS/Monetag/Interstitial";
+import { MonetagVignette } from "../../../ADS/Monetag/Vignette";
 
 //utils
 import { phoneUtils } from "@/src/utils/phone";
@@ -56,7 +60,9 @@ export default async function ManagerDashboard(props: {
 
     return (
       <div className="w-full h-full max-h-full overflow-auto p-5 md:p-10 flex flex-col lg:flex-row gap-4">
-        <CountdownAdModal />
+        <MonetagInPagePush />
+        <MonetagInterstitial />
+        <MonetagVignette />
         {/* Coluna da esquerda */}
         <div className="flex-1 flex flex-col gap-4 min-w-[300px]">
           <EstablishmentInfoCard

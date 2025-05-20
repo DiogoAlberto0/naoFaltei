@@ -4,7 +4,10 @@ import { auth } from "@/auth";
 import { RegistersTable } from "@/src/app/(front)/components/Tables/RegistersTable/RegistersTable";
 import { CalendarInput } from "../../../components/Inputs/CalendarInput/CalendarInput";
 import { Unauthorized } from "../../../components/Unauthorized";
-import { CountdownAdModal } from "../../../ADS/Adsterra/CountdownAdModal";
+
+// ADS
+import { MonetagInterstitial } from "../../../ADS/Monetag/Interstitial";
+import { MonetagInPagePush } from "../../../ADS/Monetag/InPagePush";
 
 type SearchParams = Promise<{ demo?: boolean }>;
 const TimeSheetPage = async ({
@@ -21,7 +24,8 @@ const TimeSheetPage = async ({
 
   return (
     <main className="h-full w-full overflow-auto mx-auto flex flex-col gap-6 px-2 py-4 sm:px-4 md:px-6 lg:px-8">
-      <CountdownAdModal />
+      <MonetagInterstitial />
+      <MonetagInPagePush />
       <header className="text-center px-2">
         <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
           Folha de Ponto
