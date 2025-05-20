@@ -20,6 +20,21 @@ export const GoogleScripts = () => {
         `}
       </Script>
 
+      {/* Google ads*/}
+      <Script
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}`}
+      />
+      <Script id="google-ads">
+        {`
+            window.dataLayer = window.dataLayer || [];
+            
+            gtag('js', new Date());
+
+            gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}');
+          `}
+      </Script>
+
       {/* Google Analytics */}
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALITICS_ID}`}
