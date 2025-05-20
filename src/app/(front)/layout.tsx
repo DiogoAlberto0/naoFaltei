@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   other: {
     "google-adsense-account": `${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ACCOUNT_METATAG}`,
     "apple-mobile-web-app-title": "Não Faltei",
+    monetag: "18f53497b5fa6caba76711d892c33430",
   },
 };
 
