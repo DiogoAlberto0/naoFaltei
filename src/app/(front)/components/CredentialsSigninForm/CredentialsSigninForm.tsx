@@ -16,6 +16,8 @@ const handleSubmit = async (formData: FormData) => {
   const login = formData.get("login")?.toString();
   const password = formData.get("password")?.toString();
 
+  const root = formData.get("root")?.toString();
+
   if (!login || !password)
     throw new InputError({
       message: "Informe o login e a senha",
@@ -27,18 +29,25 @@ const handleSubmit = async (formData: FormData) => {
     body: {
       login: formData.get("login")?.toString(),
       password: formData.get("password")?.toString(),
+      root: root === "true",
     },
   });
 };
-export function CredentialsSigninForm() {
+export function CredentialsSigninForm({
+  isRoot = false,
+}: {
+  isRoot?: boolean;
+}) {
   const router = useRouter();
   const onSigninSuccess = () => {
-    router.push("/worker");
+    if (isRoot) router.push("/root/dashboard");
+    else router.push("/worker");
   };
   const { isLoading, onSumit } = useSubmitForm(handleSubmit, onSigninSuccess);
 
   return (
     <Form onSubmit={onSumit} className="gap-3">
+      <Input type="hidden" name="root" value={isRoot.toString()} />
       <Input
         isRequired
         errorMessage="Informe um login válido."
