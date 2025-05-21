@@ -15,7 +15,7 @@ const waitForPostgres = () => {
     try {
       const stdout = execSync(
         "docker exec dev_postgres pg_isready --host localhost",
-        { encoding: "utf-8", stdio: "pipe" }
+        { encoding: "utf-8", stdio: "pipe" },
       );
       if (stdout.includes("accepting connections")) {
         console.log("✅ Postgres is ready!");
@@ -32,7 +32,9 @@ const waitForPostgres = () => {
 
 function applyMigrations() {
   console.log("🔄 Applying migrations...");
-  execSync("npx prisma migrate dev", { stdio: "inherit" });
+  execSync("npx prisma migrate dev && npx prisma db seed", {
+    stdio: "inherit",
+  });
   console.log("✅ Migrations applied.");
 }
 function startNextServer() {
@@ -68,7 +70,7 @@ async function waitForServer() {
     } catch (error) {
       JSON.stringify(error);
       console.log(
-        `❌ Server not ready yet. Retrying... (${attempts + 1}/${MAX_RETRIES})`
+        `❌ Server not ready yet. Retrying... (${attempts + 1}/${MAX_RETRIES})`,
       );
     }
 

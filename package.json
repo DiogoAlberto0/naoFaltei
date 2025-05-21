@@ -8,7 +8,7 @@
     "test:watch": "vitest --no-file-parallelism",
     "test": "vitest run --no-file-parallelism",
     "ci": "node src/scripts/ci.js",
-    "build": "next build",
+    "build": "next build && npx prisma migrate deploy && npx prisma db seed",
     "start": "next start",
     "lint": "next lint --dir .",
     "lint:fix": "next lint --dir . --fix",
