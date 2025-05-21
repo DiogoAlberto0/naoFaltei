@@ -174,3 +174,11 @@ model WorkDaySummary{
 
   @@map("work_day_summary")
 }
+
+model RootUser {
+  id String @id @default(cuid())
+
+  login String @unique
+  hash String
+  @@map("root_user")
+}
