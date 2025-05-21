@@ -61,6 +61,16 @@ export interface IScenario {
     cookie: string;
   };
 }
+
+export const authenticateRoot = async () => {
+  const { cookies } = await signinForTest({
+    login: `${process.env.ROOT_INICIAL_LOGIN}`,
+    password: `${process.env.ROOT_INICIAL_PASSWORD}`,
+    isRoot: true,
+  });
+
+  return cookies;
+};
 // cria cenários
 export const createScenario1 = async () => {
   const author = await createAndAuthAuthor();

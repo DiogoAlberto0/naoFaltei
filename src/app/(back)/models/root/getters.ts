@@ -14,4 +14,14 @@ const findUniqueByLogin = async ({ login }: { login: string }) => {
     };
 };
 
-export { findUniqueByLogin };
+const findUniqueById = async ({ id }: { id: string }) => {
+  const root = await prisma.rootUser.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  return root;
+};
+
+export { findUniqueByLogin, findUniqueById };

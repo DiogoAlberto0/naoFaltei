@@ -1,15 +1,18 @@
 export const signinForTest = async ({
   login,
   password,
+  isRoot = false,
 }: {
   login: string;
   password: string;
+  isRoot?: boolean;
 }) => {
   try {
     const loginResponse = await fetch("http://localhost:3000/api/v1/signin", {
       body: JSON.stringify({
         login: login,
         password: password,
+        root: isRoot,
       }),
       method: "POST",
       credentials: "include",
