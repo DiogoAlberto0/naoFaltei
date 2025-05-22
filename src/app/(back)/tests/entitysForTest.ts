@@ -17,6 +17,28 @@ export interface IValidAuthor {
 
 //cria muitos workers
 
+export const createManyAuthors = async () => {
+  const baseDate = new Date();
+  baseDate.setUTCMonth(baseDate.getUTCMonth() - 1);
+  baseDate.setUTCDate(1);
+
+  const usersToCreate = Array.from({ length: 20 }, (_, i) => {
+    const createdAt = new Date(baseDate);
+    createdAt.setUTCDate(createdAt.getUTCDate() + i); // incrementa 1 dia por usuário
+
+    return {
+      email: `user${i}@test.com`, // único
+      created_at: createdAt,
+    };
+  });
+
+  const createdUsers = await prisma.user.createMany({
+    data: usersToCreate,
+    skipDuplicates: true, // evita erro se rodar várias vezes
+  });
+
+  console.log(`${createdUsers.count} usuários criados para teste`);
+};
 export const createManyWorkers = async (establishmentId: string) => {
   const cpfsValidos = [
     "819.268.970-05",

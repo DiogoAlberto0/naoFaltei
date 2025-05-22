@@ -1,4 +1,4 @@
-import { validateUser, findBy, count } from "./getters";
+import { validateUser, findBy, count, countPeriod } from "./getters";
 import { create } from "./setters";
 
 const userModel = {
@@ -6,6 +6,7 @@ const userModel = {
   findBy,
   count,
   create,
+  countPeriod,
 };
 
 export { userModel };

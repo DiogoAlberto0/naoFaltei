@@ -6,6 +6,7 @@ import { InputError } from "@/src/Errors/errors";
 // utils
 import { cpfUtils } from "@/src/utils/cpf";
 import { emailUtils } from "@/src/utils/email";
+import { groupByPeriod } from "@/src/utils/groupby";
 
 const findBy = async ({
   id,
@@ -61,6 +62,39 @@ const validateUser = async (userId: string) => {
       action: "Verifique se os dados do gerente foram informados corretamente",
       status_code: 400,
     });
+};
+
+export const countPeriod = async ({
+  period,
+  inicialDate,
+  finalDate,
+}: {
+  period: "day" | "month" | "week";
+  inicialDate?: Date;
+  finalDate?: Date;
+}) => {
+  const lte = finalDate
+    ? new Date(finalDate.setUTCHours(23, 59, 59, 999))
+    : undefined;
+  const gt = inicialDate
+    ? new Date(inicialDate.setUTCHours(0, 0, 0, 0))
+    : undefined;
+  const result = await prisma.user.findMany({
+    select: {
+      created_at: true,
+    },
+    orderBy: {
+      created_at: "asc",
+    },
+    where: {
+      created_at: {
+        lte,
+        gt,
+      },
+    },
+  });
+
+  return groupByPeriod(result, (result) => new Date(result.created_at), period);
 };
 
 const count = async () => {
