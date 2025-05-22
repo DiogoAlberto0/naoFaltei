@@ -8,6 +8,7 @@ import { scheduleModule } from "../models/schedule/schedule";
 
 // data for tests
 import { signinForTest } from "./signinForTest";
+import { passwordUtils } from "@/src/utils/password";
 
 export interface IValidAuthor {
   id: string;
@@ -40,6 +41,10 @@ export const createManyAuthors = async () => {
   console.log(`${createdUsers.count} usuários criados para teste`);
 };
 export const createManyWorkers = async (establishmentId: string) => {
+  const baseDate = new Date();
+  baseDate.setUTCMonth(baseDate.getUTCMonth() - 1);
+  baseDate.setUTCDate(1);
+
   const cpfsValidos = [
     "819.268.970-05",
     "648.041.340-77",
@@ -51,19 +56,35 @@ export const createManyWorkers = async (establishmentId: string) => {
     "032.116.740-63",
     "545.437.330-37",
     "469.770.410-05",
+    "093.924.150-10",
+    "427.630.510-14",
+    "784.886.550-96",
+    "141.836.860-16",
+    "001.542.720-00",
+    "209.245.050-60",
+    "949.950.940-24",
+    "814.672.760-30",
+    "556.564.490-92",
+    "989.996.190-60",
   ];
-  cpfsValidos.forEach(
-    async (cpf, index) =>
-      await workerModel.create({
+  const promises = cpfsValidos.map(async (cpf, index) => {
+    const createdAt = new Date(baseDate);
+    createdAt.setUTCDate(createdAt.getUTCDate() + index);
+    return prisma.workers.create({
+      data: {
         name: `Worker ${index}`,
         email: `worker${index}@email.com`,
         cpf,
         phone: `619999900${index.toString().padStart(2, "0")}`,
-        establishmentId,
+        establishment_id: establishmentId,
+        created_at: createdAt,
         login: `Worker${index}@Establishment1`,
-        password: `Worker${index}.`,
-      }),
-  );
+        hash: passwordUtils.genHash(`Worker${index}.`),
+      },
+    });
+  });
+
+  await Promise.all(promises);
 };
 
 export interface IScenario {

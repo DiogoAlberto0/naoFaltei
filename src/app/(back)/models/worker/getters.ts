@@ -6,6 +6,7 @@ import { InputError } from "@/src/Errors/errors";
 // utils
 import { cpfUtils } from "@/src/utils/cpf";
 import { emailUtils } from "@/src/utils/email";
+import { groupByPeriod } from "@/src/utils/groupby";
 import { loginUtils } from "@/src/utils/login";
 
 const findUniqueBy = ({ id, login }: { id?: string; login?: string }) => {
@@ -116,4 +117,44 @@ const listByEstablishment = async ({
   return workers;
 };
 
-export { findBy, findUniqueBy, count, validateWorker, listByEstablishment };
+const countPeriod = async ({
+  period,
+  inicialDate,
+  finalDate,
+}: {
+  period: "day" | "month" | "week";
+  inicialDate?: Date;
+  finalDate?: Date;
+}) => {
+  const lte = finalDate
+    ? new Date(finalDate.setUTCHours(23, 59, 59, 999))
+    : undefined;
+  const gt = inicialDate
+    ? new Date(inicialDate.setUTCHours(0, 0, 0, 0))
+    : undefined;
+  const result = await prisma.workers.findMany({
+    select: {
+      created_at: true,
+    },
+    orderBy: {
+      created_at: "asc",
+    },
+    where: {
+      created_at: {
+        lte,
+        gt,
+      },
+    },
+  });
+
+  return groupByPeriod(result, (result) => new Date(result.created_at), period);
+};
+
+export {
+  findBy,
+  findUniqueBy,
+  count,
+  validateWorker,
+  listByEstablishment,
+  countPeriod,
+};
