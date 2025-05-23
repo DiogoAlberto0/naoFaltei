@@ -134,6 +134,9 @@ const getClockisGroupByDate = async (
         lte: dateUtils.getEndOfDay(finalDate),
       },
     },
+    orderBy: {
+      clocked_at: "asc",
+    },
   });
 
   const clockinsGroupByDate = groupBy(clockins, (clockin) =>
