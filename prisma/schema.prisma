@@ -110,6 +110,8 @@ model Workers {
   establishment_id String
   establishment Establishment @relation(fields: [establishment_id], references: [id])
 
+  worker_schedule_v2 WorkerScheduleV2?
+
   worker_clockin Clockin[]
   work_day_summarys WorkDaySummary[]
 
@@ -141,6 +143,28 @@ model WorkerSchedule {
 
 
   @@map("worker_schedule")
+}
+
+model WorkerScheduleV2 {
+  id String @id @default(cuid())
+  type String @default("day")
+  month_minutes Int?
+  week_minutes Int?
+  sunday_minutes Int?
+  monday_minutes Int?
+  tuesday_minutes Int?
+  wednesday_minutes Int?
+  thursday_minutes Int?
+  friday_minutes Int?
+  saturday_minutes Int?
+
+  daysOff String[]
+
+  worker_id String @unique
+  worker Workers @relation(fields: [worker_id], references: [id])
+
+
+  @@map("worker_schedule_v2")
 }
 
 model Clockin{
