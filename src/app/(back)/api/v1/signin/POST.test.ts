@@ -40,21 +40,23 @@ describe("POST on /api/v1/signin", () => {
     login,
     password,
     isSuccefulCase = true,
+    root = false,
   }: {
     login: string;
     password: string;
     isSuccefulCase?: boolean;
+    root?: boolean;
   }) => {
     const response = await fetch("http://localhost:3000/api/v1/signin", {
       body: JSON.stringify({
         login,
         password,
+        root,
       }),
       method: "POST",
       credentials: "include",
     });
 
-    console.log(response);
     if (isSuccefulCase) {
       expect(response.headers.get("set-cookie")).not.toBeUndefined();
       expect(response.headers.get("set-cookie")).not.toBeNull();
@@ -67,6 +69,9 @@ describe("POST on /api/v1/signin", () => {
         action: "Se o erro persistir contate o suporte.",
       });
     }
+    return {
+      response,
+    };
   };
   it("should be possible to signin with an valid author", async () => {
     await signinExpectations({
@@ -99,6 +104,26 @@ describe("POST on /api/v1/signin", () => {
     await signinExpectations({
       login: validManager.login,
       password: "invalidPassword",
+      isSuccefulCase: false,
+    });
+  });
+
+  it("should be possible to signin with root login", async () => {
+    const { response } = await signinExpectations({
+      login: `${process.env.ROOT_INICIAL_LOGIN}`,
+      password: `${process.env.ROOT_INICIAL_PASSWORD}`,
+      root: true,
+      isSuccefulCase: true,
+    });
+
+    console.log(response);
+  });
+
+  it("should not be possible to signin with root login if wrong password is provided", async () => {
+    await signinExpectations({
+      login: `${process.env.ROOT_INICIAL_LOGIN}`,
+      password: `${process.env.ROOT_INICIAL_PASSWORD}123`,
+      root: true,
       isSuccefulCase: false,
     });
   });

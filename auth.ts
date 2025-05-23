@@ -10,6 +10,7 @@ import { prisma } from "@/prisma/prisma";
 import { passwordUtils } from "@/src/utils/password";
 import { workerModel } from "@/src/app/(back)/models/worker/worker";
 import { userModel } from "@/src/app/(back)/models/user/user";
+import { rootModel } from "./src/app/(back)/models/root/root";
 
 declare module "next-auth" {
   /**
@@ -36,6 +37,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         login: { label: "Login", type: "text", required: true },
         password: { label: "Password", type: "password", required: true },
+        isRoot: { label: "Password", type: "text", required: true },
       },
       authorize: async (credentials) => {
         if (!credentials?.login || !credentials?.password) {
@@ -43,17 +45,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // Buscar usuário tanto em `workerModel` quanto `userModel` simultaneamente
-        const [worker, user] = await Promise.all([
+
+        let foundUser;
+        const [worker, user, root] = await Promise.all([
           workerModel.findUniqueBy({ login: credentials.login as string }),
           userModel.findBy({ email: credentials.login as string }),
+          rootModel.findUniqueByLogin({ login: credentials.login as string }),
         ]);
 
         // Definir o usuário encontrado
-        const foundUser = worker || user;
+        foundUser = worker || user;
+
+        if (credentials.isRoot === "true") {
+          foundUser = root;
+        }
+
         if (!foundUser || !foundUser.hash) {
           throw new Error("Credenciais inválidas.");
         }
-
         // Verificar senha
         const isCorrectPass = passwordUtils.comparePassAndHash(
           credentials.password as string,
@@ -66,7 +75,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         return {
           id: foundUser.id,
-          name: foundUser.name,
+          name: foundUser.name || "",
           login: "login" in foundUser ? foundUser.login : foundUser.email,
         };
       },

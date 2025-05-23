@@ -4,10 +4,11 @@ import { userModel } from "@/src/app/(back)/models/user/user";
 import { workerModel } from "@/src/app/(back)/models/worker/worker";
 import { passwordUtils } from "@/src/utils/password";
 import { NextRequest, NextResponse } from "next/server";
+import { rootModel } from "../../../models/root/root";
 
 export const POST = async (request: NextRequest) => {
   try {
-    const { login, password } = await request.json();
+    const { login, password, root } = await request.json();
 
     if (!login || !password)
       throw new InputError({
@@ -16,12 +17,21 @@ export const POST = async (request: NextRequest) => {
         status_code: 400,
       });
 
-    const [worker, user] = await Promise.all([
+    const isRoot = root === true;
+
+    let foundUser;
+
+    const [worker, user, rootUser] = await Promise.all([
       workerModel.findUniqueBy({ login: login as string }),
       userModel.findBy({ email: login as string }),
+      rootModel.findUniqueByLogin({ login: login as string }),
     ]);
 
-    const foundUser = worker || user;
+    foundUser = worker || user;
+
+    if (isRoot) {
+      foundUser = rootUser;
+    }
 
     if (!foundUser) throw new Error();
 
@@ -33,6 +43,7 @@ export const POST = async (request: NextRequest) => {
     const formData = new FormData();
     formData.append("login", login);
     formData.append("password", password);
+    formData.append("isRoot", isRoot.toString());
 
     await signIn("credentials", formData);
 

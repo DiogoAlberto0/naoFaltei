@@ -56,6 +56,8 @@ model User {
   sessions      Session[]
 
   created_establishments Establishment[]
+
+  created_at DateTime @default(now())
  
   @@map("users")
 }
@@ -173,4 +175,12 @@ model WorkDaySummary{
   @@unique([worker_id, work_date])
 
   @@map("work_day_summary")
+}
+
+model RootUser {
+  id String @id @default(cuid())
+
+  login String @unique
+  hash String
+  @@map("root_user")
 }

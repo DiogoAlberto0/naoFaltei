@@ -35,8 +35,6 @@ export const GoogleScripts = () => {
           `}
       </Script>
 
-      <script></script>
-
       {/* Google Analytics */}
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALITICS_ID}`}
