@@ -155,12 +155,13 @@ type WorkerScheduleV2Response =
         friday: number;
         saturday: number;
       };
+      daysOff: weekDays[];
     }
-  | { type: "week"; week_minutes: number }
-  | { type: "month"; month_minutes: number }
+  | { type: "week"; week_minutes: number; daysOff: weekDays[] }
+  | { type: "month"; month_minutes: number; daysOff: weekDays[] }
   | null;
 
-const getScheduleV2 = async (
+const getSchedule = async (
   workerId: string,
 ): Promise<WorkerScheduleV2Response> => {
   const schedule = await prisma.workerScheduleV2.findUnique({
@@ -182,16 +183,19 @@ const getScheduleV2 = async (
           friday: schedule.friday_minutes ?? 0,
           saturday: schedule.saturday_minutes ?? 0,
         },
+        daysOff: schedule.daysOff as weekDays[],
       };
     case "week":
       return {
         type: "week",
         week_minutes: schedule.week_minutes ?? 0,
+        daysOff: schedule.daysOff as weekDays[],
       };
     case "month":
       return {
         type: "month",
         month_minutes: schedule.month_minutes ?? 0,
+        daysOff: schedule.daysOff as weekDays[],
       };
     default:
       throw new Error("Tipo de escala inválido.");
@@ -200,7 +204,7 @@ const getScheduleV2 = async (
 
 const scheduleModuleV2 = {
   createOrUpdate,
-  getScheduleV2,
+  getSchedule,
 };
 
 export { scheduleModuleV2 };
