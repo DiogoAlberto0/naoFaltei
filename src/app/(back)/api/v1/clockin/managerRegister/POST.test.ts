@@ -15,7 +15,7 @@ import {
 
 //utils
 import { dateUtils } from "@/src/utils/date";
-import { clockinModel } from "@/src/app/(back)/models/clockin/clockin";
+import { workDaySummaryModel } from "@/src/app/(back)/models/workDaySummary/workDaySummary";
 
 let scenario1: IScenario;
 
@@ -201,8 +201,8 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(summary).toStrictEqual({
         id: expect.any(String),
         work_date: expect.any(Date),
-        expected_minutes: 480,
-        worked_minutes: 480,
+        expected_minutes: 0,
+        worked_minutes: 6 * 60,
         rested_minutes: 60,
         time_balance: 0,
         is_medical_leave: false,
@@ -222,10 +222,10 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(summary2).toStrictEqual({
         id: expect.any(String),
         work_date: expect.any(Date),
-        expected_minutes: 480,
-        worked_minutes: 0,
+        expected_minutes: 0,
+        worked_minutes: 2 * 60,
         rested_minutes: 0,
-        time_balance: -480,
+        time_balance: 0,
         is_medical_leave: false,
         status: "present",
         worker_id: scenario2.worker.id,
@@ -307,10 +307,7 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
         },
       });
 
-      expect(summary1.expected_minutes).toStrictEqual(480);
-      expect(summary1.worked_minutes).toStrictEqual(540);
-      expect(summary1.time_balance).toStrictEqual(60);
-
+      expect(summary1.worked_minutes).toStrictEqual(360);
       const summary2 = await prisma.workDaySummary.findFirstOrThrow({
         where: {
           worker_id: scenario2.worker.id,
@@ -318,8 +315,8 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
         },
       });
 
-      expect(summary2.expected_minutes).toStrictEqual(480);
-      expect(summary2.worked_minutes).toStrictEqual(480);
+      expect(summary2.expected_minutes).toStrictEqual(0);
+      expect(summary2.worked_minutes).toStrictEqual(9 * 60);
       expect(summary2.time_balance).toStrictEqual(0);
 
       const summary3 = await prisma.workDaySummary.findFirstOrThrow({
@@ -329,11 +326,11 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
         },
       });
 
-      expect(summary3.expected_minutes).toStrictEqual(480);
-      expect(summary3.worked_minutes).toStrictEqual(0);
-      expect(summary3.time_balance).toStrictEqual(-480);
+      expect(summary3.expected_minutes).toStrictEqual(0);
+      expect(summary3.worked_minutes).toStrictEqual(120);
+      expect(summary3.time_balance).toStrictEqual(0);
 
-      const total = await clockinModel.getTotalSumariesData(
+      const total = await workDaySummaryModel.getTotalSumariesData(
         scenario2.worker.id,
         firstDay,
         secondDay,
@@ -341,10 +338,9 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(total).toStrictEqual({
         totalAbscent: 0,
         totalMedicalLeave: 0,
-        totalTimeBalance: 60,
       });
 
-      const total2 = await clockinModel.getTotalSumariesData(
+      const total2 = await workDaySummaryModel.getTotalSumariesData(
         scenario2.worker.id,
         firstDay,
         thirdDay,
@@ -352,7 +348,6 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(total2).toStrictEqual({
         totalAbscent: 0,
         totalMedicalLeave: 0,
-        totalTimeBalance: -480 + 60,
       });
     });
   });
@@ -444,7 +439,7 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(summary).toStrictEqual({
         id: expect.any(String),
         work_date: expect.any(Date),
-        expected_minutes: 480,
+        expected_minutes: 0,
         worked_minutes: 480,
         rested_minutes: 90,
         time_balance: 0,
@@ -521,11 +516,9 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
         },
       });
 
-      expect(summary1.expected_minutes).toStrictEqual(480);
       expect(summary1.worked_minutes).toStrictEqual(435);
-      expect(summary1.time_balance).toStrictEqual(-45);
 
-      const total2 = await clockinModel.getTotalSumariesData(
+      const total2 = await workDaySummaryModel.getTotalSumariesData(
         scenario1.worker.id,
         firstDay,
         firstDay,
@@ -533,7 +526,6 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(total2).toStrictEqual({
         totalAbscent: 0,
         totalMedicalLeave: 0,
-        totalTimeBalance: -45,
       });
     });
 
@@ -590,11 +582,8 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
         },
       });
 
-      expect(summary1.expected_minutes).toStrictEqual(480);
       expect(summary1.worked_minutes).toStrictEqual(480 + 15 + 15 + 15);
-      expect(summary1.time_balance).toStrictEqual(45);
-
-      const total2 = await clockinModel.getTotalSumariesData(
+      const total2 = await workDaySummaryModel.getTotalSumariesData(
         scenario1.worker.id,
         firstDay,
         firstDay,
@@ -602,7 +591,6 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(total2).toStrictEqual({
         totalAbscent: 0,
         totalMedicalLeave: 0,
-        totalTimeBalance: 45,
       });
     });
 
@@ -684,11 +672,8 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
         },
       });
 
-      expect(summary1.expected_minutes).toStrictEqual(480);
       expect(summary1.worked_minutes).toStrictEqual(480);
-      expect(summary1.time_balance).toStrictEqual(0);
-
-      const total2 = await clockinModel.getTotalSumariesData(
+      const total2 = await workDaySummaryModel.getTotalSumariesData(
         scenario1.worker.id,
         firstDay,
         firstDay,
@@ -696,7 +681,6 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(total2).toStrictEqual({
         totalAbscent: 0,
         totalMedicalLeave: 0,
-        totalTimeBalance: 0,
       });
     });
 
