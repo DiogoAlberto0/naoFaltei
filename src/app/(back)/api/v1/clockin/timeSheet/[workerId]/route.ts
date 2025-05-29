@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { clockinModel } from "@/src/app/(back)/models/clockin/clockin";
 import { establishmentModel } from "@/src/app/(back)/models/establishment/establishment";
+import { workDaySummaryModel } from "@/src/app/(back)/models/workDaySummary/workDaySummary";
 import { workerModel } from "@/src/app/(back)/models/worker/worker";
 import {
   ForbiddenError,
@@ -81,7 +82,11 @@ export const GET = async (
     });
 
     const { totalAbscent, totalMedicalLeave, totalTimeBalance } =
-      await clockinModel.getTotalSumariesData(workerId, inicialDate, finalDate);
+      await workDaySummaryModel.getTotalSumariesData(
+        workerId,
+        inicialDate,
+        finalDate,
+      );
 
     return NextResponse.json({
       timeSheet,
