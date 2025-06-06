@@ -1,16 +1,8 @@
 import { prisma } from "@/prisma/prisma";
 import { InputError } from "@/src/Errors/errors";
+import { weekDays } from "@/src/utils/date";
 
 type ScheduleType = "day" | "week" | "month" | "nothing";
-
-type weekDays =
-  | "sunday"
-  | "monday"
-  | "tuesday"
-  | "wednesday"
-  | "thursday"
-  | "friday"
-  | "saturday";
 
 interface ISchedule {
   id: string;
@@ -143,7 +135,7 @@ const createOrUpdate = async ({
   return createdSchedule;
 };
 
-type WorkerScheduleV2Response =
+export type IWorkerScheduleV2 =
   | {
       type: "day";
       daily_minutes: {
@@ -161,9 +153,7 @@ type WorkerScheduleV2Response =
   | { type: "month"; month_minutes: number; daysOff: weekDays[] }
   | null;
 
-const getSchedule = async (
-  workerId: string,
-): Promise<WorkerScheduleV2Response> => {
+const getSchedule = async (workerId: string): Promise<IWorkerScheduleV2> => {
   const schedule = await prisma.workerScheduleV2.findUnique({
     where: { worker_id: workerId },
   });

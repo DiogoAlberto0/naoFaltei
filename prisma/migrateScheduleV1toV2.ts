@@ -18,7 +18,8 @@ const calculateExpectedMinutes = ({
 
   return endTime - startTime - restTime;
 };
-const main = async () => {
+
+export const migrateScheduleV1toV2 = async () => {
   const workerSchedulesV1 = await prisma.workerSchedule.findMany();
 
   const groupedByWorker = workerSchedulesV1.reduce(
@@ -90,6 +91,9 @@ const main = async () => {
     counter++;
   }
   console.log(`${counter} escalas migradas!`);
+};
+const main = async () => {
+  return migrateScheduleV1toV2();
 };
 
 main()

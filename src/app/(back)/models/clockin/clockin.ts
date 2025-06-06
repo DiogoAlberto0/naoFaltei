@@ -10,6 +10,7 @@ export interface IClockin {
   lng: number;
   is_auto_generated: boolean;
 }
+
 const clockinModel = {
   ...clockinGetters,
   ...clockinSetters,

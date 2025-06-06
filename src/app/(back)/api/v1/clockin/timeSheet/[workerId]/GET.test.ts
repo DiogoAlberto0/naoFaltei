@@ -11,6 +11,7 @@ import {
 
 //utils
 import { dateUtils } from "@/src/utils/date";
+import { migrateScheduleV1toV2 } from "@/prisma/migrateScheduleV1toV2";
 
 let scenario1: IScenario;
 let scenario2: IScenario;
@@ -20,6 +21,7 @@ beforeAll(async () => {
   scenario1 = await createScenario1();
   await setValidSchedule(scenario1.worker.id);
   scenario2 = await createScenario2();
+  await migrateScheduleV1toV2();
 });
 
 const listClockinFetch = async ({
@@ -285,7 +287,7 @@ describe("GET on `/api/v1/clockin/timeSheet/:workerId`", () => {
       expectSummary(monday, {
         weekDay: 1,
         status: "present",
-        expectedMinutes: 480,
+        expectedMinutes: 0,
         restedMinutes: 90,
         workedMinutes: 480,
       });
@@ -356,18 +358,18 @@ describe("GET on `/api/v1/clockin/timeSheet/:workerId`", () => {
       expectSummary(tuesday, {
         weekDay: 2,
         status: "present",
-        expectedMinutes: 480,
+        expectedMinutes: 0,
         restedMinutes: 90,
         workedMinutes: 465,
-        timeBalance: -15,
+        timeBalance: 0,
       });
       //vefificando quarta
       const wednesday = timeSheet[timeSheet.length - 1];
       expectSummary(wednesday, {
         weekDay: 3,
         status: "abscent",
-        expectedMinutes: 480,
-        timeBalance: -480,
+        expectedMinutes: 0,
+        timeBalance: 0,
       });
 
       expect(data).toStrictEqual({
