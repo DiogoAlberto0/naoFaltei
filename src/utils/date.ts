@@ -120,6 +120,32 @@ const convertTimeFromLocaletoUTC = ({
     minute: date.getUTCMinutes(),
   };
 };
+
+export type weekDays =
+  | "sunday"
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday";
+const weekDaysObj: weekDays[] = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+];
+const convertNumberToWeekDay = (number: number) => {
+  if (number < 0 || number >= 7) throw new Error("Invalid day week");
+  return weekDaysObj[number];
+};
+
+const convertWeekDayToNumber = (weekDay: weekDays) => {
+  return weekDaysObj.findIndex((value) => value === weekDay);
+};
 const dateUtils = {
   validateAndReturnDate,
   calculateFullDaysBetween,
@@ -133,6 +159,8 @@ const dateUtils = {
   isISODate,
   convertTimeFromUTCtoLocale,
   convertTimeFromLocaletoUTC,
+  convertNumberToWeekDay,
+  convertWeekDayToNumber,
 };
 
 export { dateUtils };

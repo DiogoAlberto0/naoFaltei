@@ -338,6 +338,7 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(total).toStrictEqual({
         totalAbscent: 0,
         totalMedicalLeave: 0,
+        totalTimeBalance: 0,
       });
 
       const total2 = await workDaySummaryModel.getTotalSumariesData(
@@ -348,6 +349,7 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(total2).toStrictEqual({
         totalAbscent: 0,
         totalMedicalLeave: 0,
+        totalTimeBalance: 0,
       });
     });
   });
@@ -526,6 +528,7 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(total2).toStrictEqual({
         totalAbscent: 0,
         totalMedicalLeave: 0,
+        totalTimeBalance: 0,
       });
     });
 
@@ -591,6 +594,7 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(total2).toStrictEqual({
         totalAbscent: 0,
         totalMedicalLeave: 0,
+        totalTimeBalance: 0,
       });
     });
 
@@ -681,6 +685,7 @@ describe("POST on `/api/v1/clockin/managerRegister`", () => {
       expect(total2).toStrictEqual({
         totalAbscent: 0,
         totalMedicalLeave: 0,
+        totalTimeBalance: 0,
       });
     });
 

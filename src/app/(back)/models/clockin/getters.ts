@@ -6,7 +6,11 @@ import { dateUtils } from "@/src/utils/date";
 
 //models
 
-import { workDaySummaryModel } from "../workDaySummary/workDaySummary";
+import {
+  IWorkDaySummary,
+  workDaySummaryModel,
+} from "../workDaySummary/workDaySummary";
+import { IClockin } from "./clockin";
 
 const getLastRegistersByEstablishment = async (
   establishmentId: string,
@@ -51,6 +55,9 @@ const getLastRegisterOfDay = async (workerId: string, date: Date) => {
   });
 };
 
+export interface ITimeSheet extends IWorkDaySummary {
+  registers: IClockin[];
+}
 const getTimeSheetByWorker = async ({
   workerId,
   inicialDate,
@@ -59,7 +66,7 @@ const getTimeSheetByWorker = async ({
   workerId: string;
   inicialDate: Date;
   finalDate: Date;
-}) => {
+}): Promise<ITimeSheet[]> => {
   const clockinsGroupByDate = await getClockisGroupByDate(
     workerId,
     inicialDate,
