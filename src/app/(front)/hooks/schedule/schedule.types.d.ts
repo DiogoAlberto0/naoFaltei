@@ -1,19 +1,18 @@
-export interface IDaySchedule {
-  startHour: number;
-  startMinute: number;
-  endHour: number;
-  endMinute: number;
-  restTimeInMinutes: number;
-  isDayOff: boolean;
-}
-export interface ISchedule {
-  sunday: IDaySchedule;
-  monday: IDaySchedule;
-  tuesday: IDaySchedule;
-  wednesday: IDaySchedule;
-  thursday: IDaySchedule;
-  friday: IDaySchedule;
-  saturday: IDaySchedule;
-}
-
-export type IScheduleArray = [keyof ISchedule, IDaySchedule][];
+import { weekDays } from "@/src/utils/date";
+export type ISchedule =
+  | {
+      type: "day";
+      daily_minutes: {
+        sunday: number;
+        monday: number;
+        tuesday: number;
+        wednesday: number;
+        thursday: number;
+        friday: number;
+        saturday: number;
+      };
+      daysOff: weekDays[];
+    }
+  | { type: "week"; week_minutes: number; daysOff: weekDays[] }
+  | { type: "month"; month_minutes: number; daysOff: weekDays[] }
+  | null;
