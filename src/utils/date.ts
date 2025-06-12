@@ -79,8 +79,10 @@ const transformMinutesInTime = (
   const hours = Math.floor(absBank / 60);
   const minute = absBank % 60;
 
-  if (variant == "clock") return `${hours}:${minute}`;
-  if (variant == "letter") return `${hours}h ${minute}m`;
+  if (variant == "clock")
+    return `${hours.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+  if (variant == "letter")
+    return `${hours.toString().padStart(2, "0")}h ${minute.toString().padStart(2, "0")}m`;
 };
 
 const isISODate = (str: string) => {
@@ -120,6 +122,46 @@ const convertTimeFromLocaletoUTC = ({
     minute: date.getUTCMinutes(),
   };
 };
+
+export type weekDays =
+  | "sunday"
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday";
+const weekDaysObj: weekDays[] = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+];
+
+const weekDaysTranslate = {
+  sunday: "domingo",
+  monday: "segunda",
+  tuesday: "terça",
+  wednesday: "quarta",
+  thursday: "quinta",
+  friday: "sexta",
+  saturday: "sábado",
+};
+const convertNumberToWeekDay = (number: number) => {
+  if (number < 0 || number >= 7) throw new Error("Invalid day week");
+  return weekDaysObj[number];
+};
+
+const convertWeekDayToNumber = (weekDay: weekDays) => {
+  return weekDaysObj.findIndex((value) => value === weekDay);
+};
+
+const translateWeekDayFromEnglishToPT = (weekDay: weekDays) => {
+  return weekDaysTranslate[weekDay];
+};
 const dateUtils = {
   validateAndReturnDate,
   calculateFullDaysBetween,
@@ -133,6 +175,9 @@ const dateUtils = {
   isISODate,
   convertTimeFromUTCtoLocale,
   convertTimeFromLocaletoUTC,
+  convertNumberToWeekDay,
+  convertWeekDayToNumber,
+  translateWeekDayFromEnglishToPT,
 };
 
 export { dateUtils };

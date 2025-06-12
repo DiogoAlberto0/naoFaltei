@@ -16,27 +16,27 @@ const BenefitsList = () => {
   const benefits = [
     {
       text: "Cadastro rápido e sem burocracia",
-      icon: <CheckCircleIcon className="h-6 w-6 text-primary-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-primary-500" />,
     },
     {
       text: "Acesso em qualquer lugar pelo celular",
-      icon: <CheckCircleIcon className="h-6 w-6 text-primary-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-primary-500" />,
     },
     {
       text: "Relatórios claros e organizados",
-      icon: <CheckCircleIcon className="h-6 w-6 text-primary-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-primary-500" />,
     },
     {
       text: "Atualizações automáticas e gratuitas",
-      icon: <CheckCircleIcon className="h-6 w-6 text-primary-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-primary-500" />,
     },
     {
       text: "Suporte dedicado via e-mail",
-      icon: <CheckCircleIcon className="h-6 w-6 text-primary-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-primary-500" />,
     },
     {
       text: "Sem necessidade de instalação",
-      icon: <CheckCircleIcon className="h-6 w-6 text-primary-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-primary-500" />,
     },
   ];
   return (
@@ -62,27 +62,27 @@ const FeaturesList = () => {
   const features = [
     {
       text: "Geolocalização do funcionário",
-      icon: <CheckCircleIcon className="h-6 w-6 text-green-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-green-500" />,
     },
     {
       text: "Sem limites de funcionários",
-      icon: <CheckCircleIcon className="h-6 w-6 text-green-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-green-500" />,
     },
     {
       text: "Cálculo de banco de horas",
-      icon: <CheckCircleIcon className="h-6 w-6 text-green-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-green-500" />,
     },
     {
       text: "Atestados e faltas",
-      icon: <CheckCircleIcon className="h-6 w-6 text-green-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-green-500" />,
     },
     {
       text: "Status do funcionário em tempo real",
-      icon: <CheckCircleIcon className="h-6 w-6 text-green-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-green-500" />,
     },
     {
       text: "Sem limites de empresas",
-      icon: <CheckCircleIcon className="h-6 w-6 text-green-500" />,
+      icon: <CheckCircleIcon className="min-h-6 min-w-6 text-green-500" />,
     },
   ];
   return (
@@ -126,7 +126,7 @@ const PresentationPage = async () => {
           <h2 className="text-lg md:text-2xl text-primary-500 font-semibold mb-6">
             Controle de ponto gratuito para pequenas empresas.
           </h2>
-          <p className="text-base md:text-lg font-semibold mb-6">
+          <p className="text-white md:text-lg font-semibold mb-6">
             O Não Faltei é um sistema de ponto eletrônico online desenvolvido
             para pequenas empresas que buscam controle de presença eficiente e
             acessível. Com ele, é possível registrar e acompanhar os horários

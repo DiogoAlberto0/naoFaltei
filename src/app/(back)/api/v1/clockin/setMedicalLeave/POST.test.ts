@@ -1,5 +1,6 @@
 import { resetAllDatabase } from "@/prisma/prisma";
 import { clockinModel } from "@/src/app/(back)/models/clockin/clockin";
+import { workDaySummaryModel } from "@/src/app/(back)/models/workDaySummary/workDaySummary";
 import {
   createScenario1,
   createScenario2,
@@ -256,7 +257,7 @@ describe("POST on `/api/v1/clockin/setMedicalLeave`", () => {
         inicialDate,
         finalDate,
       });
-      const totalSummary = await clockinModel.getTotalSumariesData(
+      const totalSummary = await workDaySummaryModel.getTotalSumariesData(
         scenario1.worker.id,
         inicialDate,
         finalDate,

@@ -6,7 +6,7 @@ import { InputError } from "@/src/Errors/errors";
 // utils
 import { cpfUtils } from "@/src/utils/cpf";
 import { emailUtils } from "@/src/utils/email";
-import { groupByPeriod } from "@/src/utils/groupby";
+import { countGroupedByPeriod } from "@/src/utils/groupby";
 
 const findBy = async ({
   id,
@@ -94,7 +94,11 @@ export const countPeriod = async ({
     },
   });
 
-  return groupByPeriod(result, (result) => new Date(result.created_at), period);
+  return countGroupedByPeriod(
+    result,
+    (result) => new Date(result.created_at),
+    period,
+  );
 };
 
 const count = async () => {

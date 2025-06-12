@@ -1,13 +1,13 @@
 //Components
-import { EditButton } from "../../Buttons/EditButton";
-import { ModalForm } from "../../Modal/ModalForm";
+import { EditButton } from "../../../Buttons/EditButton";
+import { ModalForm } from "../../../Modal/ModalForm";
 import { addToast } from "@heroui/toast";
 
 // handler
-import { setScheduleHandler } from "./setScheduleHandler";
+import { setScheduleHandler } from "../setScheduleHandler";
 import { SetScheduleModalBody } from "./SetScheduleModalBody";
-import { ISchedule } from "../../../hooks/schedule/schedule.types";
-import { useScheduleDayOffsState } from "../../../hooks/schedule/useScheduleDayOffsState";
+import { ISchedule } from "../../../../hooks/schedule/schedule.types";
+import { Input } from "@heroui/react";
 
 export const SetScheduleModal = ({
   workerId,
@@ -20,7 +20,6 @@ export const SetScheduleModal = ({
   updateSchedule: () => void;
   isDemo?: boolean;
 }) => {
-  const { daysOff, toggleDayOff } = useScheduleDayOffsState(prevSchedule);
   return (
     <ModalForm
       handleSubmit={async (formData) => {
@@ -35,12 +34,8 @@ export const SetScheduleModal = ({
       submitButtonText="Salvar"
       onUpdate={updateSchedule}
     >
-      <SetScheduleModalBody
-        daysOff={daysOff}
-        toggleDayOff={toggleDayOff}
-        workerId={workerId}
-        prevSchedule={prevSchedule}
-      />
+      <Input type="hidden" name="workerId" value={workerId} />
+      <SetScheduleModalBody prevSchedule={prevSchedule} />
     </ModalForm>
   );
 };

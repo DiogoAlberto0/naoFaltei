@@ -1,64 +1,19 @@
 import { fetcher } from "@/src/utils/fetcher";
 import useSWR from "swr";
-import { ISchedule, IScheduleArray } from "./schedule.types";
+import { ISchedule } from "./schedule.types";
 
 const fakeSchedule: ISchedule = {
-  sunday: {
-    startHour: 0,
-    startMinute: 0,
-    endHour: 0,
-    endMinute: 0,
-    restTimeInMinutes: 0,
-    isDayOff: true,
+  type: "day",
+  daily_minutes: {
+    monday: 480,
+    tuesday: 480,
+    wednesday: 480,
+    thursday: 480,
+    friday: 480,
+    saturday: 480,
+    sunday: 0,
   },
-  monday: {
-    startHour: 9,
-    startMinute: 0,
-    endHour: 18,
-    endMinute: 0,
-    restTimeInMinutes: 60,
-    isDayOff: false,
-  },
-  tuesday: {
-    startHour: 9,
-    startMinute: 0,
-    endHour: 18,
-    endMinute: 0,
-    restTimeInMinutes: 60,
-    isDayOff: false,
-  },
-  wednesday: {
-    startHour: 9,
-    startMinute: 0,
-    endHour: 18,
-    endMinute: 0,
-    restTimeInMinutes: 60,
-    isDayOff: false,
-  },
-  thursday: {
-    startHour: 9,
-    startMinute: 0,
-    endHour: 18,
-    endMinute: 0,
-    restTimeInMinutes: 60,
-    isDayOff: false,
-  },
-  friday: {
-    startHour: 9,
-    startMinute: 0,
-    endHour: 17,
-    endMinute: 0,
-    restTimeInMinutes: 60,
-    isDayOff: false,
-  },
-  saturday: {
-    startHour: 0,
-    startMinute: 0,
-    endHour: 0,
-    endMinute: 0,
-    restTimeInMinutes: 0,
-    isDayOff: true,
-  },
+  daysOff: ["sunday"],
 };
 
 export const useScheduleByWorker = ({
@@ -69,14 +24,13 @@ export const useScheduleByWorker = ({
   isDemo?: boolean;
 }) => {
   const { data, error, isLoading, mutate } = useSWR<ISchedule>(
-    isDemo ? null : `/api/v1/worker/${workerId}/getSchedule`,
+    isDemo ? null : `/api/v2/worker/${workerId}/getSchedule`,
     fetcher,
   );
 
-  const schedule = !isDemo
-    ? (Object.entries(data || []) as IScheduleArray)
-    : (Object.entries(fakeSchedule) as IScheduleArray);
+  const schedule = !isDemo ? (data as ISchedule) : (fakeSchedule as ISchedule);
 
+  console.log(data);
   return {
     data,
     error,
